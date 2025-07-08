@@ -1,0 +1,7 @@
+# Excluded folders
+scratch/
+bin/
+cmake/
+elke_build/
+lib/
+.vscode/
