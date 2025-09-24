@@ -15,21 +15,25 @@ struct CommandLineArgument
   /**Constructor. Will assign int(0) to default value.*/
   CommandLineArgument(const std::string& name,
                       const std::string& short_name,
-                      const std::string& doc_string);
+                      const std::string& doc_string,
+                      bool only_one_allowed = true,
+                      bool requires_value = true);
   /**Constructor with default value.*/
   CommandLineArgument(const std::string& name,
                       const std::string& short_name,
                       const std::string& doc_string,
-                      const elk::Varying& default_value);
+                      const elk::Varying& default_value,
+                      bool only_one_allowed = true,
+                      bool requires_value = true);
 
-  std::string m_name;
-  std::string m_short_name;
-  std::string m_doc_string;
+  const std::string m_name;
+  const std::string m_short_name;
+  const std::string m_doc_string;
 
-  elk::Varying m_default_value;
+  const elk::Varying m_default_value;
+  const bool m_only_one_allowed;
+  const bool m_requires_value;
   std::vector<elk::Varying> m_values_assigned;
-  bool m_only_one_allowed = true;
-  bool m_requires_value = true;
 };
 
 } // namespace elk

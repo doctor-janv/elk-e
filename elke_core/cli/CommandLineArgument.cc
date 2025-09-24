@@ -5,22 +5,30 @@ namespace elk
 
 CommandLineArgument::CommandLineArgument(const std::string& name,
                                          const std::string& short_name,
-                                         const std::string& doc_string)
+                                         const std::string& doc_string,
+                                         bool only_one_allowed/*=true*/,
+                                         bool requires_value/*=true*/)
 
   : m_name(name),
     m_short_name(short_name),
     m_doc_string(doc_string),
-    m_default_value(0)
+    m_default_value(0),
+    m_only_one_allowed(only_one_allowed),
+    m_requires_value(requires_value)
 {
 }
 CommandLineArgument::CommandLineArgument(const std::string& name,
                                          const std::string& short_name,
                                          const std::string& doc_string,
-                                         const elk::Varying& default_value)
+                                         const elk::Varying& default_value,
+                                         bool only_one_allowed/*=true*/,
+                                         bool requires_value/*=true*/)
   : m_name(name),
     m_short_name(short_name),
     m_doc_string(doc_string),
-    m_default_value(default_value)
+    m_default_value(default_value),
+    m_only_one_allowed(only_one_allowed),
+    m_requires_value(requires_value)
 {
 }
 } // namespace elk

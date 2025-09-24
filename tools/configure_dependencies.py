@@ -1,6 +1,5 @@
 """
-This is a utility script for the download and installation of OpenSn
-dependencies.
+This is a utility script for the download and installation of dependencies.
 
 NOTES:
 - If you see errors in building fblaslapack, try using a  different BLAS/LAPACK. For example, on
@@ -607,7 +606,7 @@ print("\nWhen opening this project in an IDE, the following environment variable
 print(f'CMAKE_PREFIX_PATH="{install_dir}"${{CMAKE_PREFIX_PATH:+:${{CMAKE_PREFIX_PATH}}}}')
 print()
 print(TextColors.WARNING
-        + "When compiling OpenSn, in a terminal, the following environment variables need to be "
+        + "When compiling, in a terminal, the following environment variables need to be "
         + "set:\n" + TextColors.ENDC)
 
 print(
