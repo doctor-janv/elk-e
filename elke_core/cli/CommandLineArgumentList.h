@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace elk
+namespace elke
 {
 
 struct CommandLineArgument;
@@ -28,6 +28,6 @@ private:
   std::vector<CommandLineArgument> m_list;
 };
 
-} // namespace elk
+} // namespace elke
 
 #endif // COMMAND_LINE_ARGUMENT_LIST_H

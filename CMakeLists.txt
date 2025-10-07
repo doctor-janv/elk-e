@@ -37,43 +37,43 @@ endif()
 find_package(MPI REQUIRED)
 find_package(Lua 5.3 REQUIRED)
 
-find_package(VTK QUIET)
-if(VTK_VERSION VERSION_GREATER_EQUAL "9.0.0")
-    find_package(VTK
-        COMPONENTS
-            CommonCore
-            CommonDataModel
-            IOLegacy
-            IOCore
-            IOXML
-            ParallelCore
-            IOParallelXML
-            FiltersCore
-            IOEnSight
-            IOExodus
-        REQUIRED
-    )
-    message(STATUS "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")")
-elseif(VTK_VERSION VERSION_GREATER_LESS "8.0.0")
-    message(FATAL_ERROR "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")
-but the minimum version is 9.0.0")
-else()
-    if (${VTK_DIR} STREQUAL VTK_DIR-NOTFOUND)
-        message(FATAL_ERROR "Could not find VTK")
-    else()
-        message(FATAL_ERROR "Found unsupported version of VTK: ${VTK_DIR}, version ${VTK_VERSION}")
-    endif()
-endif()
+# find_package(VTK QUIET)
+# if(VTK_VERSION VERSION_GREATER_EQUAL "9.0.0")
+#     find_package(VTK
+#         COMPONENTS
+#             CommonCore
+#             CommonDataModel
+#             IOLegacy
+#             IOCore
+#             IOXML
+#             ParallelCore
+#             IOParallelXML
+#             FiltersCore
+#             IOEnSight
+#             IOExodus
+#         REQUIRED
+#     )
+#     message(STATUS "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")")
+# elseif(VTK_VERSION VERSION_GREATER_LESS "8.0.0")
+#     message(FATAL_ERROR "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")
+# but the minimum version is 9.0.0")
+# else()
+#     if (${VTK_DIR} STREQUAL VTK_DIR-NOTFOUND)
+#         message(FATAL_ERROR "Could not find VTK")
+#     else()
+#         message(FATAL_ERROR "Found unsupported version of VTK: ${VTK_DIR}, version ${VTK_VERSION}")
+#     endif()
+# endif()
 
-find_package(PETSc 3.20 REQUIRED)
-check_symbol_exists(PETSC_USE_64BIT_INDICES "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_USE_64BIT_INDICES)
-if(NOT ${PETSC_USE_64BIT_INDICES} MATCHES 1)
-    message(FATAL_ERROR "PETSc has not been configured with the flag --with-64-bit-indices\n")
-endif()
-check_symbol_exists(PETSC_HAVE_PTSCOTCH "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_HAVE_PTSCOTCH)
-if(NOT ${PETSC_HAVE_PTSCOTCH} MATCHES 1)
-    message(FATAL_ERROR "PETSc has not been configured with PTSCOTCH\n")
-endif()
+# find_package(PETSc 3.20 REQUIRED)
+# check_symbol_exists(PETSC_USE_64BIT_INDICES "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_USE_64BIT_INDICES)
+# if(NOT ${PETSC_USE_64BIT_INDICES} MATCHES 1)
+#     message(FATAL_ERROR "PETSc has not been configured with the flag --with-64-bit-indices\n")
+# endif()
+# check_symbol_exists(PETSC_HAVE_PTSCOTCH "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_HAVE_PTSCOTCH)
+# if(NOT ${PETSC_HAVE_PTSCOTCH} MATCHES 1)
+#     message(FATAL_ERROR "PETSc has not been configured with PTSCOTCH\n")
+# endif()
 
 # compile options
 set(Project_CXX_FLAGS)
@@ -99,7 +99,7 @@ else()
     message(WARNING "Untested compiler : ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
-configure_file(${PROJECT_SOURCE_DIR}/cmake/elke_configuration.h.in
+configure_file(${PROJECT_SOURCE_DIR}/tools/elke_configuration.h.in
                ${PROJECT_SOURCE_DIR}/elke_core/elke_configuration.h)
 
 if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
@@ -111,6 +111,8 @@ if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     file(WRITE "${CONFIG_FILE_NAME}"
         "# Environment configuration file for project.\n")
 endif()
+
+include_directories("${PROJECT_SOURCE_DIR}")
 
 # libelke
 file(GLOB_RECURSE libelke_SRCS CONFIGURE_DEPENDS
@@ -154,6 +156,16 @@ set_target_properties(
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
 )
+
+# Test Executable
+file(GLOB_RECURSE elke_test_SRCS CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/test/src/*.cc")
+add_executable(elke_test ${elke_test_SRCS}
+               "${PROJECT_SOURCE_DIR}/elke_main.cc")
+
+target_link_libraries(elke_test libelke)
+
+# Executable
 add_executable(elke "${PROJECT_SOURCE_DIR}/elke_main.cc")
 
 target_link_libraries(elke libelke)

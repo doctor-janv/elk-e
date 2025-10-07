@@ -19,3 +19,9 @@ Then install the dependencies:
 ```
 python tools/configure_dependencies.py -d scratch/dependencies
 ```
+
+## MacOS installation
+Use
+`
+conda activate moose-dev-2025.08.06
+`

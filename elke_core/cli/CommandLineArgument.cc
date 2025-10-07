@@ -1,26 +1,12 @@
 #include "CommandLineArgument.h"
 
-namespace elk
+namespace elke
 {
 
 CommandLineArgument::CommandLineArgument(const std::string& name,
                                          const std::string& short_name,
                                          const std::string& doc_string,
-                                         bool only_one_allowed/*=true*/,
-                                         bool requires_value/*=true*/)
-
-  : m_name(name),
-    m_short_name(short_name),
-    m_doc_string(doc_string),
-    m_default_value(0),
-    m_only_one_allowed(only_one_allowed),
-    m_requires_value(requires_value)
-{
-}
-CommandLineArgument::CommandLineArgument(const std::string& name,
-                                         const std::string& short_name,
-                                         const std::string& doc_string,
-                                         const elk::Varying& default_value,
+                                         const elke::Varying& default_value,
                                          bool only_one_allowed/*=true*/,
                                          bool requires_value/*=true*/)
   : m_name(name),
@@ -34,7 +20,7 @@ CommandLineArgument::CommandLineArgument(const std::string& name,
 } // namespace elk
 
 std::ostream& operator<<(std::ostream& outstr,
-                         const elk::CommandLineArgument& arg)
+                         const elke::CommandLineArgument& arg)
 {
   const std::string column1 = "--" + arg.m_name + ", -" + arg.m_short_name;
 

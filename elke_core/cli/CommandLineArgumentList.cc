@@ -2,7 +2,7 @@
 #include "CommandLineArgument.h"
 #include "elke_core/output/elk_exceptions.h"
 
-namespace elk
+namespace elke
 {
 
 void CommandLineArgumentList::add(const CommandLineArgument& arg)
@@ -58,4 +58,4 @@ CommandLineArgumentList::getCLAlist() const
   return m_list;
 }
 
-} // namespace elk
+} // namespace elke

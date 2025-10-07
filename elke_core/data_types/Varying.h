@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-namespace elk
+namespace elke
 {
 /**Enumeration of data-types supported by Varying*/
 enum class VaryingDataType : int
@@ -471,10 +471,10 @@ public:
   ~Varying() = default;
 }; // class Varying
 
-} // namespace elk
+} // namespace elke
 
 /**Stream operator*/
 std::ostream& operator<<(std::ostream& outstr,
-                         const elk::Varying& value);
+                         const elke::Varying& value);
 
 #endif // ELK_DATA_TYPES_VARYING_H

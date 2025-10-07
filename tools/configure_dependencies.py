@@ -84,14 +84,14 @@ package_info = {
         "5.4.6",
         "https://www.lua.org/ftp/lua-5.4.6.tar.gz"
     ],
-    "petsc": [
-        "3.20.6",
-        "https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.20.6.tar.gz"
-    ],
-    "vtk": [
-        "9.3.0",
-        "https://www.vtk.org/files/release/9.3/VTK-9.3.0.tar.gz"
-    ],
+    # "petsc": [
+    #     "3.23.6",
+    #     "https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.23.6.tar.gz"
+    # ],
+    # "vtk": [
+    #     "9.3.0",
+    #     "https://www.vtk.org/files/release/9.3/VTK-9.3.0.tar.gz"
+    # ],
 }
 
 

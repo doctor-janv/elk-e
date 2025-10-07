@@ -1,8 +1,6 @@
-#include <iostream>
-
-#include "elke_core/elke.h"
+#include "elke_core/CoreModule.h"
 
 int main(int argc, char** argv)
 {
-  return elk::main(argc, argv);
+  return elke::CoreModule::execute(argc, argv);
 }
