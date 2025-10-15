@@ -4,7 +4,7 @@
 #include "elke_core/elke_configuration.h"
 #include "elke_core/registration/registration.h"
 #include "elke_core/utilities/string_utils.h"
-#include "elke_core/registration/registration.h"
+#include "elke_core/utilities/general_utils.h"
 
 namespace elke
 {

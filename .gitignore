@@ -5,3 +5,7 @@ cmake/
 elke_build/
 lib/
 .vscode/
+
+# Clion items
+.idea/
+**/__pycache__/

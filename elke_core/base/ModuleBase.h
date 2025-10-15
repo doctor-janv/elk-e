@@ -5,7 +5,6 @@
 #include "elke_core/cli/CommandLineArgument.h"
 #include "elke_core/cli/CommandLineArgumentList.h"
 #include "elke_core/registration/registration.h"
-#include "elke_core/utilities/general_utils.h"
 
 #include <map>
 #include <string>
@@ -17,6 +16,17 @@ namespace elke
 /**A base module class.*/
 class ModuleBase
 {
+  std::map<std::string, NullaryFunction> m_nullary_function_register;
+  Logger m_logger;
+
+protected:
+  const std::string m_name;
+  std::string m_program_header;
+  CommandLineArgumentList m_registered_command_line_arguments;
+  CommandLineArgumentList m_supplied_command_line_arguments;
+  bool m_suppress_color = false;
+  int m_verbosity;
+
 public:
   /**Registers a Nullary Function (no argument function). */
   void registerNullaryFunction(const std::string& function_name,
@@ -30,7 +40,7 @@ public:
   const std::map<std::string, NullaryFunction>& getNullaryFunctions() const;
 
 protected:
-  ModuleBase(const std::string& name);
+  explicit ModuleBase(const std::string& name);
 
   //01
   /**Registers a new CLA into the CLA-registry.*/
@@ -53,18 +63,6 @@ protected:
 private:
   /**Sets the default program header.*/
   static std::string setDefaultHeader();
-
-private:
-  std::map<std::string, NullaryFunction> m_nullary_function_register;
-  Logger m_logger;
-
-protected:
-  const std::string m_name;
-  std::string m_program_header;
-  CommandLineArgumentList m_registered_command_line_arguments;
-  CommandLineArgumentList m_supplied_command_line_arguments;
-  bool m_suppress_color = false;
-  int m_verbosity;
 };
 
 } // namespace elke

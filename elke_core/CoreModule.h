@@ -1,7 +1,7 @@
 #ifndef ELKE_CORE_COREMODULE_H
 #define ELKE_CORE_COREMODULE_H
 
-#include "elke_core/bases/ModuleBase.h"
+#include "elke_core/base/ModuleBase.h"
 #include "elke_core/registration/registration.h"
 
 namespace elke

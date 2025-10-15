@@ -6,7 +6,7 @@ namespace elke
 {
 
 //###################################################################
-int CoreModule::execute(int argc, char** argv)
+int CoreModule::execute(const int argc, char** argv)
 {
   auto& core = CoreModule::getInstance();
   try
@@ -23,6 +23,12 @@ int CoreModule::execute(int argc, char** argv)
 
   return 0;
 }
+
+extern "C" void elke__CoreModule__execute()
+{
+  std::cout << "executing core" << "\n";
+}
+
 
 
 } // namespace elke

@@ -1,12 +1,10 @@
 #include "registration.h"
-#include "elke_core/bases/ModuleBase.h"
+#include "elke_core/base/ModuleBase.h"
 
 #include <iostream>
 
 namespace elke
 {
-
-Registry::Registry() {}
 
 Registry& Registry::getInstance()
 {
@@ -32,12 +30,12 @@ char registerNullaryFunction(const std::string& module_name,
 }
 
 char registerModule(const std::string& module_name,
-                    ModuleInstanceFetcher fetcher)
+                    const ModuleInstanceFetcher fetcher)
 {
   auto& registry = Registry::getInstance();
-  ModuleRegistryEntry reg_entry = {module_name, fetcher};
+  const ModuleRegistryEntry reg_entry = {module_name, fetcher};
   registry.m_module_registry.push_back(reg_entry);
-  std::cout << "Registered " << reg_entry.name << registry.m_module_registry.size() << "\n";
+  std::cout << "Registered " << reg_entry.name << "\n";
 
   return 0;
 }

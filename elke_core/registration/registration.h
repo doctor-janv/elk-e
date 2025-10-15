@@ -8,7 +8,7 @@
 
 /**Small utility macro for joining two words.*/
 #define RJoinWordsA(x, y) x##y
-/**IDK why this is needed. Seems like counter doesnt work properly without it*/
+/**IDK why this is needed. Seems like counter doesn't work properly without it*/
 #define RJoinWordsB(x, y) RJoinWordsA(x, y)
 
 /**Macro for registering a nullary/no-argument function to an app.*/
@@ -55,14 +55,9 @@ public:
   const std::vector<ModuleRegistryEntry>& getModuleRegistry() const;
 
 private:
-  Registry();
+  Registry() = default;
 
-private:
   std::vector<ModuleRegistryEntry> m_module_registry;
-
-//   Registry() = delete;                          // Deleted constructor
-//   Registry(const Registry&) = delete;           // Deleted copy constructor
-//   Registry operator=(const Registry&) = delete; // Deleted assignment operator
 };
 
 } // namespace elke
