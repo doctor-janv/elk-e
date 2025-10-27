@@ -13,3 +13,4 @@ lib/
 # Test System items
 TestResults.yaml
 TraceAbilityMatrix.md
+**/out/
