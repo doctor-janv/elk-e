@@ -1,0 +1,6 @@
+[submodule "test/src/tfc_TestSystem"]
+	path = test/src/tfc_TestSystem
+	url = git@github.com:tfc-engineering/tfc_TestSystem.git
+[submodule "test/src/tfc-pyfactory"]
+	path = test/src/tfc-pyfactory
+	url = git@github.com:tfc-engineering/tfc-pyfactory.git
