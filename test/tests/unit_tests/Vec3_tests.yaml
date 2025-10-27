@@ -1,0 +1,9 @@
+__executable: "bin/elke_test"
+
+unitTestVec3.cc:
+  args: "-b 'call elke::unit_tests::unitTestVec3'"
+  debug: True
+  checks: [
+    {
+      type: ExitCodeCheck,
+    }]

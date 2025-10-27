@@ -9,3 +9,7 @@ lib/
 # Clion items
 .idea/
 **/__pycache__/
+
+# Test System items
+TestResults.yaml
+TraceAbilityMatrix.md

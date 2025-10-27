@@ -8,7 +8,7 @@
 namespace elke
 {
 
-enum LogVerbosity
+enum class LogVerbosity
 {
   LEVEL_1 = 1,
   LEVEL_2 = 2,
@@ -17,26 +17,25 @@ enum LogVerbosity
 
 class Logger
 {
-public:
-  Logger(int verbosity);
-  static Logger& getInstance() noexcept;
-  int getVerbosity() {return m_verbosity;}
-  LogStream log(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
-  LogStream logAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
-  LogStream warn(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
-  LogStream warnAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
-  LogStream error(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
-  LogStream errorAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
+  DummyStream m_dummy_stream;
+  const int m_rank;
+  int m_verbosity = 1;
+  bool m_suppress_color = false;
 
-  std::string stringColor(StringColorCode code);
+public:
+  explicit Logger(int verbosity, int rank);
+  int getVerbosity() const {return m_verbosity;}
+  LogStream log(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
+  LogStream logAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1) const;
+  LogStream warn(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
+  LogStream warnAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1) const;
+  LogStream error(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
+  LogStream errorAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1) const;
+
+  std::string stringColor(StringColorCode code) const;
 
   void setColorSuppression(bool value);
   void setVerbosity(int verbosity);
-
-private:
-  DummyStream m_dummy_stream;
-  int m_verbosity = 1;
-  bool m_suppress_color = false;
 };
 
 } // namespace elke

@@ -2,15 +2,13 @@
 #define ELKE_CORE_COREMODULE_H
 
 #include "elke_core/base/ModuleBase.h"
-#include "elke_core/registration/registration.h"
 
 namespace elke
 {
 
 /**The core module*/
-class CoreModule final : public elke::ModuleBase
+class CoreModule final : public ModuleBase
 {
-private:
   /**Constructor*/
   CoreModule();
 

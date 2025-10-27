@@ -38,7 +38,7 @@ void elke_DataTree_printYAMLString(int& errorCode, const int handle)
     auto& warehouse = elke::Warehouse::getInstance();
     auto& stack = warehouse.m_data_tree_stack;
 
-    const elke::DataTree& tree = *stack.getItem(static_cast<size_t>(handle));
+    const elke::DataTree& tree = stack.getItemReference(static_cast<size_t>(handle));
     std::cout << tree.toStringAsYAML();
   }
   catch (std::exception& e)
@@ -64,7 +64,7 @@ void elke_DataTree_addSubTree(int& errorCode,
     auto& warehouse = elke::Warehouse::getInstance();
     auto& stack = warehouse.m_data_tree_stack;
 
-    elke::DataTree& tree = *stack.getItem(static_cast<size_t>(handle));
+    elke::DataTree& tree = stack.getItemReference(static_cast<size_t>(handle));
 
     // Traverse the tree until the address is found
     bool address_found = false;
@@ -112,7 +112,7 @@ void DataTree_addArbitraryValue(int& errorCode,
     auto& warehouse = Warehouse::getInstance();
     auto& stack = warehouse.m_data_tree_stack;
 
-    DataTree& tree = *stack.getItem(static_cast<size_t>(handle));
+    DataTree& tree = stack.getItemReference(static_cast<size_t>(handle));
 
     // Traverse the tree until the address is found
     bool address_found = false;

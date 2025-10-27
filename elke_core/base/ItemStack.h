@@ -22,8 +22,8 @@ public:
     return m_next_item_id++;
   }
 
-  /**Obtains an item from the stack.*/
-  std::shared_ptr<T> getItem(size_t item_id)
+  /**Obtains the smart pointer for an item from the stack.*/
+  std::shared_ptr<T> getItemSharedPtr(size_t item_id)
   {
     auto find_result = m_items.find(item_id);
     if (find_result == m_items.end())
@@ -31,6 +31,16 @@ public:
                              " not in stack.");
 
     return find_result->second;
+  }
+  /**Obtains a reference to an item from the stack.*/
+  T& getItemReference(size_t item_id)
+  {
+    auto find_result = m_items.find(item_id);
+    if (find_result == m_items.end())
+      throw std::logic_error("Item-id " + std::to_string(item_id) +
+                             " not in stack.");
+
+    return *find_result->second;
   }
 };
 

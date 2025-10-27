@@ -4,8 +4,6 @@
 #include <vector>
 #include <string>
 
-// #include "elke_core/bases/ModuleBase.h"
-
 /**Small utility macro for joining two words.*/
 #define RJoinWordsA(x, y) x##y
 /**IDK why this is needed. Seems like counter doesn't work properly without it*/
@@ -44,7 +42,8 @@ char registerNullaryFunction(const std::string& module_name,
 char registerModule(const std::string& module_name,
                     ModuleInstanceFetcher fetcher);
 
-/**This is the global registry.*/
+//###################################################################
+/**This is the global registry singleton.*/
 class Registry
 {
   friend char registerModule(const std::string& module_name,

@@ -24,8 +24,6 @@ protected:
   std::string m_program_header;
   CommandLineArgumentList m_registered_command_line_arguments;
   CommandLineArgumentList m_supplied_command_line_arguments;
-  bool m_suppress_color = false;
-  int m_verbosity;
 
 public:
   /**Registers a Nullary Function (no argument function). */
@@ -35,14 +33,14 @@ public:
   /**Returns the logger.*/
   Logger& getLogger();
 
-  void sayHi();
+  void sayHi() const;
 
   const std::map<std::string, NullaryFunction>& getNullaryFunctions() const;
 
 protected:
-  explicit ModuleBase(const std::string& name);
+  explicit ModuleBase(std::string name, int rank);
 
-  //01
+  // 01
   /**Registers a new CLA into the CLA-registry.*/
   void registerNewCLA(const CommandLineArgument& cla);
 
@@ -58,7 +56,7 @@ protected:
   void printHelp();
   void printHeader();
   void dumpRegistry();
-  void basicCommandCall(const std::string& command_string);
+  void basicCommandCall(const std::string& command_string) const;
 
 private:
   /**Sets the default program header.*/

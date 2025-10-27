@@ -6,7 +6,7 @@ namespace elke
 {
 
 // ###################################################################
-CoreModule::CoreModule() : ModuleBase("CoreModule") {};
+CoreModule::CoreModule() : ModuleBase("CoreModule", 0) {};
 
 // ###################################################################
 CoreModule& CoreModule::getInstance() noexcept

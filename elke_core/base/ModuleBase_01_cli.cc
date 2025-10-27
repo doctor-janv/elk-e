@@ -25,7 +25,7 @@ void ModuleBase::registerCLI()
   auto cli0 = CommandLineArgument("help",
                                   "h",
                                   "Prints basic help for the program.",
-                                  /*default_value=*/Varying(int(0)),
+                                  /*default_value=*/Varying(0),
                                   /*only_one_allowed=*/false,
                                   /*requires_value=*/false);
   auto cli1 = CommandLineArgument("input", "i", "Input file to the program.");
@@ -41,7 +41,7 @@ void ModuleBase::registerCLI()
   auto cli4 = CommandLineArgument("dump-registry",
                                   "",
                                   "Dumps the registry in yaml format",
-                                  /*default_value=*/Varying(int(0)),
+                                  /*default_value=*/Varying(0),
                                   /*only_one_allowed=*/true,
                                   /*requires_value=*/false);
 
@@ -53,12 +53,13 @@ void ModuleBase::registerCLI()
 }
 
 // ###################################################################
-void ModuleBase::parseCommandLine(int argc, char** argv)
+void ModuleBase::parseCommandLine(const int argc, char** argv)
 {
   //=================================== Converts c-strings to std::string
   std::vector<std::string> raw_clas;
+  raw_clas.reserve(argc);
   for (int c = 0; c < argc; ++c)
-    raw_clas.push_back(argv[c]);
+    raw_clas.emplace_back(argv[c]);
 
   this->parseCommandLine(raw_clas);
 }
@@ -77,7 +78,7 @@ void ModuleBase::parseCommandLine(const std::vector<std::string>& args)
     std::string short_name;
     std::string long_name;
 
-    if (cla.find("-") != std::string::npos and cla.size() == 2)
+    if (cla.find('-') != std::string::npos and cla.size() == 2)
       short_name = cla.substr(1, 1);
     else if (cla.find("--") != std::string::npos)
       long_name = cla.substr(2, cla.size() - 2);
@@ -87,7 +88,7 @@ void ModuleBase::parseCommandLine(const std::vector<std::string>& args)
       elkLogicalError("Invalid argument \"" + cla + "\"");
 
     //============================ Grab the CLA specification
-    const auto& cla_spec = (short_name == "")
+    const auto& cla_spec = short_name.empty()
                              ? cla_specs.getCLAbyName(long_name)
                              : cla_specs.getCLAbyShortName(short_name);
 
@@ -103,7 +104,7 @@ void ModuleBase::parseCommandLine(const std::vector<std::string>& args)
     //============================ Check if actual value for key is required
     if (cla_spec.m_requires_value)
     {
-      if ((c + 1) >= argc)
+      if (c + 1 >= argc)
         elkLogicalError("Command line argument --" + cla_spec.m_name + "/-" +
                         cla_spec.m_short_name +
                         " requires a value to be supplied but the keyword " +
@@ -111,7 +112,7 @@ void ModuleBase::parseCommandLine(const std::vector<std::string>& args)
                         " so a value cannot be deduced for it.");
 
       const auto& next_cla = args.at(c + 1);
-      if ((next_cla.find("-") == 0 and next_cla.size() == 2) or
+      if ((next_cla.find('-') == 0 and next_cla.size() == 2) or
           next_cla.find("--") == 0)
         elkLogicalError("Command line argument --" + cla_spec.m_name + "/-" +
                         cla_spec.m_short_name +
@@ -119,7 +120,7 @@ void ModuleBase::parseCommandLine(const std::vector<std::string>& args)
                         "is followed by another keyword specifier, " +
                         next_cla + ", therefore no value can be deduced.");
 
-      const auto value = elke::Varying(next_cla);
+      const auto value = Varying(next_cla);
       c += 1;
       auto& supplied_cla = supplied_clas.getCLAbyName(cla_spec.m_name);
       supplied_cla.m_values_assigned.push_back(value);
@@ -142,7 +143,8 @@ void ModuleBase::initialCLIResponse()
   if (supplied_clas.has("verbosity"))
   {
     const auto& cla = supplied_clas.getCLAbyName("verbosity");
-    m_logger.setVerbosity(cla.m_values_assigned.front().IntegerValue());
+    m_logger.setVerbosity(
+      static_cast<int>(cla.m_values_assigned.front().IntegerValue()));
   }
 
   if (supplied_clas.has("say-hello"))
@@ -162,9 +164,9 @@ void ModuleBase::initialCLIResponse()
     {
       const std::string command = basic_command.StringValue();
       logger.log() << command << "\n";
-      const auto& words = elke::string_utils::splitString(command);
+      const auto& words = string_utils::splitString(command);
 
-      if (words.size() > 0 and words[0] == "call")
+      if (not words.empty() and words[0] == "call")
         this->basicCommandCall(command);
       else
       {
@@ -184,7 +186,6 @@ void ModuleBase::initialCLIResponse()
 // ###################################################################
 void ModuleBase::printHelp()
 {
-  const auto& supplied_clas = this->m_supplied_command_line_arguments;
   const auto& registered_clas = this->m_registered_command_line_arguments;
 
   std::stringstream outstr;
@@ -193,9 +194,9 @@ void ModuleBase::printHelp()
   for (const auto& cla : registered_clas.getCLAlist())
   {
     const std::string short_part =
-      (cla.m_short_name.empty()) ? "" : ", -" + cla.m_short_name;
+      cla.m_short_name.empty() ? "" : ", -" + cla.m_short_name;
     const auto column1 = "--" + cla.m_name + short_part;
-    const int offset = 20 - column1.size();
+    const int offset = std::max(20 - static_cast<int>(column1.size()), 0);
 
     outstr << column1;
     if (offset < 0) outstr << "\n" + std::string(20, ' ');
@@ -232,15 +233,15 @@ void ModuleBase::printHeader()
   for (const auto& cla : supplied_clas_list)
   {
     const std::string short_part =
-      (cla.m_short_name.empty()) ? "" : ", -" + cla.m_short_name;
+      cla.m_short_name.empty() ? "" : ", -" + cla.m_short_name;
     const auto column1 = "--" + cla.m_name + short_part;
-    const int offset = 20 - column1.size();
+    const int offset = std::max(20 - static_cast<int>(column1.size()), 0);
 
     outstr << column1 + std::string(offset, ' ');
     for (const auto& val : cla.m_values_assigned)
     {
       outstr << val.StringValue();
-      if (&val != &*cla.m_values_assigned.rbegin()) outstr << ", ";
+      if (&val != &cla.m_values_assigned.back()) outstr << ", ";
     }
     outstr << "\n";
   }
@@ -269,7 +270,7 @@ void ModuleBase::dumpRegistry()
 }
 
 // ###################################################################
-void ModuleBase::basicCommandCall(const std::string& command_string)
+void ModuleBase::basicCommandCall(const std::string& command_string) const
 {
   auto& logger = m_logger;
   const auto& words = elke::string_utils::splitString(command_string);

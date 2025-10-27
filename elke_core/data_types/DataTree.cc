@@ -11,13 +11,16 @@ DataTree::DataTree(std::string name) : m_name(std::move(name)) {}
 /**Returns the name assigned to this tree.*/
 const std::string& DataTree::name() const { return m_name; }
 
+/**Assigns a new name.*/
+void DataTree::rename(const std::string& new_name) { m_name = new_name; }
+
 /**Returns a constant reference to the values.*/
 const std::vector<Varying>& DataTree::values() const { return m_values; }
 
 /**Returns a reference to the values.*/
 std::vector<Varying>& DataTree::values() { return m_values; }
 
-//###################################################################
+// ###################################################################
 /**Traverses the tree and calls a callback function at each node.*/
 void DataTree::traverseWithCallback(const std::string& running_address,
                                     const DataTreeTraverseFunction& function)
@@ -31,14 +34,14 @@ void DataTree::traverseWithCallback(const std::string& running_address,
     child->traverseWithCallback(current_address, function);
 }
 
-//###################################################################
+// ###################################################################
 /**Adds a child tree.*/
 void DataTree::addChild(const DataTreePtr& child)
 {
   m_children.push_back(child);
 }
 
-//###################################################################
+// ###################################################################
 /**Produces a string in YAML format of the entire tree.*/
 /* Extreme use case. A python dictionary like
  *
@@ -88,7 +91,7 @@ std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
       for (const auto& value : m_values)
       {
         yaml << value.PrintStr(/*with_type=*/false);
-        if (value != *m_values.rbegin()) yaml << ", ";
+        if (value != m_values.back()) yaml << ", ";
       }
       yaml << "]\n";
     }
@@ -103,5 +106,56 @@ std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
 
   return yaml.str();
 }
+
+// ###################################################################
+/**Returns a const reference to a child of only the current level tree. If the
+ * name is not found std::logic_error is thrown.
+ */
+DataTree& DataTree::child(const std::string& child_name)
+{
+  if (m_children.empty())
+    throw std::logic_error("Child '" + child_name + "' not found");
+
+  for (const auto& child : m_children)
+    if (child->name() == child_name) return *child;
+
+  throw std::logic_error("Child '" + child_name + "' not found");
+}
+
+// ###################################################################
+/**Returns a const reference to a child of only the current level tree. If the
+ * name is not found std::logic_error is thrown.
+ */
+const DataTree& DataTree::child(const std::string& child_name) const
+{
+  if (m_children.empty())
+    throw std::logic_error("Child '" + child_name + "' not found");
+
+  for (const auto& child : m_children)
+    if (child->name() == child_name) return *child;
+
+  throw std::logic_error("Child '" + child_name + "' not found");
+}
+
+// // ###################################################################
+// /**Returns a const reference to a child at any level of the tree. If
+//  * the name is not found std::logic_error is thrown.*/
+// const DataTree& DataTree::childByAddress(const std::string& address) const
+// {
+//
+//   auto words = string_utils::splitString(address, "/");
+//   if (words.empty()) words = {address};
+//
+//   // try
+//   // {
+//   //   child
+//   // }
+//   // catch (const std::exception& e)
+//   // {
+//   //   throw std::logic_error("Invalid address '" + address + "' in data tree
+//   '" +
+//   //                          m_name + "'.");
+//   // }
+// }
 
 } // namespace elke

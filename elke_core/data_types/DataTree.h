@@ -13,18 +13,20 @@
  * - Must be able to obtain data nodes via hierarchical reference of the form:
  *   'main_node/block1/subblock2/param_1'
  * - Values must be assignable via array.
- * - Each node is either a node (having 1 or more values) or a sub-tree
+ * - Each node is either a node (having 1 or more values) or a subtree
  */
 
 namespace elke
 {
 
+/**Class to support a data tree.*/
 class DataTree
 {
   /**Function called during traversals.*/
   using DataTreeTraverseFunction =
     std::function<void(const std::string&, DataTree&)>;
   using DataTreePtr = std::shared_ptr<DataTree>;
+  using DataTreeConstPtr = std::shared_ptr<const DataTree>;
   std::string m_name;
   std::vector<Varying> m_values;
   std::vector<DataTreePtr> m_children;
@@ -35,6 +37,9 @@ public:
 
   /**Returns the name assigned to this tree.*/
   const std::string& name() const;
+
+  /**Assigns a new name.*/
+  void rename(const std::string& new_name);
 
   /**Returns a constant reference to the values.*/
   const std::vector<Varying>& values() const;
@@ -49,12 +54,20 @@ public:
   /**Adds a child tree.*/
   void addChild(const DataTreePtr& child);
 
+  /**Returns a reference to a child of only the current level tree. If
+   * the name is not found std::logic_error is thrown.*/
+  DataTree& child(const std::string& child_name);
+
+  /**Returns a const reference to a child of only the current level tree. If
+   * the name is not found std::logic_error is thrown.*/
+  const DataTree& child(const std::string& child_name) const;
+
+  // /**Returns a const reference to a child at any level of the tree. If
+  //  * the name is not found std::logic_error is thrown.*/
+  // const DataTree& childByAddress(const std::string& address) const;
+
   /**Produces a string in YAML format of the entire tree.*/
   std::string toStringAsYAML(const std::string& indent = "") const;
-
-  // private:
-  //   void addValues(const std::vector<Varying>& values);
-  //   void addChild(DataTreePtr child);
 };
 
 } // namespace elke

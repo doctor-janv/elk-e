@@ -24,7 +24,7 @@ int CoreModule::execute(const int argc, char** argv)
   return 0;
 }
 
-extern "C" void elke__CoreModule__execute()
+extern "C" void elke_CoreModule_execute()
 {
   std::cout << "executing core" << "\n";
 }
