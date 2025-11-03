@@ -8,7 +8,19 @@
   beginning of a line (the hashes must start at column 0) triggers the third
   word as the requirement text name. For example:
   `## Requirement cli1` denotes requirement `cli1` follows.
-- The block of requirements is terminated with \`endreq\` with the apostrophes.
+- The block of requirements is terminated with `<!--endreq-->` with the apostrophes.
+
+## Requirement basic1 - Basic program philosophy
+There shall be the ability to instantiate the program via an executable as well
+as a dynamic library. Program instances shall commence with a `CoreModule`, which 
+shall be a singleton within each process, via an `execution` static method.
+
+<!--endreq-->
+
+## Requirement input1 - Input processing shall be a distinct process
+Input processing shall be a distinct process. Runtime input processing should be avoided.
+
+<!--endreq-->
 
 ## Requirement cli1 - Command Line Interface
 
@@ -19,8 +31,9 @@ Elke based programs shall support command line arguments (CLAs) in the following
   conflict with other command line arguments in the application.
 - A CLA does not have to have a value, and can thus be used as a flag.
 - Some CLAs could be used multiple times. Functionality should exist to allow for it.
+- The `-h` flag summons help
 
-`endreq`
+<!--endreq-->
 
 ## Requirement utesting - Unit testing
 - As a CLA the user can use `basic` to execute unit-testing.
@@ -29,13 +42,13 @@ Elke based programs shall support command line arguments (CLAs) in the following
 During this phase all possible input processing
 shall be performed and all errors shall be collected to be displayed/conveyed at the end of the 
 phase.
-`endreq`
+<!--endreq-->
 
 ## Requirement cconv - Documented Coding conventions
 
 There shall be a documented set of coding conventions.
 
-`endreq`
+<!--endreq-->
 
 
 
@@ -48,4 +61,4 @@ An input parameter can be one of following:
 - An array of numbers
 - An array of strings
 
-`endreq`
+<!--endreq-->

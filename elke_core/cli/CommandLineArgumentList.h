@@ -1,6 +1,8 @@
 #ifndef COMMAND_LINE_ARGUMENT_LIST_H
 #define COMMAND_LINE_ARGUMENT_LIST_H
 
+#include "CommandLineArgument.h"
+
 #include <vector>
 #include <string>
 

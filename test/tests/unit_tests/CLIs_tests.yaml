@@ -1,0 +1,17 @@
+__executable: "bin/elke_test"
+
+unitTestCLI_help1:
+  args: "-h --nocolor"
+  checks: [{type: ExitCodeCheck}]
+
+unitTestCLI_help2:
+  args: "--help --nocolor"
+  checks: [{type: ExitCodeCheck}]
+
+unitTestCLIs.cc:
+  args: "-b 'call elke::unit_tests::unitTestVec3' --nocolor"
+  debug: True
+  checks: [
+    {
+      type: ExitCodeCheck,
+    }]

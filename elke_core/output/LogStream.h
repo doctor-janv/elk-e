@@ -15,10 +15,10 @@ public:
   /**Creates a string stream.*/
   LogStream(std::ostream* output_stream,
             std::string header,
-            bool dummy_flag = false);
+            const bool& color_active);
 
   /**Flushes the headered stream to the output.*/
-  virtual ~LogStream();
+  ~LogStream() override;
 
   /**Initializes the stream via another. */
   LogStream(const LogStream& other);
@@ -26,21 +26,21 @@ public:
 private:
   std::ostream* m_log_stream;
   std::string m_log_header;
-  const bool m_dummy = false;
+  const bool& m_color_active = false;
 };
 
 // ###################################################################
 /**A dummy stream class to inhibit output from a particular rank.*/
-struct DummyStream: public std::ostream
+struct DummyStream: std::ostream
 {
-  struct DummyStreamBuffer : std::streambuf
+  struct DummyStreamBuffer final : std::streambuf
   {
-    virtual int overflow(int c) { return c; };
+    int overflow(const int c) override { return c; }
   } buffer;
 
   DummyStream(): std::ostream(&buffer) {}
 
-  ~DummyStream() {}
+  ~DummyStream() override = default;
 };
 
 } // namespace elke

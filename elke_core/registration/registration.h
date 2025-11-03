@@ -10,10 +10,9 @@
 #define RJoinWordsB(x, y) RJoinWordsA(x, y)
 
 /**Macro for registering a nullary/no-argument function to an app.*/
-#define elkeRegisterNullaryFunction(app_name, func_name)                       \
+#define elkeRegisterNullaryFunction(func_name)                                 \
   static char RJoinWordsB(unique_var_name1_, __COUNTER__) =                    \
-    elke::registerNullaryFunction(                                             \
-      #app_name, app_name::getInstance(), #func_name, func_name)
+    elke::registerNullaryFunction(#func_name, func_name)
 
 /**Macro for registering a module*/
 #define elkeRegisterModule(module_name)                                        \
@@ -23,41 +22,12 @@
 namespace elke
 {
 
-class ModuleBase;
+class FrameworkCore;
 
 using NullaryFunction = void (*)();
-using ModuleInstanceFetcher = ModuleBase& (*)();
 
-struct ModuleRegistryEntry
-{
-  const std::string name;
-  ModuleInstanceFetcher fetcher;
-};
-
-char registerNullaryFunction(const std::string& module_name,
-                             ModuleBase& module,
-                             const std::string& function_name,
+char registerNullaryFunction(const std::string& function_name,
                              NullaryFunction function);
-
-char registerModule(const std::string& module_name,
-                    ModuleInstanceFetcher fetcher);
-
-//###################################################################
-/**This is the global registry singleton.*/
-class Registry
-{
-  friend char registerModule(const std::string& module_name,
-                    ModuleInstanceFetcher fetcher);
-public:
-  static Registry& getInstance();
-
-  const std::vector<ModuleRegistryEntry>& getModuleRegistry() const;
-
-private:
-  Registry() = default;
-
-  std::vector<ModuleRegistryEntry> m_module_registry;
-};
 
 } // namespace elke
 

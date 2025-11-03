@@ -1,14 +1,16 @@
 #include "Warehouse.h"
 
-#include <iostream>
-
 namespace elke
 {
 
-Warehouse& Warehouse::getInstance() noexcept
+ItemStorage<DataTree>& Warehouse::DataTreeStorage()
 {
-  static Warehouse instance;
-  return instance;
+  return m_data_tree_storage;
 }
 
+const ItemStorage<DataTree>& Warehouse::DataTreeStorage() const
+{
+  return m_data_tree_storage;
 }
+
+} // namespace elke

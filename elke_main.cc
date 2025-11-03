@@ -1,6 +1,7 @@
-#include "elke_core/CoreModule.h"
+#include "elke_core/FrameworkCore.h"
 
 int main(const int argc, char** argv)
 {
-  return elke::CoreModule::execute(argc, argv);
+  elke::FrameworkCore::initialize(argc, argv);
+  return elke::FrameworkCore::execute();
 }

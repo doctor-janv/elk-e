@@ -1,5 +1,5 @@
 #include "elke_core/math/Vec3.h"
-#include "elke_core/CoreModule.h"
+#include "elke_core/FrameworkCore.h"
 
 namespace elke::unit_tests
 {
@@ -9,4 +9,4 @@ void unitTestVec3() { std::cout << "Hello from unitTestVec3\n"; }
 
 } // namespace elke::unit_tests
 
-elkeRegisterNullaryFunction(elke::CoreModule, elke::unit_tests::unitTestVec3);
+elkeRegisterNullaryFunction(elke::unit_tests::unitTestVec3);

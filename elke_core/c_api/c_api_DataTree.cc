@@ -1,5 +1,6 @@
 #include "c_api_DataTree.h"
 
+#include  "elke_core/FrameworkCore.h"
 #include "elke_core/data_types/DataTree.h"
 #include "elke_core/base/Warehouse.h"
 
@@ -15,10 +16,10 @@ int elke_DataTree_makeNew(int& errorCode, const char* c_str)
     std::cout << "Making new data tree " << c_str << std::endl;
     const auto new_data_tree = std::make_shared<elke::DataTree>(c_str);
 
-    auto& warehouse = elke::Warehouse::getInstance();
+    auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
 
     const size_t handle =
-      warehouse.m_data_tree_stack.depositItem(new_data_tree);
+      warehouse.DataTreeStorage().depositItem(new_data_tree);
 
     return static_cast<int>(handle);
   }
@@ -35,8 +36,8 @@ void elke_DataTree_printYAMLString(int& errorCode, const int handle)
   errorCode = 0;
   try
   {
-    auto& warehouse = elke::Warehouse::getInstance();
-    auto& stack = warehouse.m_data_tree_stack;
+    auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
+    auto& stack = warehouse.DataTreeStorage();
 
     const elke::DataTree& tree = stack.getItemReference(static_cast<size_t>(handle));
     std::cout << tree.toStringAsYAML();
@@ -61,8 +62,8 @@ void elke_DataTree_addSubTree(int& errorCode,
     const auto str_address = std::string(address);
     const auto str_name = std::string(name);
 
-    auto& warehouse = elke::Warehouse::getInstance();
-    auto& stack = warehouse.m_data_tree_stack;
+    auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
+    auto& stack = warehouse.DataTreeStorage();
 
     elke::DataTree& tree = stack.getItemReference(static_cast<size_t>(handle));
 
@@ -109,8 +110,8 @@ void DataTree_addArbitraryValue(int& errorCode,
   {
     const auto str_address = std::string(address);
 
-    auto& warehouse = Warehouse::getInstance();
-    auto& stack = warehouse.m_data_tree_stack;
+    auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
+    auto& stack = warehouse.DataTreeStorage();
 
     DataTree& tree = stack.getItemReference(static_cast<size_t>(handle));
 

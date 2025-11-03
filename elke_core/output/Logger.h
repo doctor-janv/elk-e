@@ -18,24 +18,25 @@ enum class LogVerbosity
 class Logger
 {
   DummyStream m_dummy_stream;
-  const int m_rank;
+  int m_rank;
   int m_verbosity = 1;
   bool m_suppress_color = false;
 
 public:
   explicit Logger(int verbosity, int rank);
-  int getVerbosity() const {return m_verbosity;}
+  int getVerbosity() const { return m_verbosity; }
   LogStream log(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
-  LogStream logAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1) const;
+  LogStream logAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
   LogStream warn(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
-  LogStream warnAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1) const;
+  LogStream warnAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
   LogStream error(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
-  LogStream errorAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1) const;
+  LogStream errorAllRanks(LogVerbosity verbosity = LogVerbosity::LEVEL_1);
 
   std::string stringColor(StringColorCode code) const;
 
   void setColorSuppression(bool value);
   void setVerbosity(int verbosity);
+  void setRank(int rank);
 };
 
 } // namespace elke

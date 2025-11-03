@@ -1,43 +1,45 @@
 #include "registration.h"
-#include "elke_core/base/ModuleBase.h"
+#include "elke_core/FrameworkCore.h"
 
 #include <iostream>
 
 namespace elke
 {
 
-Registry& Registry::getInstance()
-{
-  static Registry instance;
-  return instance;
-}
+// Registry& Registry::getInstance()
+// {
+//   static Registry instance;
+//   return instance;
+// }
+//
+// const std::vector<ModuleRegistryEntry>& Registry::getModuleRegistry() const
+// {
+//   return m_module_registry;
+// }
 
-const std::vector<ModuleRegistryEntry>& Registry::getModuleRegistry() const
+char registerNullaryFunction(const std::string& function_name,
+                             const NullaryFunction function)
 {
-  return m_module_registry;
-}
+  auto& core_module = FrameworkCore::getInstance();
+  core_module.registerNullaryFunction(function_name, function);
 
-char registerNullaryFunction(const std::string& module_name,
-                             ModuleBase& module,
-                             const std::string& function_name,
-                             NullaryFunction function)
-{
-  module.registerNullaryFunction(function_name, function);
+  auto& logger = core_module.getLogger();
 
-  std::cout << "Registered " << function_name << " to " << module_name << "\n";
+  logger.log() << "Registered Nullary function " << function_name
+               << " to CoreModule";
 
   return 0;
 }
 
-char registerModule(const std::string& module_name,
-                    const ModuleInstanceFetcher fetcher)
-{
-  auto& registry = Registry::getInstance();
-  const ModuleRegistryEntry reg_entry = {module_name, fetcher};
-  registry.m_module_registry.push_back(reg_entry);
-  std::cout << "Registered " << reg_entry.name << "\n";
-
-  return 0;
-}
+// char registerModule(const std::string& module_name,
+//                     const ModuleInstanceFetcher fetcher)
+// {
+//   auto& registry = Registry::getInstance();
+//   const ModuleRegistryEntry reg_entry = {module_name, fetcher};
+//   registry.m_module_registry.push_back(reg_entry);
+//   std::cout << "Registered " << reg_entry.name << "\n";
+//
+//   return 0;
+// }
 
 } // namespace elke

@@ -7,9 +7,9 @@
 namespace elke
 {
 
-/**An item-stack is a templated class that handles the storage of items.*/
+/**An ItemStorage is a templated class that handles the storage of items.*/
 template <class T>
-class ItemStack
+class ItemStorage
 {
   size_t m_next_item_id = 1;
   std::map<size_t, std::shared_ptr<T>> m_items;
