@@ -30,14 +30,22 @@ int MPI_Interface::num_ranks() const
   return m_num_ranks;
 }
 
+std::array<int, 3> MPI_Interface::getMPIVersion() const
+{
+  return {m_MPI_major_version, m_MPI_minor_version, 0};
+}
+
 void MPI_Interface::reinitializeMPI_Interface(int argc,
                                               char** argv,
                                               MPI_Comm communicator)
 {
-#ifdef MPI_IS_DEFINED
+#ifdef MPI_VERSION
   MPI_Init(&argc, &argv);                    /* starts MPI */
   MPI_Comm_rank(communicator, &m_rank);      /* get cur process id */
   MPI_Comm_size(communicator, &m_num_ranks); /* get num of processes */
+
+  m_MPI_major_version = MPI_VERSION;
+  m_MPI_minor_version = MPI_SUBVERSION;;
 #endif
   m_communicator = communicator;
 
@@ -47,7 +55,7 @@ void MPI_Interface::reinitializeMPI_Interface(int argc,
 int MPI_Interface::getRankFromCommunicator(MPI_Comm communicator)
 {
   int rank = 0;
-#ifdef MPI_IS_DEFINED
+#ifdef MPI_VERSION
   MPI_Comm_rank(communicator, &rank);      /* get cur process id */
 #endif
   return rank;
@@ -56,7 +64,7 @@ int MPI_Interface::getRankFromCommunicator(MPI_Comm communicator)
 int MPI_Interface::getNumRanksFromCommunicator(MPI_Comm communicator)
 {
   int num_ranks = 1;
-#ifdef MPI_IS_DEFINED
+#ifdef MPI_VERSION
   MPI_Comm_size(communicator, &num_ranks);      /* get cur process id */
 #endif
   return num_ranks;
@@ -64,14 +72,14 @@ int MPI_Interface::getNumRanksFromCommunicator(MPI_Comm communicator)
 
 void MPI_Interface::FinalizeMPI()
 {
-#ifdef MPI_IS_DEFINED
+#ifdef MPI_VERSION
   MPI_Finalize();
 #endif
 }
 
 void MPI_Interface::AbortMPI(int error_code)
 {
-#ifdef MPI_IS_DEFINED
+#ifdef MPI_VERSION
   MPI_Abort(m_communicator, error_code);
 #endif
 }

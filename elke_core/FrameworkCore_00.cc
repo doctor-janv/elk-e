@@ -31,6 +31,15 @@ void FrameworkCore::initialize(const int argc, char** argv)
 
   core.reinitializeMPI_Interface(argc, argv, MPI_COMM_WORLD);
   core.getLogger().setRank(core.rank());
+  auto header = core.getHeader();
+
+  const auto mpi_version = core.getMPIVersion();
+  header += "MPI-Version: ";
+  header += std::to_string(mpi_version[0]) + ".";
+  header += std::to_string(mpi_version[1]) + ".";
+  header += std::to_string(mpi_version[2]);
+
+  core.setHeader(header);
 
   core.m_initialized = true;
 }

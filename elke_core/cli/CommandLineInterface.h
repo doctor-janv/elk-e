@@ -16,7 +16,7 @@ class CommandLineInterface
 
   // Constructor/Destructor
 public:
-  CommandLineInterface(std::shared_ptr<Logger> logger_ptr);
+  explicit CommandLineInterface(std::shared_ptr<Logger> logger_ptr);
 
   //Interface
   /**Registers a new CLA into the CLA-registry.*/
@@ -34,7 +34,10 @@ public:
   void registerCommonCLI_Items();
 
   /**Initial CLI response.*/
-  void respondToCommonCLAs();
+  void respondToCommonCLAs() const;
+
+  const std::string& getHeader() const;
+  void setHeader(std::string new_header);
 
 private:
   /**Sets the default program header.*/

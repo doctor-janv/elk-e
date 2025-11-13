@@ -6,6 +6,7 @@
 #include "elke_core/elke_configuration.h"
 
 #include <sstream>
+#include <utility>
 
 namespace elke
 {
@@ -14,7 +15,7 @@ namespace elke
 CommandLineInterface::CommandLineInterface(std::shared_ptr<Logger> logger_ptr)
   : m_program_header(
       CommandLineInterface::constructionHelperSetDefaultHeader()),
-    m_logger_ptr(logger_ptr)
+    m_logger_ptr(std::move(logger_ptr))
 {
 }
 
@@ -147,7 +148,7 @@ void CommandLineInterface::registerCommonCLI_Items()
 }
 
 // ###################################################################
-void CommandLineInterface::respondToCommonCLAs()
+void CommandLineInterface::respondToCommonCLAs() const
 {
   const auto& supplied_clas = getSuppliedCommandLineArguments();
   auto& logger = *m_logger_ptr;
@@ -165,6 +166,20 @@ void CommandLineInterface::respondToCommonCLAs()
   }
 }
 
+// ###################################################################
+const std::string& CommandLineInterface::getHeader() const
+{
+  return m_program_header;
+}
+
+// ###################################################################
+void CommandLineInterface::setHeader(std::string new_header)
+{
+  m_program_header = std::move(new_header);
+}
+
+
+// ###################################################################
 std::string CommandLineInterface::constructionHelperSetDefaultHeader()
 {
   // clang-format off
@@ -174,6 +189,7 @@ std::string CommandLineInterface::constructionHelperSetDefaultHeader()
 "*                    A computational physics library                          *\n"
 "*                          for thermal-hydraulics                             *\n"
 "*******************************************************************************\n";
+  header += "Framework Version: " + std::string(PROJECT_VERSION) + "\n";
   // clang-format on
   return header;
 }
@@ -216,8 +232,7 @@ void CommandLineInterface::printHeader() const
 
   std::stringstream outstr;
 
-  outstr << m_program_header << "\n";
-  outstr << "Version: " << PROJECT_VERSION << "\n\n";
+  outstr << m_program_header << "\n\n";
 
   const auto& supplied_clas_list = supplied_clas.getCLAlist();
   if (not supplied_clas_list.empty())

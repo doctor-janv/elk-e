@@ -1,7 +1,8 @@
 #ifndef ELK_E_MPI_INTERFACE_H
 #define ELK_E_MPI_INTERFACE_H
+#include <array>
 
-#ifndef MPI_IS_DEFINED
+#ifndef MPI_VERSION
 typedef int MPI_Comm;
 inline MPI_Comm MPI_COMM_WORLD = 0;
 #else
@@ -21,6 +22,9 @@ class MPI_Interface
   int m_num_ranks = 1;               ///< Number of ranks on the communicator
   bool m_mpi_is_initialized = false; ///< Is Initialized? flag
 
+  int m_MPI_major_version = 0;
+  int m_MPI_minor_version = 0;
+
   MPI_Interface() = default; // Only used by core module
 
 public:
@@ -34,6 +38,7 @@ public:
   /**Returns the number of ranks on the communicator.*/
   int num_ranks() const;
 
+  std::array<int, 3> getMPIVersion() const;
 
 private:
   void FinalizeMPI();
