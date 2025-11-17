@@ -16,16 +16,13 @@ class Simulation : public MPI_Interface,
 {
   Warehouse m_warehouse;
   // Constructors/Destructors
-protected:
+public:
   /**Private constructor*/
   explicit Simulation(MPI_Comm communicator);
 
-public:
   virtual ~Simulation() = default;
 
   // Interface
-  virtual int execute() = 0;
-
   const Warehouse& warehouse() const;
   Warehouse& warehouse();
 };

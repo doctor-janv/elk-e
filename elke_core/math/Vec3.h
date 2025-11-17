@@ -5,7 +5,7 @@
 #include<cmath>
 #include <sstream>
 
-namespace elk::math
+namespace elke::math
 {
 //=============================================== General 3D vector structure
 /**General 3 element vector structure.
@@ -436,7 +436,7 @@ struct Vec3
 
 //The following functions are defined in chi_mesh_utilities.cc
 //Left multiplcation by scalar
-elk::math::Vec3 operator*(double value,const elk::math::Vec3& that);
+elke::math::Vec3 operator*(double value,const elke::math::Vec3& that);
 
 
 #endif //ELK_MATH_VEC3_H

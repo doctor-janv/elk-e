@@ -1,6 +1,6 @@
 #include "Vec3.h"
 
-namespace elk::math
+namespace elke::math
 {
 
 /**Default constructor. Initialized as all zeros.*/

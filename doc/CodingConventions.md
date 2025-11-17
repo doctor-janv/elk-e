@@ -1,3 +1,4 @@
+\page CodingConventions Coding Conventions
 # Coding conventions
 
 ## 1 Declarations and Implementations

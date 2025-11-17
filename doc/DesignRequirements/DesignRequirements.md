@@ -1,4 +1,5 @@
 # ELK-E Design Requirements
+\page DesignRequirements Design Requirements
 
 ## Convention in this document
 
@@ -35,21 +36,18 @@ Elke based programs shall support command line arguments (CLAs) in the following
 
 <!--endreq-->
 
+
 ## Requirement utesting - Unit testing
 - As a CLA the user can use `basic` to execute unit-testing.
+
+<!--endreq-->
+
 
 ## Requirement input_processing - There shall be a distinct input processing phase
 During this phase all possible input processing
 shall be performed and all errors shall be collected to be displayed/conveyed at the end of the 
 phase.
 <!--endreq-->
-
-## Requirement cconv - Documented Coding conventions
-
-There shall be a documented set of coding conventions.
-
-<!--endreq-->
-
 
 
 ## Requirement inparams1 - Object instantiation via input parameters

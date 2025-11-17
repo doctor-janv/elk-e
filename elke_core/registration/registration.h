@@ -29,6 +29,7 @@ using NullaryFunction = void (*)();
 char registerNullaryFunction(const std::string& function_name,
                              NullaryFunction function);
 
+
 } // namespace elke
 
 #endif // ELKE_CORE_REGISTRATION_REGISTRATION_H

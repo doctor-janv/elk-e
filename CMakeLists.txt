@@ -117,7 +117,7 @@ include_directories("${PROJECT_SOURCE_DIR}")
 # libelke
 file(GLOB_RECURSE libelke_SRCS CONFIGURE_DEPENDS
     elke_core/*.cc
-    modules/*.cc
+    elke_modules/*.cc
 )
 list(REMOVE_ITEM libelke_SRCS "elke_main.cc")
 

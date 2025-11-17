@@ -27,19 +27,21 @@ class FrameworkCore final : public MPI_Interface,
 
   std::map<std::string, NullaryFunction> m_nullary_function_register;
 
+  /**Pre-input warehouse of objects.*/
   Warehouse m_warehouse;
 
   // Constructors/Destructors
   /**Private constructor*/
   FrameworkCore();
 public:
+  /**Destructor.*/
   ~FrameworkCore() = default;
 
   // Interface
   /**Obtains an instance to the ModuleBase singleton.*/
   static FrameworkCore& getInstance();
 
-  /***/
+  /**Initializes the core.*/
   static void initialize(int argc, char** argv);
 
   /**Executes the Core module.*/
@@ -55,7 +57,10 @@ public:
   /**Forcibly quits execution by throwing `std::runtime_error`.*/
   static void ForcedQuit(const std::string& reason="");
 
+  /**Returns a constant reference to the warehouse.*/
   const Warehouse& warehouse() const;
+
+  /**Returns a reference to the warehouse.*/
   Warehouse& warehouse();
 
 protected:

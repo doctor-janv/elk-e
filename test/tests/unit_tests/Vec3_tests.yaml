@@ -7,3 +7,4 @@ unitTestVec3.cc:
     {
       type: ExitCodeCheck,
     }]
+  requirements: ["utesting"]

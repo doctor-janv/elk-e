@@ -14,3 +14,7 @@ lib/
 TestResults.yaml
 TraceAbilityMatrix.md
 **/out/
+
+# Documentation System
+doc/doxygen_elke_core
+doc/RTM.md

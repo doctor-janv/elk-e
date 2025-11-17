@@ -57,7 +57,7 @@ parser.add_argument(
          "7=All"
 )
 parser.add_argument(
-    "-c", "--config_file", default="../TestSystemCONFIG.yaml", type=str,
+    "-c", "--config_file", default="test/TestSystemCONFIG.yaml", type=str,
     required=False,
     help="The name of the default config file"
 )

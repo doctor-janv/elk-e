@@ -1,5 +1,5 @@
-#ifndef ELK_E_ITEMSTACK_H
-#define ELK_E_ITEMSTACK_H
+#ifndef ELK_E_ITEMSTORAGE_H
+#define ELK_E_ITEMSTORAGE_H
 
 #include <map>
 #include <memory>
@@ -46,4 +46,4 @@ public:
 
 } // namespace elke
 
-#endif // ELK_E_ITEMSTACK_H
+#endif // ELK_E_ITEMSTORAGE_H
