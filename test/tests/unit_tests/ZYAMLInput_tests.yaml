@@ -1,0 +1,10 @@
+__executable: "bin/elke_test"
+
+unitTestYAMLInput.cc:
+  args: "-b 'call elke::unit_tests::unitTestYAMLInput'"
+  debug: True
+  checks: [
+    {
+      type: ExitCodeCheck,
+    }]
+  requirements: ["utesting"]

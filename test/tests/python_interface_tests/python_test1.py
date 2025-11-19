@@ -1,10 +1,12 @@
+#!/usr/bin/python3
+import os
 import sys
 
-sys.path.append("python/elke")
-
+sys.path.append(os.getcwd() + "/../../../python/")
+print("HERERA")
 from elke import *
-
-elke_lib = ElkePythonInterface(library_path="lib/libelke.dylib")
+print("HERER")
+elke_lib = ElkePythonInterface(library_path="../../../lib/libelke_lib_shared.dylib")
 
 input_data = dict(
     component_100 = dict(

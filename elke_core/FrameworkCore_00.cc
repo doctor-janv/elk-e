@@ -59,7 +59,7 @@ int FrameworkCore::execute()
   catch (const std::exception& exception_object)
   {
     core.getLogger().error() << exception_object.what() << "\n";
-    return core.m_error_code;
+    return core.m_error_code == 0 ? 1 : core.m_error_code;
   }
 
   return 0;

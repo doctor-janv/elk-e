@@ -123,7 +123,7 @@ void DataTree_addArbitraryValue(int& errorCode,
       {
         if (current_address == str_address)
         {
-          current_tree.values().push_back(Varying(value));
+          current_tree.addValue(Varying(value));
           address_found = true;
         }
       };

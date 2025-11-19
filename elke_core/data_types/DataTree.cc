@@ -17,8 +17,15 @@ void DataTree::rename(const std::string& new_name) { m_name = new_name; }
 /**Returns a constant reference to the values.*/
 const std::vector<Varying>& DataTree::values() const { return m_values; }
 
-/**Returns a reference to the values.*/
-std::vector<Varying>& DataTree::values() { return m_values; }
+/**Adds a value to the node*/
+void DataTree::addValue(const Varying& value)
+{
+  if (not m_children.empty())
+    throw std::runtime_error(
+      "Attempting to add value to DataTree " + m_name +
+      " which has children and therefore cannot have values.");
+  m_values.push_back(value);
+}
 
 // ###################################################################
 /**Traverses the tree and calls a callback function at each node.*/
@@ -38,13 +45,17 @@ void DataTree::traverseWithCallback(const std::string& running_address,
 /**Adds a child tree.*/
 void DataTree::addChild(const DataTreePtr& child)
 {
+  if (not m_values.empty())
+    throw std::runtime_error(
+      "Attempting to add child to DataTree " + m_name +
+      " which has values and therefore cannot have children.");
   m_children.push_back(child);
 }
 
 // ###################################################################
-/**Produces a string in YAML format of the entire tree.*/
-/* Extreme use case. A python dictionary like
- *
+/**Produces a string in YAML format of the entire tree.
+Extreme use case. A python dictionary like
+
 MainInput = dict(
     component_100 = dict(
         type = "snglvol",

@@ -1,0 +1,10 @@
+python_test1:
+  executable: "$PROJECT_ROOTtest/tests/python_interface_tests/python_test1.py"
+  args: ""
+  checks: [
+    {type: ExitCodeCheck},
+#    {type: HasStringCheck
+#       line_key: ""}
+  ]
+  debug: True
+#  requirements: ["basic1", "cli1"]

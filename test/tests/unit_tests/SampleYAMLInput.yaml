@@ -1,0 +1,25 @@
+absolute:
+  yes
+never:
+  ever
+number:
+  123
+float:
+  123.0
+sci1:
+  0.1e12
+sci2:
+  0.1e-12
+sci3:
+  1e-12
+sci4:
+  1.1E-12
+zero:
+  0
+kneel:
+  null
+sub:
+  a: A
+  b: b
+  c: "3"
+arr: [1,2,true,false,5,"yes", 55]

@@ -5,7 +5,7 @@ class ElkePythonInterface:
     def __init__(self, library_path):
         print("Initializing elke")
 
-        ctypes.cdll.LoadLibrary(library_path)
+        # ctypes.cdll.LoadLibrary(library_path)
         dll = ctypes.CDLL(library_path)
 
         self.__dll = dll

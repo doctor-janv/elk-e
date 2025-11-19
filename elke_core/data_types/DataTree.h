@@ -19,6 +19,13 @@
 namespace elke
 {
 
+enum class DataTreeType : int
+{
+  SCALAR = 0,    ///< Contains a single value, no children
+  SEQUENCE = 1,  ///< Contains multiple values, no children
+  MAP = 2        ///< Contains no values, multiple children
+};
+
 /**Class to support a data tree.*/
 class DataTree
 {
@@ -44,8 +51,8 @@ public:
   /**Returns a constant reference to the values.*/
   const std::vector<Varying>& values() const;
 
-  /**Returns a reference to the values.*/
-  std::vector<Varying>& values();
+  /**Adds a value to the node*/
+  void addValue(const Varying& value);
 
   /**Traverses the tree and calls a callback function at each node.*/
   void traverseWithCallback(const std::string& running_address,

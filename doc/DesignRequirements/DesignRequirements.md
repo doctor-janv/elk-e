@@ -18,9 +18,10 @@ shall be a singleton within each process, via an `execution` static method.
 
 <!--endreq-->
 
-## Requirement input1 - Input processing shall be a distinct process
-Input processing shall be a distinct process. Runtime input processing should be avoided.
-
+## Requirement input_processing - There shall be a distinct input processing phase
+During this phase all possible input processing
+shall be performed and all errors shall be collected to be displayed/conveyed at the end of the
+phase.
 <!--endreq-->
 
 ## Requirement cli1 - Command Line Interface
@@ -43,11 +44,7 @@ Elke based programs shall support command line arguments (CLAs) in the following
 <!--endreq-->
 
 
-## Requirement input_processing - There shall be a distinct input processing phase
-During this phase all possible input processing
-shall be performed and all errors shall be collected to be displayed/conveyed at the end of the 
-phase.
-<!--endreq-->
+
 
 
 ## Requirement inparams1 - Object instantiation via input parameters
