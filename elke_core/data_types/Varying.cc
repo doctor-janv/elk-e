@@ -37,7 +37,7 @@ elke::Varying::Varying(const std::string& value)
 /**Copy constructor.*/
 elke::Varying::Varying(const Varying& other)
 {
-  m_data = other.m_data->Clone();
+  m_data = other.m_data == nullptr ? nullptr : other.m_data->Clone();
   m_type = other.m_type;
 }
 

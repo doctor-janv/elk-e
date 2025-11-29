@@ -9,47 +9,23 @@ MPI_Interface::MPI_Interface(const MPI_Comm communicator)
     m_rank(MPI_Interface::getRankFromCommunicator(m_communicator)),
     m_num_ranks(MPI_Interface::getNumRanksFromCommunicator(m_communicator))
 {
+#ifdef MPI_VERSION
+  MPI_Comm_rank(communicator, &m_rank);      /* get cur process id */
+  MPI_Comm_size(communicator, &m_num_ranks); /* get num of processes */
+#endif
 }
 
 MPI_Comm MPI_Interface::communicator() const
 {
-  elkLogicalErrorIf(not m_mpi_is_initialized,
-                    "MPI_Interface used without being initialized.");
   return m_communicator;
 }
 int MPI_Interface::rank() const
 {
-  elkLogicalErrorIf(not m_mpi_is_initialized,
-                    "MPI_Interface used without being initialized.");
   return m_rank;
 }
 int MPI_Interface::num_ranks() const
 {
-  elkLogicalErrorIf(not m_mpi_is_initialized,
-                    "MPI_Interface used without being initialized.");
   return m_num_ranks;
-}
-
-std::array<int, 3> MPI_Interface::getMPIVersion() const
-{
-  return {m_MPI_major_version, m_MPI_minor_version, 0};
-}
-
-void MPI_Interface::reinitializeMPI_Interface(int argc,
-                                              char** argv,
-                                              MPI_Comm communicator)
-{
-#ifdef MPI_VERSION
-  MPI_Init(&argc, &argv);                    /* starts MPI */
-  MPI_Comm_rank(communicator, &m_rank);      /* get cur process id */
-  MPI_Comm_size(communicator, &m_num_ranks); /* get num of processes */
-
-  m_MPI_major_version = MPI_VERSION;
-  m_MPI_minor_version = MPI_SUBVERSION;;
-#endif
-  m_communicator = communicator;
-
-  m_mpi_is_initialized = true;
 }
 
 int MPI_Interface::getRankFromCommunicator(MPI_Comm communicator)

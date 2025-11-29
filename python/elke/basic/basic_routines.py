@@ -8,6 +8,8 @@ class ElkePythonInterface:
         # ctypes.cdll.LoadLibrary(library_path)
         dll = ctypes.CDLL(library_path)
 
+        dll.elke_FrameworkCore_initialize()
+
         self.__dll = dll
 
 

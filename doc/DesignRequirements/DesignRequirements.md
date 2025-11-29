@@ -43,9 +43,12 @@ Elke based programs shall support command line arguments (CLAs) in the following
 
 <!--endreq-->
 
+## Requirement blocks - Input files have syntax-blocks
+- Input files shall be processed via syntax-blocks.
+- There shall be a "Simulation" syntax block that serves as an entry point for
+  general settings (such as loading plugins).
 
-
-
+<!--endreq-->
 
 ## Requirement inparams1 - Object instantiation via input parameters
 
@@ -57,3 +60,7 @@ An input parameter can be one of following:
 - An array of strings
 
 <!--endreq-->
+
+## Requirement friendly_errors - The code should output friendly errors
+- When a file is not found a friendly error should be printed at least showing
+  which file could not be found.

@@ -7,18 +7,17 @@
 namespace elke
 {
 
+class FrameworkCore;
+
 class CommandLineInterface
 {
   CommandLineArgumentList m_registered_command_line_arguments;
   CommandLineArgumentList m_supplied_command_line_arguments;
   std::string m_program_header;
-  std::shared_ptr<Logger> m_logger_ptr;
+  std::shared_ptr<elke::Logger> m_logger_ptr;
 
-  // Constructor/Destructor
+  // Interface
 public:
-  explicit CommandLineInterface(std::shared_ptr<Logger> logger_ptr);
-
-  //Interface
   /**Registers a new CLA into the CLA-registry.*/
   void registerNewCLA(const CommandLineArgument& cla);
   /**Returns registered CLAs.*/
@@ -34,10 +33,15 @@ public:
   void registerCommonCLI_Items();
 
   /**Initial CLI response.*/
-  void respondToCommonCLAs() const;
+  void respondToBasicCLAs() const;
 
   const std::string& getHeader() const;
   void setHeader(std::string new_header);
+
+protected:
+  friend class elke::FrameworkCore;
+  // Constructor/Destructor
+  explicit CommandLineInterface(std::shared_ptr<elke::Logger> logger_ptr);
 
 private:
   /**Sets the default program header.*/

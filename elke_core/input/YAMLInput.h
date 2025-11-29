@@ -1,22 +1,22 @@
 #ifndef ELK_E_YAMLINPUT_H
 #define ELK_E_YAMLINPUT_H
 
-#include "InputProcessor.h"
+#include "InputParser.h"
 #include "elke_core/data_types/DataTree.h"
-#include "elke_core/output/Logger.h"
 
 namespace elke
 {
+class Logger;
 
 /**YAML input processor.*/
-class YAMLInput final : public InputProcessor
+class YAMLInput final : public InputParser
 {
-private:
-  Logger& m_logger;
+  /**Flag to print extra input*/
+  bool m_test_mode/*=false*/;
 public:
-  YAMLInput(Logger& logger);
+  explicit YAMLInput(elke::Logger& logger, bool test_mode = false);
 
-  elke::DataTree readInputFile(std::string file_name) override;
+  elke::DataTree parseInputFile(std::string file_name) override;
 };
 
 } // namespace elke

@@ -94,7 +94,6 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/external/yaml-cpp/CMakeLists.txt")
     add_compile_definitions(YAML_CPP_EXISTS)
 endif()
 
-
 #========================================================== Main outputs
 target_link_libraries(elke_lib_static PUBLIC elke_lib_objects yaml-cpp::yaml-cpp)
 target_link_libraries(elke_lib_shared PUBLIC elke_lib_objects yaml-cpp::yaml-cpp)

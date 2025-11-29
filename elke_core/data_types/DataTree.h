@@ -21,9 +21,9 @@ namespace elke
 
 enum class DataTreeType : int
 {
-  SCALAR = 0,    ///< Contains a single value, no children
-  SEQUENCE = 1,  ///< Contains multiple values, no children
-  MAP = 2        ///< Contains no values, multiple children
+  SCALAR = 0,   ///< Contains a single value, no children
+  SEQUENCE = 1, ///< Contains multiple values, no children
+  MAP = 2       ///< Contains no values, multiple children
 };
 
 /**Class to support a data tree.*/
@@ -68,6 +68,12 @@ public:
   /**Returns a const reference to a child of only the current level tree. If
    * the name is not found std::logic_error is thrown.*/
   const DataTree& child(const std::string& child_name) const;
+
+  /**Returns the number of children.*/
+  size_t numChildren() const { return m_children.size(); }
+
+  /**Returns the number of values.*/
+  size_t numValues() const { return m_values.size(); }
 
   // /**Returns a const reference to a child at any level of the tree. If
   //  * the name is not found std::logic_error is thrown.*/

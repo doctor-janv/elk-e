@@ -87,6 +87,8 @@ std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
 
   yaml << indent << m_name << ":";
 
+
+
   //=================================== Branch case this is NOT a subtree
   if (m_children.empty())
   {
@@ -111,6 +113,7 @@ std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
   else
   {
     yaml << "\n";
+    size_t k=0;
     for (const auto& child : m_children)
       yaml << child->toStringAsYAML(indent + std::string(4, ' '));
   }

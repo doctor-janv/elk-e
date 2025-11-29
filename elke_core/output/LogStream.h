@@ -15,7 +15,7 @@ public:
   /**Creates a string stream.*/
   LogStream(std::ostream* output_stream,
             std::string header,
-            const bool& color_active);
+            const bool& suppress_color);
 
   /**Flushes the headered stream to the output.*/
   ~LogStream() override;
@@ -26,7 +26,7 @@ public:
 private:
   std::ostream* m_log_stream;
   std::string m_log_header;
-  const bool& m_color_active = false;
+  const bool& m_suppress_color = false;
 };
 
 // ###################################################################

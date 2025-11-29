@@ -9,10 +9,10 @@ namespace elke
 /**Creates a string stream.*/
 LogStream::LogStream(std::ostream* output_stream,
                      std::string header,
-                     const bool& color_active)
+                     const bool& suppress_color)
   : m_log_stream(output_stream),
     m_log_header(std::move(header)),
-    m_color_active(color_active)
+    m_suppress_color(suppress_color)
 {
 }
 
@@ -23,7 +23,7 @@ LogStream::~LogStream()
   while (std::getline(*this, line))
   {
     oline += m_log_header + line + '\n';
-    if (m_color_active)
+    if (not m_suppress_color)
       oline +=
         std::string("\033[") + std::to_string(StringColorCode::RESET) + "m";
   }
@@ -35,7 +35,7 @@ LogStream::~LogStream()
 LogStream::LogStream(const LogStream& other) :
 m_log_stream(other.m_log_stream),
 m_log_header(other.m_log_header),
-m_color_active(other.m_color_active)
+m_suppress_color(other.m_suppress_color)
 {
 }
 

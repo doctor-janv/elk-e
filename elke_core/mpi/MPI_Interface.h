@@ -20,17 +20,12 @@ class MPI_Interface
   MPI_Comm m_communicator = 0;       ///< MPI-communicator
   int m_rank = 0;                    ///< Rank of the current process
   int m_num_ranks = 1;               ///< Number of ranks on the communicator
-  bool m_mpi_is_initialized = false; ///< Is Initialized? flag
 
-  int m_MPI_major_version = 0;
-  int m_MPI_minor_version = 0;
-
-  MPI_Interface() = default; // Only used by core module
-
-public:
+protected:
   /**Communicator based constructor.*/
   explicit MPI_Interface(MPI_Comm communicator);
 
+public:
   /**Returns the communicator of this context.*/
   MPI_Comm communicator() const;
   /**Returns the rank of the context.*/
@@ -38,12 +33,9 @@ public:
   /**Returns the number of ranks on the communicator.*/
   int num_ranks() const;
 
-  std::array<int, 3> getMPIVersion() const;
-
 private:
   void FinalizeMPI();
   void AbortMPI(int error_code);
-  void reinitializeMPI_Interface(int argc, char** argv, MPI_Comm communicator);
   static int getRankFromCommunicator(MPI_Comm communicator);
   static int getNumRanksFromCommunicator(MPI_Comm communicator);
 };

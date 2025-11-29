@@ -1,47 +1,59 @@
-#include <utility>
-
 #include "FrameworkCore.h"
+
+#include "elke_core/output/elk_exceptions.h"
 
 namespace elke
 {
 
+std::unique_ptr<FrameworkCore> FrameworkCore::m_instance_ptr = nullptr;
+
 // ###################################################################
-FrameworkCore::FrameworkCore()
-  : MPI_Interface(),
-    OutputInterface(0),
-    CommandLineInterface(this->getLoggerPtr())
+FrameworkCore::FrameworkCore(const MPI_Comm communicator,
+                             const int argc,
+                             char** argv)
+  : MPI_Interface(communicator),
+    OutputInterface(this->rank()),
+    m_argc(argc),
+    m_argv(argv),
+    m_CLI(this->getLoggerPtr()),
+    m_input_processor(this->getLoggerPtr()),
+    m_factory(m_warehouse)
 {
 }
 
 // ###################################################################
 FrameworkCore& FrameworkCore::getInstance()
 {
-  static FrameworkCore instance;
+  elkLogicalErrorIf(m_instance_ptr == nullptr,
+                    "This method was called before a call to "
+                    "elke::FrameworkCore::initialize was made.");
 
-  return instance;
+  return *m_instance_ptr;
 }
 
 // ###################################################################
 void FrameworkCore::initialize(const int argc, char** argv)
 {
-  auto& core = FrameworkCore::getInstance();
+#ifdef MPI_VERSION
+  MPI_Init(&argc, &argv); /* starts MPI */
+#endif
 
-  core.m_argc = argc;
-  core.m_argv = argv;
+  // In the code below we cannot use std::make_unique because the constructor
+  // is private.
+  m_instance_ptr = std::unique_ptr<FrameworkCore>(
+    new FrameworkCore(MPI_COMM_WORLD, argc, argv));
+  auto& core = *m_instance_ptr;
 
-  core.reinitializeMPI_Interface(argc, argv, MPI_COMM_WORLD);
-  core.getLogger().setRank(core.rank());
+#ifdef MPI_VERSION
   auto header = core.getHeader();
 
-  const auto mpi_version = core.getMPIVersion();
   header += "MPI-Version: ";
-  header += std::to_string(mpi_version[0]) + ".";
-  header += std::to_string(mpi_version[1]) + ".";
-  header += std::to_string(mpi_version[2]);
+  header += std::to_string(MPI_VERSION) + ".";
+  header += std::to_string(MPI_SUBVERSION) + ".";
+  header += std::to_string(0);
 
   core.setHeader(header);
-
-  core.m_initialized = true;
+#endif
 }
 
 // ###################################################################
@@ -50,11 +62,15 @@ int FrameworkCore::execute()
   auto& core = FrameworkCore::getInstance();
   try
   {
-    core.registerCommonCLI_Items();
+    core.m_CLI.registerCommonCLI_Items();
     core.registerFrameworkCoreSpecificCLI();
-    core.parseCommandLine(core.m_argc, core.m_argv);
-    core.respondToCommonCLAs();
+
+    core.m_CLI.parseCommandLine(core.m_argc, core.m_argv);
+    core.m_CLI.respondToBasicCLAs();
     core.respondToFrameworkCoreCLAs();
+
+    core.m_input_processor.parseInputFiles();
+    //core.m_input_processor.consolidateBlocks();
   }
   catch (const std::exception& exception_object)
   {
@@ -63,20 +79,6 @@ int FrameworkCore::execute()
   }
 
   return 0;
-}
-
-// ###################################################################
-void FrameworkCore::registerNullaryFunction(const std::string& function_name,
-                                            NullaryFunction function)
-{
-  m_nullary_function_register.insert(std::make_pair(function_name, function));
-}
-
-// ###################################################################
-const std::map<std::string, NullaryFunction>&
-FrameworkCore::getNullaryFunctions() const
-{
-  return m_nullary_function_register;
 }
 
 // ###################################################################
@@ -94,3 +96,9 @@ const Warehouse& FrameworkCore::warehouse() const { return m_warehouse; }
 Warehouse& FrameworkCore::warehouse() { return m_warehouse; }
 
 } // namespace elke
+
+/**elke C-API call to initialize the FrameworkCore.*/
+extern "C" void elke_FrameworkCore_initialize()
+{
+  elke::FrameworkCore::initialize(0, nullptr);
+}

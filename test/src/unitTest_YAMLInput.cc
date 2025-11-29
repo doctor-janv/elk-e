@@ -6,9 +6,12 @@ namespace elke::unit_tests
 
 void unitTestYAMLInput()
 {
-  YAMLInput input_processor(FrameworkCore::getInstance().getLogger());
+  auto& logger = FrameworkCore::getInstance().getLogger();
 
-  input_processor.readInputFile("SampleYAMLInput.yaml");
+  YAMLInput input_processor(logger);
+
+  const auto data_tree = input_processor.parseInputFile("SampleYAMLInput.yaml");
+  logger.log() << data_tree.toStringAsYAML();
 }
 
 } // namespace elke::unit_tests

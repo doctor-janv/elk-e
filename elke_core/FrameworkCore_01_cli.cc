@@ -35,15 +35,42 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
                                         /*only_one_allowed=*/false,
                                         /*requires_value=*/true);
 
-  this->registerNewCLA(cli0);
-  this->registerNewCLA(cli1);
-  this->registerNewCLA(cli2);
+  const auto cli3 = CommandLineArgument(
+    "input",
+    "i",
+    "Assigns an input file. Repeated calls will load a list of input files.",
+    /*default_value=*/Varying("input.yaml"),
+    /*only_one_allowed=*/false,
+    /*requires_value=*/true);
+
+  const auto cli4 =
+    CommandLineArgument("echo-input",
+                        "",
+                        "Turns on/off the echoing of the input files",
+                        /*default_value=*/Varying(false),
+                        /*only_one_allowed=*/true,
+                        /*requires_value=*/true);
+
+  const auto cli5 = CommandLineArgument(
+    "echo-input-data",
+    "",
+    "Turns on/off the echoing of the processed input files.",
+    /*default_value=*/Varying(false),
+    /*only_one_allowed=*/true,
+    /*requires_value=*/true);
+
+  m_CLI.registerNewCLA(cli0);
+  m_CLI.registerNewCLA(cli1);
+  m_CLI.registerNewCLA(cli2);
+  m_CLI.registerNewCLA(cli3);
+  m_CLI.registerNewCLA(cli4);
+  m_CLI.registerNewCLA(cli5);
 }
 
 // ###################################################################
-void FrameworkCore::respondToFrameworkCoreCLAs() const
+void FrameworkCore::respondToFrameworkCoreCLAs()
 {
-  const auto& supplied_clas = getSuppliedCommandLineArguments();
+  const auto& supplied_clas = m_CLI.getSuppliedCommandLineArguments();
   auto& logger = this->getLogger();
 
   if (supplied_clas.has("dump-registry")) dumpRegistry();
@@ -77,6 +104,35 @@ void FrameworkCore::respondToFrameworkCoreCLAs() const
       }
     }
   } // if (supplied_clas.has("basic"))
+
+  if (supplied_clas.has("input"))
+  {
+    const auto& input_CLA = supplied_clas.getCLAbyName("input");
+    const auto& inputs = input_CLA.m_values_assigned;
+
+    for (const auto& input : inputs)
+      this->m_input_processor.addInputFilePath(input.StringValue());
+  }
+
+  if (supplied_clas.has("echo-input"))
+  {
+    const auto& input_CLA = supplied_clas.getCLAbyName("echo-input");
+    const auto& inputs = input_CLA.m_values_assigned;
+
+    const bool value = inputs.front().StringValue() == "true";
+
+    this->m_input_processor.setEchoInput(value);
+  }
+
+  if (supplied_clas.has("echo-input-data"))
+  {
+    const auto& input_CLA = supplied_clas.getCLAbyName("echo-input-data");
+    const auto& inputs = input_CLA.m_values_assigned;
+
+    const bool value = inputs.front().StringValue() == "true";
+
+    this->m_input_processor.setEchoInputData(value);
+  }
 }
 
 // ###################################################################
@@ -106,7 +162,8 @@ void FrameworkCore::basicCommandCall(const std::string& command_string) const
   const auto& function_name = words[1];
 
   bool function_found = false;
-  for (const auto& [name, function] : m_nullary_function_register)
+  const auto& nullary_functions = StaticRegister::getNullaryFunctions();
+  for (const auto& [name, function] : nullary_functions)
   {
     if (name == function_name)
     {
@@ -126,7 +183,7 @@ void FrameworkCore::dumpRegistry() const
 {
   auto& logger = this->getLogger();
 
-  const auto& nullary_functions = m_nullary_function_register;
+  const auto& nullary_functions = StaticRegister::getNullaryFunctions();
 
   logger.log() << "nullary_functions:"
                << (nullary_functions.empty() ? " []" : "\n");

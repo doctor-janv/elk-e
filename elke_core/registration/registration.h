@@ -1,7 +1,10 @@
 #ifndef ELKE_CORE_REGISTRATION_REGISTRATION_H
 #define ELKE_CORE_REGISTRATION_REGISTRATION_H
 
-#include <vector>
+#include "elke_core/parameters/InputParametersBlock.h"
+#include "elke_core/syntax_blocks/SyntaxBlock.h"
+
+#include <map>
 #include <string>
 
 /**Small utility macro for joining two words.*/
@@ -12,24 +15,83 @@
 /**Macro for registering a nullary/no-argument function to an app.*/
 #define elkeRegisterNullaryFunction(func_name)                                 \
   static char RJoinWordsB(unique_var_name1_, __COUNTER__) =                    \
-    elke::registerNullaryFunction(#func_name, func_name)
+    elke::StaticRegister::registerNullaryFunction(#func_name, func_name)
 
-/**Macro for registering a module*/
-#define elkeRegisterModule(module_name)                                        \
+#define elkeRegisterSyntaxBlock(block_name, block_syntax)                      \
   static char RJoinWordsB(unique_var_name2_, __COUNTER__) =                    \
-    elke::registerModule(#module_name, module_name::getBaseInstance)
+    elke::StaticRegister::registerSyntaxBlock<block_name>(#block_name,         \
+                                                          #block_syntax)
 
 namespace elke
 {
 
-class FrameworkCore;
-
+// ###################################################################
+//  Helpers
 using NullaryFunction = void (*)();
 
-char registerNullaryFunction(const std::string& function_name,
-                             NullaryFunction function);
+using GetParametersFunction = elke::InputParametersBlock (*)();
 
+using SyntaxSystemPtr = std::shared_ptr<SyntaxBlock>;
+using SystemConstructionFunction =
+  SyntaxSystemPtr (*)(const elke::InputParametersBlock&);
 
+struct SyntaxSystemRegisterEntry
+{
+  std::string m_syntax;
+  GetParametersFunction m_parameter_function = nullptr;
+  SystemConstructionFunction m_constructor_function = nullptr;
+};
+
+// ###################################################################
+/**A singleton for static registration.*/
+class StaticRegister
+{
+  std::map<std::string, NullaryFunction> m_nullary_function_register;
+  std::map<std::string, SyntaxSystemRegisterEntry> m_syntax_system_register;
+
+public:
+  static StaticRegister& getInstance();
+  /**Returns the mapping of nullary functions.*/
+  static const std::map<std::string, NullaryFunction>& getNullaryFunctions();
+
+  static char registerNullaryFunction(const std::string& function_name,
+                                      NullaryFunction function);
+
+  template <typename TargetType>
+  static char registerSyntaxBlock(const std::string& syntax_block_name,
+                                  const std::string& syntax)
+  {
+    auto& registry = getInstance();
+
+    SyntaxSystemRegisterEntry new_entry;
+
+    new_entry.m_syntax = syntax;
+    new_entry.m_parameter_function = TargetType::getInputParameters;
+    new_entry.m_constructor_function =
+      ProxyConstructor<TargetType, SyntaxBlock>;
+
+    registry.m_syntax_system_register[syntax_block_name] = new_entry;
+
+    return 0;
+  }
+
+  ///@{ Delete all copy/move/assignment methods.
+  StaticRegister(StaticRegister const&) = delete;            // copy constructor
+  StaticRegister(StaticRegister&&) = delete;                 // move constructor
+  StaticRegister& operator=(StaticRegister const&) = delete; // assignment op
+  StaticRegister& operator=(StaticRegister&&) = delete; // assignment move op
+  ///@}
+
+private:
+  StaticRegister() = default;
+
+  template <typename TargetType, typename BaseType>
+  static std::shared_ptr<BaseType>
+  ProxyConstructor(const InputParametersBlock& params)
+  {
+    return std::make_shared<TargetType>(params);
+  }
+};
 } // namespace elke
 
 #endif // ELKE_CORE_REGISTRATION_REGISTRATION_H

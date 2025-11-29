@@ -130,11 +130,10 @@ void CommandLineInterface::registerCommonCLI_Items()
                                   /*default_value=*/Varying(0),
                                   /*only_one_allowed=*/false,
                                   /*requires_value=*/false);
-  auto cli1 = CommandLineArgument("input", "i", "Input file to the program.");
-  auto cli2 = CommandLineArgument(
+  auto cli1 = CommandLineArgument(
     "verbosity", "v", "Verbosity level. 0=default, 1=more, 2=most.");
 
-  auto cli3 = CommandLineArgument("nocolor",
+  auto cli2 = CommandLineArgument("nocolor",
                                   "",
                                   "Suppresses color output.",
                                   /*default_value=*/Varying(false),
@@ -144,16 +143,15 @@ void CommandLineInterface::registerCommonCLI_Items()
   this->registerNewCLA(cli0);
   this->registerNewCLA(cli1);
   this->registerNewCLA(cli2);
-  this->registerNewCLA(cli3);
 }
 
 // ###################################################################
-void CommandLineInterface::respondToCommonCLAs() const
+void CommandLineInterface::respondToBasicCLAs() const
 {
   const auto& supplied_clas = getSuppliedCommandLineArguments();
   auto& logger = *m_logger_ptr;
 
-  this->printHeader();
+
   if (supplied_clas.has("help")) this->printHelp();
 
   if (supplied_clas.has("nocolor")) logger.setColorSuppression(true);
@@ -164,6 +162,7 @@ void CommandLineInterface::respondToCommonCLAs() const
     logger.setVerbosity(
       static_cast<int>(cla.m_values_assigned.front().IntegerValue()));
   }
+  this->printHeader();
 }
 
 // ###################################################################

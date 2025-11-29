@@ -8,11 +8,12 @@ namespace elke
 
 class OutputInterface
 {
-  std::shared_ptr<Logger> m_logger_ptr;
+  const std::shared_ptr<Logger> m_logger_ptr;
 
-public:
+protected:
   explicit OutputInterface(int rank);
 
+public:
   Logger& getLogger() const;
 
   std::shared_ptr<Logger> getLoggerPtr() const;
