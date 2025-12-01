@@ -72,7 +72,7 @@ public:
   void addChild(const DataTreePtr& child);
 
   /**Set address tag*/
-  void setAddressTag(const std::string& address);
+  void setTag(const std::string& tag_name, const std::string& tag_value);
 
   /**Traverses the tree and calls a callback function at each node.*/
   void traverseWithCallback(const std::string& running_address,
@@ -95,7 +95,9 @@ public:
   // const DataTree& childByAddress(const std::string& address) const;
 
   /**Produces a string in YAML format of the entire tree.*/
-  std::string toStringAsYAML(const std::string& indent = "") const;
+  std::string
+  toStringAsYAML(const std::string& indent,
+                 const std::vector<std::string>& tags_to_print = {}) const;
 };
 
 } // namespace elke

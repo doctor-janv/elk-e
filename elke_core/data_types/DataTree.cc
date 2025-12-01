@@ -12,10 +12,7 @@ DataTree::DataTree(std::string name) : m_name(std::move(name))
 }
 
 /**Returns the general type of the data-tree.*/
-DataTreeType DataTree::type() const
-{
-  return m_type;
-}
+DataTreeType DataTree::type() const { return m_type; }
 
 /**Returns a string representation of the type.*/
 std::string DataTreeTypeName(const DataTreeType type)
@@ -34,7 +31,6 @@ std::string DataTreeTypeName(const DataTreeType type)
       return "no_data";
   }
 }
-
 
 /**Sets the data-tree type.*/
 void DataTree::setType(const DataTreeType type)
@@ -61,14 +57,14 @@ void DataTree::setValue(const Varying& value)
       " which has not been designated as a DataTreeType::Scalar");
   m_value = value;
 
-  m_tags["type"] = value.TypeName();
+  m_tags["type"] = value.typeName();
 }
 
 // ###################################################################
 /**Adds a child tree.*/
 void DataTree::addChild(const DataTreePtr& child)
 {
-  if (not (m_type == DataTreeType::SEQUENCE or m_type == DataTreeType::MAP))
+  if (not(m_type == DataTreeType::SEQUENCE or m_type == DataTreeType::MAP))
     throw std::runtime_error(
       "Attempting to add child to DataTree " + m_name +
       " which is not designated as either a SEQUENCE or a MAP.");
@@ -82,18 +78,17 @@ void DataTree::addChild(const DataTreePtr& child)
   if (m_type == DataTreeType::SEQUENCE)
   {
     const std::string name = std::to_string(id);
-    child->setAddressTag(address_tag->second + "/" + name);
+    child->setTag("address", address_tag->second + "/" + name);
   }
   else
-    child->setAddressTag(address_tag->second + "/" + child->name());
+    child->setTag("address", address_tag->second + "/" + child->name());
 }
 
 // ###################################################################
-void DataTree::setAddressTag(const std::string& address)
+void DataTree::setTag(const std::string& tag_name, const std::string& tag_value)
 {
-  m_tags["address"] = address;
+  m_tags[tag_name] = tag_value;
 }
-
 
 // ###################################################################
 /**Traverses the tree and calls a callback function at each node.*/
@@ -111,7 +106,8 @@ void DataTree::traverseWithCallback(const std::string& running_address,
     size_t id = 0;
     for (const auto& child : m_children)
     {
-      child->traverseWithCallback(current_address, function, std::to_string(id));
+      child->traverseWithCallback(
+        current_address, function, std::to_string(id));
       ++id;
     }
   }
@@ -119,8 +115,6 @@ void DataTree::traverseWithCallback(const std::string& running_address,
     for (const auto& child : m_children)
       child->traverseWithCallback(current_address, function);
 }
-
-
 
 // ###################################################################
 /**Produces a string in YAML format of the entire tree.
@@ -151,7 +145,9 @@ MainInput:
         param2:["abc", "def"]
         param3:["mixed", 123, 45.6]
 */
-std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
+std::string
+DataTree::toStringAsYAML(const std::string& indent,
+                         const std::vector<std::string>& tags_to_print/*={}*/) const
 {
   // Every parent is responsible for indenting its own children.
   const auto child_indent = indent + std::string(2, ' ');
@@ -165,13 +161,12 @@ std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
   auto appendTags = [&]
   {
     yaml << " # ";
-    for (const auto& [tag_key, value] : m_tags)
+    for (const auto& tag : tags_to_print)
     {
-      bool print_tag = false;
+      const auto tag_value = m_tags.find(tag);
 
-      if (tag_key == "type") print_tag = true;
-
-      if (print_tag) yaml << tag_key << "=" << value << " ";
+      if (tag_value != m_tags.end())
+        yaml << tag << "=" << tag_value->second << " ";
     }
   };
 
@@ -184,12 +179,12 @@ std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
       break;
 
     case DataTreeType::SCALAR:
-      {
-        yaml << " " << m_value.PrintStr(/*with_type=*/false);
-        appendTags();
-        yaml << "\n";
-      }
-      break;
+    {
+      yaml << " " << m_value.convertToString(/*with_type=*/false);
+      appendTags();
+      yaml << "\n";
+    }
+    break;
 
     case DataTreeType::SEQUENCE:
       appendTags();
@@ -197,7 +192,7 @@ std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
       for (const auto& child : m_children)
       {
         yaml << child_indent << "-";
-        yaml << child->toStringAsYAML(child_indent);
+        yaml << child->toStringAsYAML(child_indent, tags_to_print);
       }
 
       break;
@@ -208,7 +203,7 @@ std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
       for (const auto& child : m_children)
       {
         yaml << child_indent;
-        yaml << child->toStringAsYAML(indent + std::string(2, ' '));
+        yaml << child->toStringAsYAML(indent + std::string(2, ' '), tags_to_print);
       }
       break;
   }
@@ -245,6 +240,5 @@ const DataTree& DataTree::child(const std::string& child_name) const
 
   throw std::logic_error("Child '" + child_name + "' not found");
 }
-
 
 } // namespace elke

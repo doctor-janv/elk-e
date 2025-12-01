@@ -11,7 +11,7 @@ void unitTestYAMLInput()
   YAMLInput input_processor(logger);
 
   const auto data_tree = input_processor.parseInputFile("SampleYAMLInput.yaml");
-  logger.log() << data_tree.toStringAsYAML();
+  logger.log() << data_tree.toStringAsYAML("", {"type", "address", "mark"});
 }
 
 } // namespace elke::unit_tests

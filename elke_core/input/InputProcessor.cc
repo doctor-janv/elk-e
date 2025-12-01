@@ -88,7 +88,7 @@ void InputProcessor::parseInputFiles()
       if (m_echo_input_data)
       {
         m_logger_ptr->log() << "Input data echo for " << path.string() << ":\n"
-                            << data_tree.toStringAsYAML();
+                            << data_tree.toStringAsYAML("", {"type"});
       }
 
       m_data_trees.insert(std::make_pair(path, data_tree));

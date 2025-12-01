@@ -9,12 +9,12 @@
 namespace elke
 {
 
+
+#ifdef YAML_CPP_EXISTS
 namespace YAMLInputHelpers
 {
-#ifdef YAML_CPP_EXISTS
-
 // ###################################################################
-/**Called when YAML.Type() == Scalar.*/
+/**Called when YAML.type() == Scalar.*/
 void populateValue(elke::DataTree& parent_tree,
                    const YAML::Node& node,
                    Logger& logger,
@@ -83,16 +83,23 @@ void populateValue(elke::DataTree& parent_tree,
 
   // clang-format on
 }
+} // namespace YAMLInputHelpers
 
 // ###################################################################
 /**Recursive function to run through a YAML-tree.*/
-void populateTree(elke::DataTree& tree,
-                  const YAML::Node& node,
-                  Logger& logger,
-                  const int level,
-                  const bool test_mode)
+void YAMLInput::populateTree(elke::DataTree& tree,
+                             const YAML::Node& node,
+                             Logger& logger,
+                             const int level,
+                             const bool test_mode)
 {
   const auto offset = std::string(level + 2, ' ');
+  const auto mark = node.Mark();
+
+  tree.setTag("mark",
+              m_current_file_name + " line " + std::to_string(mark.line + 1) + ":" +
+                std::to_string(mark.column + 1));
+
   switch (node.Type())
   {
     case YAML::NodeType::Null:
@@ -101,7 +108,7 @@ void populateTree(elke::DataTree& tree,
       break;
     case YAML::NodeType::Scalar:
       tree.setType(DataTreeType::SCALAR);
-      populateValue(tree, node, logger, level, test_mode);
+      YAMLInputHelpers::populateValue(tree, node, logger, level, test_mode);
       break;
     case YAML::NodeType::Sequence:
       if (test_mode) logger.log() << offset << "Sequence node\n";
@@ -119,7 +126,8 @@ void populateTree(elke::DataTree& tree,
       tree.setType(DataTreeType::MAP);
       for (auto it = node.begin(); it != node.end(); ++it)
       {
-        auto sub_node_ptr = std::make_shared<DataTree>(it->first.as<std::string>());
+        auto sub_node_ptr =
+          std::make_shared<DataTree>(it->first.as<std::string>());
         auto& sub_node = *sub_node_ptr;
         tree.addChild(sub_node_ptr);
         populateTree(sub_node, it->second, logger, level + 2, test_mode);
@@ -129,9 +137,8 @@ void populateTree(elke::DataTree& tree,
       throw std::logic_error("YAML node is not defined");
   }
 }
-
 #endif
-} // namespace YAMLInputHelpers
+
 
 // ###################################################################
 YAMLInput::YAMLInput(Logger& logger, const bool test_mode /*=false*/)
@@ -145,6 +152,8 @@ elke::DataTree YAMLInput::parseInputFile(const std::string file_name)
 {
   elke::DataTree data_tree("");
 
+  m_current_file_name = file_name;
+
 #ifdef YAML_CPP_EXISTS
   m_logger.log() << "Reading YAML-file \"" << file_name << "\"\n";
   const YAML::Node root = YAML::LoadFile(file_name);
@@ -152,7 +161,7 @@ elke::DataTree YAMLInput::parseInputFile(const std::string file_name)
   DataTree root_tree(file_name);
   try
   {
-    YAMLInputHelpers::populateTree(root_tree, root, m_logger, 0, m_test_mode);
+    this->populateTree(root_tree, root, m_logger, 0, m_test_mode);
   }
   catch (const std::exception& e)
   {

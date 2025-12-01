@@ -51,7 +51,7 @@ public:
   T getValue() const
   {
     auto scalar = getScalar();
-    return scalar.GetValue<T>();
+    return scalar.getValue<T>();
   }
 
 protected:
@@ -79,7 +79,7 @@ public:
                      ParameterType::SCALAR,
                      std::move(description)),
       m_default_value(Varying(T())),
-      m_scalar_type(m_default_value.Type())
+      m_scalar_type(m_default_value.type())
   {
   }
 
@@ -93,7 +93,7 @@ public:
                      ParameterType::SCALAR,
                      std::move(description)),
       m_default_value(Varying(default_value)),
-      m_scalar_type(m_default_value.Type())
+      m_scalar_type(m_default_value.type())
   {
   }
 

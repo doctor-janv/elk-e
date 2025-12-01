@@ -85,7 +85,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
 
     for (const auto& basic_command : basic_commands)
     {
-      const std::string command = basic_command.StringValue();
+      const std::string command = basic_command.stringValue();
       logger.log() << command << "\n";
       const auto& words = string_utils::splitString(command);
 
@@ -111,7 +111,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
     const auto& inputs = input_CLA.m_values_assigned;
 
     for (const auto& input : inputs)
-      this->m_input_processor.addInputFilePath(input.StringValue());
+      this->m_input_processor.addInputFilePath(input.stringValue());
   }
 
   if (supplied_clas.has("echo-input"))
@@ -119,7 +119,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
     const auto& input_CLA = supplied_clas.getCLAbyName("echo-input");
     const auto& inputs = input_CLA.m_values_assigned;
 
-    const bool value = inputs.front().StringValue() == "true";
+    const bool value = inputs.front().stringValue() == "true";
 
     this->m_input_processor.setEchoInput(value);
   }
@@ -129,7 +129,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
     const auto& input_CLA = supplied_clas.getCLAbyName("echo-input-data");
     const auto& inputs = input_CLA.m_values_assigned;
 
-    const bool value = inputs.front().StringValue() == "true";
+    const bool value = inputs.front().stringValue() == "true";
 
     this->m_input_processor.setEchoInputData(value);
   }

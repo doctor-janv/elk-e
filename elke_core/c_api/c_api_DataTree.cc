@@ -91,7 +91,7 @@ void elke_DataTree_printYAMLString(int& errorCode, const int handle)
 
     const elke::DataTree& tree =
       stack.getItemReference(static_cast<size_t>(handle));
-    std::cout << tree.toStringAsYAML();
+    std::cout << tree.toStringAsYAML("");
   }
   catch (std::exception& e)
   {

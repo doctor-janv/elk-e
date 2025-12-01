@@ -160,7 +160,7 @@ void CommandLineInterface::respondToBasicCLAs() const
   {
     const auto& cla = supplied_clas.getCLAbyName("verbosity");
     logger.setVerbosity(
-      static_cast<int>(cla.m_values_assigned.front().IntegerValue()));
+      static_cast<int>(cla.m_values_assigned.front().integerValue()));
   }
   this->printHeader();
 }
@@ -251,7 +251,7 @@ void CommandLineInterface::printHeader() const
     outstr << column1 + std::string(offset, ' ');
     for (const auto& val : cla.m_values_assigned)
     {
-      outstr << val.StringValue();
+      outstr << val.stringValue();
       if (&val != &cla.m_values_assigned.back()) outstr << ", ";
     }
     outstr << "\n";
