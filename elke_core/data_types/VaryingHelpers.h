@@ -105,15 +105,15 @@ using UnsignedIntegerType = std::enable_if_t<IsUnsignedInteger<T>::value, T>;
 /**This acts as a base class for templated child arbitrary types.*/
 class VaryingAbstractData
 {
-public:
-  virtual std::string StringValue() const;
-  virtual bool BoolValue() const;
-  virtual int64_t IntegerValue() const;
-  virtual double FloatValue() const;
-  virtual std::vector<std::byte> BytesValue() const;
+protected:
+  VaryingDataType m_type;
 
-  virtual std::unique_ptr<VaryingAbstractData> Clone() const = 0;
-  virtual size_t Size() const = 0;
+public:
+  virtual std::string stringValue() const;
+  virtual bool boolValue() const;
+  virtual int64_t integerValue() const;
+  virtual double floatValue() const;
+  virtual std::vector<std::byte> bytesValue() const;
 
   virtual bool operator==(const VaryingAbstractData& that) const = 0;
   virtual bool operator!=(const VaryingAbstractData& that) const = 0;
@@ -122,19 +122,26 @@ public:
   virtual bool operator>=(const VaryingAbstractData& that) const = 0;
   virtual bool operator<=(const VaryingAbstractData& that) const = 0;
 
-  VaryingDataType Type() const { return type_; }
+  VaryingDataType type() const { return m_type; }
+
+  /**Makes a clone of a unique_ptr to VaryingAbstractData.*/
+  static std::unique_ptr<VaryingAbstractData>
+  cloneData(const std::unique_ptr<VaryingAbstractData>& that);
 
   virtual ~VaryingAbstractData() = default;
 
 protected:
-  VaryingDataType type_;
-  explicit VaryingAbstractData(const VaryingDataType type) : type_(type) {}
+  explicit VaryingAbstractData(const VaryingDataType type) : m_type(type) {}
+  virtual std::unique_ptr<VaryingAbstractData> clone() const = 0;
 };
 
+// ###################################################################
 /**Templated arbitrary types.*/
 template <typename T>
 class VaryingTemplatedData final : public VaryingAbstractData
 {
+  T m_value;
+
 public:
   // clang-format off
     explicit VaryingTemplatedData(T value)
@@ -144,63 +151,56 @@ public:
                     IsInteger<T>::value ? VaryingDataType::INTEGER :
                     IsFloat<T>::value ? VaryingDataType::FLOAT :
                     VaryingDataType::VOID),
-      value_(value)
+      m_value(value)
     {
     }
   // clang-format on
-  std::string StringValue() const override;
-  bool BoolValue() const override;
-  int64_t IntegerValue() const override;
-  double FloatValue() const override;
-
-  std::unique_ptr<VaryingAbstractData> Clone() const override
-  {
-    return std::make_unique<VaryingTemplatedData>(value_);
-  }
-  size_t Size() const override { return sizeof(T); }
+  std::string stringValue() const override;
+  bool boolValue() const override;
+  int64_t integerValue() const override;
+  double floatValue() const override;
 
   bool operator==(const VaryingAbstractData& that) const override
   {
-    if (type_ != that.Type()) return false;
+    if (m_type != that.type()) return false;
 
-    switch (this->Type())
+    switch (this->type())
     {
       case VaryingDataType::ARBITRARY_BYTES:
-        return BytesValue() == that.BytesValue();
+        return bytesValue() == that.bytesValue();
       case VaryingDataType::STRING:
-        return StringValue() == that.StringValue();
+        return stringValue() == that.stringValue();
       case VaryingDataType::BOOL:
-        return BoolValue() == that.BoolValue();
+        return boolValue() == that.boolValue();
       case VaryingDataType::INTEGER:
-        return IntegerValue() == that.IntegerValue();
+        return integerValue() == that.integerValue();
       case VaryingDataType::FLOAT:
-        return FloatValue() == that.FloatValue();
+        return floatValue() == that.floatValue();
       case VaryingDataType::VOID:
       default:
         return false;
     }
   }
-
   bool operator!=(const VaryingAbstractData& that) const override
   {
     return not(*this == that);
   }
   bool operator>(const VaryingAbstractData& that) const override
   {
-    if (type_ != that.Type()) return false;
+    if (m_type != that.type()) return false;
 
-    switch (this->Type())
+    switch (this->type())
     {
       case VaryingDataType::ARBITRARY_BYTES:
-        return BytesValue() > that.BytesValue();
+        return bytesValue() > that.bytesValue();
       case VaryingDataType::STRING:
-        return StringValue() > that.StringValue();
+        return stringValue() > that.stringValue();
       case VaryingDataType::BOOL:
-        return BoolValue() > that.BoolValue();
+        return boolValue() > that.boolValue();
       case VaryingDataType::INTEGER:
-        return IntegerValue() > that.IntegerValue();
+        return integerValue() > that.integerValue();
       case VaryingDataType::FLOAT:
-        return FloatValue() > that.FloatValue();
+        return floatValue() > that.floatValue();
       case VaryingDataType::VOID:
       default:
         return false;
@@ -208,20 +208,20 @@ public:
   }
   bool operator<(const VaryingAbstractData& that) const override
   {
-    if (type_ != that.Type()) return false;
+    if (m_type != that.type()) return false;
 
-    switch (this->Type())
+    switch (this->type())
     {
       case VaryingDataType::ARBITRARY_BYTES:
-        return BytesValue() < that.BytesValue();
+        return bytesValue() < that.bytesValue();
       case VaryingDataType::STRING:
-        return StringValue() < that.StringValue();
+        return stringValue() < that.stringValue();
       case VaryingDataType::BOOL:
-        return BoolValue() < that.BoolValue();
+        return boolValue() < that.boolValue();
       case VaryingDataType::INTEGER:
-        return IntegerValue() < that.IntegerValue();
+        return integerValue() < that.integerValue();
       case VaryingDataType::FLOAT:
-        return FloatValue() < that.FloatValue();
+        return floatValue() < that.floatValue();
       case VaryingDataType::VOID:
       default:
         return false;
@@ -236,19 +236,22 @@ public:
     return *this < that or * this == that;
   }
 
-private:
-  T value_;
+protected:
+  std::unique_ptr<VaryingAbstractData> clone() const override
+  {
+    return std::make_unique<VaryingTemplatedData>(m_value);
+  }
 };
 
 // ######################################################### Helper functions
 /**Provides a string-name for an enumerated VaryingDataType.*/
-std::string VaryingDataTypeStringName(VaryingDataType type);
+std::string varyingDataTypeStringName(VaryingDataType type);
 
-std::unique_ptr<VaryingAbstractData> MakeAbstractData(const bool& value);
+std::unique_ptr<VaryingAbstractData> makeAbstractData(const bool& value);
 
-std::unique_ptr<VaryingAbstractData> MakeAbstractData(const int64_t& value);
+std::unique_ptr<VaryingAbstractData> makeAbstractData(const int64_t& value);
 
-std::unique_ptr<VaryingAbstractData> MakeAbstractData(const double& value);
+std::unique_ptr<VaryingAbstractData> makeAbstractData(const double& value);
 
 } // namespace elke
 

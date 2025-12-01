@@ -14,7 +14,7 @@ void unitTest_CLIs()
   {
     std::cout << cla.m_name << std::endl;
     for (const auto& value : cla.m_values_assigned)
-      std::cout << value.PrintStr() << std::endl;
+      std::cout << value.convertToString() << std::endl;
   }
 }
 

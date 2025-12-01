@@ -12,7 +12,7 @@ namespace elke
 
 class Varying
 {
-  /**Type specification*/
+  /**type specification*/
   VaryingDataType m_type = VaryingDataType::VOID;
   std::unique_ptr<VaryingAbstractData> m_data = nullptr;
 
@@ -35,7 +35,7 @@ public:
     else if (IsFloat<T>::value) { m_type = VaryingDataType::FLOAT; }
     else if (IsInteger<T>::value) { m_type = VaryingDataType::INTEGER; }
 
-    m_data = MakeAbstractData(CastValue(value));
+    m_data = makeAbstractData(CastValue(value));
   }
 
   /**Constructor for an arbitrary sequence of bytes value.*/
@@ -117,58 +117,58 @@ public:
 
   /**Returns a default value for the type required.*/
   template <typename T>
-  static T DefaultValue()
+  static T defaultValue()
   {
     return {};
   }
 
   /**Returns values of type bool if able.*/
   template <typename T>
-  BoolType<T> GetValue() const
+  BoolType<T> getValue() const
   {
-    AssertTypeMatch(m_type, VaryingDataType::BOOL);
+    assertTypeMatch(m_type, VaryingDataType::BOOL);
 
-    return m_data->BoolValue();
+    return m_data->boolValue();
   }
 
   /**Returns floating point values if able.*/
   template <typename T>
-  FloatType<T> GetValue() const
+  FloatType<T> getValue() const
   {
-    AssertTypeMatch(m_type, VaryingDataType::FLOAT);
+    assertTypeMatch(m_type, VaryingDataType::FLOAT);
 
-    const double value = m_data->FloatValue();
+    const double value = m_data->floatValue();
 
     return static_cast<T>(value);
   }
 
   /**Returns a string if able.*/
   template <typename T>
-  StringType<T> GetValue() const
+  StringType<T> getValue() const
   {
-    AssertTypeMatch(m_type, VaryingDataType::STRING);
+    assertTypeMatch(m_type, VaryingDataType::STRING);
 
-    return m_data->StringValue();
+    return m_data->stringValue();
   }
 
   /**Returns a signed integer if able.*/
   template <typename T>
-  SignedIntegerType<T> GetValue() const
+  SignedIntegerType<T> getValue() const
   {
-    AssertTypeMatch(m_type, VaryingDataType::INTEGER);
+    assertTypeMatch(m_type, VaryingDataType::INTEGER);
 
-    const int64_t value = m_data->IntegerValue();
+    const int64_t value = m_data->integerValue();
 
     return static_cast<T>(value);
   }
 
   /**Returns an unsigned integer if able.*/
   template <typename T>
-  UnsignedIntegerType<T> GetValue() const
+  UnsignedIntegerType<T> getValue() const
   {
-    AssertTypeMatch(m_type, VaryingDataType::INTEGER);
+    assertTypeMatch(m_type, VaryingDataType::INTEGER);
 
-    const int64_t value = m_data->IntegerValue();
+    const int64_t value = m_data->integerValue();
 
     if (value < 0)
       throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
@@ -178,31 +178,28 @@ public:
   }
 
   /**Returns the string value if valid. Otherwise, throws std::logic_error.*/
-  std::string StringValue() const;
+  std::string stringValue() const;
   /**Returns the bool value if valid. Otherwise, throws std::logic_error.*/
-  bool BoolValue() const;
+  bool boolValue() const;
   /**Returns the integer value if valid. Otherwise, throws std::logic_error.*/
-  int64_t IntegerValue() const;
+  int64_t integerValue() const;
   /**Returns the float value if valid. Otherwise, throws std::logic_error.*/
-  double FloatValue() const;
-
-  /**Returns the raw byte size associated with the type.*/
-  size_t ByteSize() const;
+  double floatValue() const;
 
   /**Returns the current-type of the variable.*/
-  VaryingDataType Type() const { return m_type; }
+  VaryingDataType type() const { return m_type; }
   /**Returns the string type name of the type.*/
-  std::string TypeName() const { return VaryingDataTypeStringName(m_type); }
+  std::string typeName() const { return varyingDataTypeStringName(m_type); }
 
   /**Returns a string value for the value.*/
-  std::string PrintStr(bool with_type = true) const;
+  std::string convertToString(bool with_type = true) const;
 
   ~Varying() = default;
 
 private:
   /**Checks if two VaryingDataType values match.
-   * Type A is matched against type B.*/
-  void AssertTypeMatch(VaryingDataType type_A,
+   * type A is matched against type B.*/
+  void assertTypeMatch(VaryingDataType type_A,
                        VaryingDataType type_B_required) const;
 }; // class Varying
 
