@@ -28,6 +28,9 @@ enum class DataTreeType : int
   MAP = 3       ///< Contains no values, multiple children
 };
 
+/**Returns a string representation of the type.*/
+std::string DataTreeTypeName(DataTreeType type);
+
 /**Class to support a data tree.*/
 class DataTree
 {
@@ -67,6 +70,9 @@ public:
 
   /**Adds a child tree.*/
   void addChild(const DataTreePtr& child);
+
+  /**Set address tag*/
+  void setAddressTag(const std::string& address);
 
   /**Traverses the tree and calls a callback function at each node.*/
   void traverseWithCallback(const std::string& running_address,

@@ -110,19 +110,19 @@ void populateTree(elke::DataTree& tree,
       {
         auto sub_node_ptr = std::make_shared<DataTree>("");
         auto& sub_node = *sub_node_ptr;
-        populateTree(sub_node, node[i], logger, level + 2, test_mode);
         tree.addChild(sub_node_ptr);
+        populateTree(sub_node, node[i], logger, level + 2, test_mode);
       }
       break;
     case YAML::NodeType::Map:
       if (test_mode) logger.log() << offset << "Map node\n";
       tree.setType(DataTreeType::MAP);
-      for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
+      for (auto it = node.begin(); it != node.end(); ++it)
       {
         auto sub_node_ptr = std::make_shared<DataTree>(it->first.as<std::string>());
         auto& sub_node = *sub_node_ptr;
-        populateTree(sub_node, it->second, logger, level + 2, test_mode);
         tree.addChild(sub_node_ptr);
+        populateTree(sub_node, it->second, logger, level + 2, test_mode);
       }
       break;
     case YAML::NodeType::Undefined:
