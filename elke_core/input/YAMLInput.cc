@@ -50,12 +50,12 @@ void populateValue(elke::DataTree& parent_tree,
     if (is_integer)
     {
       type = "[integer]";
-      parent_tree.addValue(Varying(node.as<int64_t>()));
+      parent_tree.setValue(Varying(node.as<int64_t>()));
     }
     else
     {
       type = "[real]";
-      parent_tree.addValue(Varying(node.as<double>()));
+      parent_tree.setValue(Varying(node.as<double>()));
     }
   }
 
@@ -67,19 +67,19 @@ void populateValue(elke::DataTree& parent_tree,
   if (is_boolean)
   {
     type = "[boolean]";
-    parent_tree.addValue(Varying(node.as<bool>()));
+    parent_tree.setValue(Varying(node.as<bool>()));
   }
 
   //=================================== Default to string
   if (not is_number and not is_boolean)
   {
     type = "[string]";
-    parent_tree.addValue(Varying(node.as<std::string>()));
+    parent_tree.setValue(Varying(node.as<std::string>()));
   }
 
   if (test_mode) logger.log() << offset << "Scalar node " << node.Tag()
                << " " + parent_tree.name() + ":" << " "
-               << node.as<std::string>() << " " + type << parent_tree.numValues();
+               << node.as<std::string>() << " " + type;
 
   // clang-format on
 }
@@ -97,16 +97,18 @@ void populateTree(elke::DataTree& tree,
   {
     case YAML::NodeType::Null:
       if (test_mode) logger.log() << offset << "Null node\n";
-      tree.addValue(elke::Varying());
+      tree.setType(DataTreeType::NO_DATA);
       break;
     case YAML::NodeType::Scalar:
+      tree.setType(DataTreeType::SCALAR);
       populateValue(tree, node, logger, level, test_mode);
       break;
     case YAML::NodeType::Sequence:
       if (test_mode) logger.log() << offset << "Sequence node\n";
+      tree.setType(DataTreeType::SEQUENCE);
       for (size_t i = 0; i < node.size(); i++)
       {
-        auto sub_node_ptr = std::make_shared<DataTree>(std::to_string(i));
+        auto sub_node_ptr = std::make_shared<DataTree>("");
         auto& sub_node = *sub_node_ptr;
         populateTree(sub_node, node[i], logger, level + 2, test_mode);
         tree.addChild(sub_node_ptr);
@@ -114,6 +116,7 @@ void populateTree(elke::DataTree& tree,
       break;
     case YAML::NodeType::Map:
       if (test_mode) logger.log() << offset << "Map node\n";
+      tree.setType(DataTreeType::MAP);
       for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
       {
         auto sub_node_ptr = std::make_shared<DataTree>(it->first.as<std::string>());
@@ -143,7 +146,6 @@ elke::DataTree YAMLInput::parseInputFile(const std::string file_name)
   elke::DataTree data_tree("");
 
 #ifdef YAML_CPP_EXISTS
-  // std::stringstream outstr;
   m_logger.log() << "Reading YAML-file \"" << file_name << "\"\n";
   const YAML::Node root = YAML::LoadFile(file_name);
 

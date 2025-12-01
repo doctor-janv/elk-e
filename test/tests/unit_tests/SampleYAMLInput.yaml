@@ -23,3 +23,8 @@ sub:
   b: b
   c: "3"
 arr: [1,2,true,false,5,"yes", 55]
+arr2:
+  - type: objA
+    param: A
+  - type: objB
+    param: B

@@ -1,2 +1,7 @@
 Simulation:
   scale: 2.0
+  array_of_objects:
+    - type: Father
+      scale: 1.0
+    - type: Mother
+      scale: 0.5

@@ -3,7 +3,7 @@ from .ElkeDataTree import *
 
 class ElkePythonInterface:
     def __init__(self, library_path):
-        print("Initializing elke")
+        print("Initializing elke", flush=True)
 
         # ctypes.cdll.LoadLibrary(library_path)
         dll = ctypes.CDLL(library_path)

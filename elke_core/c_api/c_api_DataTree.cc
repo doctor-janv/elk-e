@@ -1,6 +1,6 @@
 #include "c_api_DataTree.h"
 
-#include  "elke_core/FrameworkCore.h"
+#include "elke_core/FrameworkCore.h"
 #include "elke_core/data_types/DataTree.h"
 #include "elke_core/base/Warehouse.h"
 
@@ -15,6 +15,8 @@ int elke_DataTree_makeNew(int& errorCode, const char* c_str)
   {
     std::cout << "Making new data tree " << c_str << std::endl;
     const auto new_data_tree = std::make_shared<elke::DataTree>(c_str);
+
+    new_data_tree->setType(elke::DataTreeType::MAP);
 
     auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
 
@@ -31,16 +33,46 @@ int elke_DataTree_makeNew(int& errorCode, const char* c_str)
   }
 }
 
-void elke_DataTree_printYAMLString(int& errorCode, const int handle)
+void elke_DataTree_setType(int& errorCode,
+                           const int root_handle,
+                           const char* address,
+                           const int type_id)
 {
   errorCode = 0;
   try
   {
+    const auto str_address = std::string(address);
+
     auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
     auto& stack = warehouse.DataTreeStorage();
 
-    const elke::DataTree& tree = stack.getItemReference(static_cast<size_t>(handle));
-    std::cout << tree.toStringAsYAML();
+    elke::DataTree& root_tree =
+      stack.getItemReference(static_cast<size_t>(root_handle));
+
+    //=========================================== Call back function
+    auto callback =
+      [&](const std::string& current_address, elke::DataTree& current_tree)
+    {
+      if (current_address == str_address)
+      {
+        switch (type_id)
+        {
+          case 1:
+            current_tree.setType(elke::DataTreeType::SCALAR);
+            break;
+          case 2:
+            current_tree.setType(elke::DataTreeType::SEQUENCE);
+            break;
+          case 3:
+            current_tree.setType(elke::DataTreeType::MAP);
+            break;
+          default:
+            current_tree.setType(elke::DataTreeType::NO_DATA);
+        }
+      } // if
+    }; // End of callback
+
+    root_tree.traverseWithCallback("", callback);
   }
   catch (std::exception& e)
   {
@@ -49,6 +81,24 @@ void elke_DataTree_printYAMLString(int& errorCode, const int handle)
   }
 }
 
+void elke_DataTree_printYAMLString(int& errorCode, const int handle)
+{
+  errorCode = 0;
+  try
+  {
+    auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
+    auto& stack = warehouse.DataTreeStorage();
+
+    const elke::DataTree& tree =
+      stack.getItemReference(static_cast<size_t>(handle));
+    std::cout << tree.toStringAsYAML();
+  }
+  catch (std::exception& e)
+  {
+    errorCode = 1;
+    std::cout << e.what();
+  }
+}
 
 //===================================================================
 void elke_DataTree_addSubTree(int& errorCode,
@@ -76,11 +126,12 @@ void elke_DataTree_addSubTree(int& errorCode,
     {
       if (current_address == str_address)
       {
-        // std::cout << "c++ added tree '" << str_name << "' at " << str_address << "\n";
-        current_tree.addChild(std::make_shared<elke::DataTree>(str_name));
+        const std::string allowed_name =
+          current_tree.type() == elke::DataTreeType::MAP ? str_name : "";
+        current_tree.addChild(std::make_shared<elke::DataTree>(allowed_name));
         address_found = true;
       }
-    };// End of callback
+    }; // End of callback
 
     tree.traverseWithCallback("", callback);
 
@@ -100,7 +151,7 @@ namespace elke
  *Given a handle to the data-tree, adds a template-value to the subtree at the
  * address.*/
 template <typename T>
-void DataTree_addArbitraryValue(int& errorCode,
+void DataTree_setArbitraryValue(int& errorCode,
                                 const int handle,
                                 const char* address,
                                 const T value)
@@ -120,13 +171,13 @@ void DataTree_addArbitraryValue(int& errorCode,
 
     auto callback =
       [&](const std::string& current_address, DataTree& current_tree)
+    {
+      if (current_address == str_address)
       {
-        if (current_address == str_address)
-        {
-          current_tree.addValue(Varying(value));
-          address_found = true;
-        }
-      };
+        current_tree.setValue(Varying(value));
+        address_found = true;
+      }
+    };
 
     tree.traverseWithCallback("", callback);
 
@@ -143,37 +194,37 @@ void DataTree_addArbitraryValue(int& errorCode,
 } // namespace elke
 
 //===================================================================
-void elke_DataTree_addIntValue(int& errorCode,
+void elke_DataTree_setIntValue(int& errorCode,
                                const int handle,
                                const char* address,
                                const int64_t int_value)
 {
-  elke::DataTree_addArbitraryValue(errorCode, handle, address, int_value);
+  elke::DataTree_setArbitraryValue(errorCode, handle, address, int_value);
 }
 
 //===================================================================
-void elke_DataTree_addRealValue(int& errorCode,
+void elke_DataTree_setRealValue(int& errorCode,
                                 const int handle,
                                 const char* address,
                                 const double real_value)
 {
-  elke::DataTree_addArbitraryValue(errorCode, handle, address, real_value);
+  elke::DataTree_setArbitraryValue(errorCode, handle, address, real_value);
 }
 
 //===================================================================
-void elke_DataTree_addBoolValue(int& errorCode,
+void elke_DataTree_setBoolValue(int& errorCode,
                                 const int handle,
                                 const char* address,
                                 const bool bool_value)
 {
-  elke::DataTree_addArbitraryValue(errorCode, handle, address, bool_value);
+  elke::DataTree_setArbitraryValue(errorCode, handle, address, bool_value);
 }
 
 //===================================================================
-void elke_DataTree_addStringValue(int& errorCode,
-                                const int handle,
-                                const char* address,
-                                const char* string_value)
+void elke_DataTree_setStringValue(int& errorCode,
+                                  const int handle,
+                                  const char* address,
+                                  const char* string_value)
 {
-  elke::DataTree_addArbitraryValue(errorCode, handle, address, string_value);
+  elke::DataTree_setArbitraryValue(errorCode, handle, address, string_value);
 }

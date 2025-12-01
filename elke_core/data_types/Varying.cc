@@ -53,7 +53,7 @@ elke::Varying& elke::Varying::operator=(const Varying& other)
 {
   if (this != &other)
   {
-    m_data = other.m_data->Clone();
+    m_data = other.m_data == nullptr ? nullptr : other.m_data->Clone();
     m_type = other.m_type;
   }
   return *this;

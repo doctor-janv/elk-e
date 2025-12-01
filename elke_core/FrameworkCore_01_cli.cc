@@ -54,7 +54,7 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
   const auto cli5 = CommandLineArgument(
     "echo-input-data",
     "",
-    "Turns on/off the echoing of the processed input files.",
+    "Turns on/off the echoing of the processed input files with tags.",
     /*default_value=*/Varying(false),
     /*only_one_allowed=*/true,
     /*requires_value=*/true);

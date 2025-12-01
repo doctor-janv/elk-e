@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <map>
 
 /**What is a data tree? Well if you google JSON format... that is a data tree.
  *Requirements:
@@ -21,9 +22,10 @@ namespace elke
 
 enum class DataTreeType : int
 {
-  SCALAR = 0,   ///< Contains a single value, no children
-  SEQUENCE = 1, ///< Contains multiple values, no children
-  MAP = 2       ///< Contains no values, multiple children
+  NO_DATA = 0,  ///< An unpopulated data-tree
+  SCALAR = 1,   ///< Contains a single value, no children
+  SEQUENCE = 2, ///< Contains multiple values, no children
+  MAP = 3       ///< Contains no values, multiple children
 };
 
 /**Class to support a data tree.*/
@@ -34,8 +36,11 @@ class DataTree
     std::function<void(const std::string&, DataTree&)>;
   using DataTreePtr = std::shared_ptr<DataTree>;
   using DataTreeConstPtr = std::shared_ptr<const DataTree>;
+
   std::string m_name;
-  std::vector<Varying> m_values;
+  DataTreeType m_type = DataTreeType::NO_DATA;
+  std::map<std::string, std::string> m_tags;
+  Varying m_value;
   std::vector<DataTreePtr> m_children;
 
 public:
@@ -45,21 +50,28 @@ public:
   /**Returns the name assigned to this tree.*/
   const std::string& name() const;
 
+  /**Returns the general type of the data-tree.*/
+  DataTreeType type() const;
+
+  /**Sets the data-tree type.*/
+  void setType(DataTreeType type);
+
   /**Assigns a new name.*/
   void rename(const std::string& new_name);
 
   /**Returns a constant reference to the values.*/
-  const std::vector<Varying>& values() const;
+  const Varying& value() const;
 
   /**Adds a value to the node*/
-  void addValue(const Varying& value);
-
-  /**Traverses the tree and calls a callback function at each node.*/
-  void traverseWithCallback(const std::string& running_address,
-                            const DataTreeTraverseFunction& function);
+  void setValue(const Varying& value);
 
   /**Adds a child tree.*/
   void addChild(const DataTreePtr& child);
+
+  /**Traverses the tree and calls a callback function at each node.*/
+  void traverseWithCallback(const std::string& running_address,
+                            const DataTreeTraverseFunction& function,
+                            const std::string& name_override = "");
 
   /**Returns a reference to a child of only the current level tree. If
    * the name is not found std::logic_error is thrown.*/
@@ -71,9 +83,6 @@ public:
 
   /**Returns the number of children.*/
   size_t numChildren() const { return m_children.size(); }
-
-  /**Returns the number of values.*/
-  size_t numValues() const { return m_values.size(); }
 
   // /**Returns a const reference to a child at any level of the tree. If
   //  * the name is not found std::logic_error is thrown.*/

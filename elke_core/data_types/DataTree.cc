@@ -8,6 +8,18 @@ namespace elke
 /**Constructor requiring the name.*/
 DataTree::DataTree(std::string name) : m_name(std::move(name)) {}
 
+/**Returns the general type of the data-tree.*/
+DataTreeType DataTree::type() const
+{
+  return m_type;
+}
+
+/**Sets the data-tree type.*/
+void DataTree::setType(const DataTreeType type)
+{
+  m_type = type;
+}
+
 /**Returns the name assigned to this tree.*/
 const std::string& DataTree::name() const { return m_name; }
 
@@ -15,42 +27,55 @@ const std::string& DataTree::name() const { return m_name; }
 void DataTree::rename(const std::string& new_name) { m_name = new_name; }
 
 /**Returns a constant reference to the values.*/
-const std::vector<Varying>& DataTree::values() const { return m_values; }
+const Varying& DataTree::value() const { return m_value; }
 
 /**Adds a value to the node*/
-void DataTree::addValue(const Varying& value)
+void DataTree::setValue(const Varying& value)
 {
-  if (not m_children.empty())
+  if (m_type != DataTreeType::SCALAR)
     throw std::runtime_error(
       "Attempting to add value to DataTree " + m_name +
-      " which has children and therefore cannot have values.");
-  m_values.push_back(value);
-}
-
-// ###################################################################
-/**Traverses the tree and calls a callback function at each node.*/
-void DataTree::traverseWithCallback(const std::string& running_address,
-                                    const DataTreeTraverseFunction& function)
-{
-  const std::string current_address =
-    running_address.empty() ? m_name + "/" : running_address + m_name + "/";
-
-  function(current_address, *this);
-
-  for (const auto& child : m_children)
-    child->traverseWithCallback(current_address, function);
+      " which has not been designated as a DataTreeType::Scalar");
+  m_value = value;
 }
 
 // ###################################################################
 /**Adds a child tree.*/
 void DataTree::addChild(const DataTreePtr& child)
 {
-  if (not m_values.empty())
+  if (not (m_type == DataTreeType::SEQUENCE or m_type == DataTreeType::MAP))
     throw std::runtime_error(
       "Attempting to add child to DataTree " + m_name +
-      " which has values and therefore cannot have children.");
+      " which is not designated as either a SEQUENCE or a MAP.");
   m_children.push_back(child);
 }
+
+// ###################################################################
+/**Traverses the tree and calls a callback function at each node.*/
+void DataTree::traverseWithCallback(const std::string& running_address,
+                                    const DataTreeTraverseFunction& function,
+                                    const std::string& name_override /* = ""*/)
+{
+  const std::string name = name_override.empty() ? m_name : name_override;
+  const std::string current_address = running_address + name + "/";
+
+  function(current_address, *this);
+
+  if (m_type == DataTreeType::SEQUENCE)
+  {
+    size_t id = 0;
+    for (const auto& child : m_children)
+    {
+      child->traverseWithCallback(current_address, function, std::to_string(id));
+      ++id;
+    }
+  }
+  else if (m_type == DataTreeType::MAP)
+    for (const auto& child : m_children)
+      child->traverseWithCallback(current_address, function);
+}
+
+
 
 // ###################################################################
 /**Produces a string in YAML format of the entire tree.
@@ -83,40 +108,78 @@ MainInput:
 */
 std::string DataTree::toStringAsYAML(const std::string& indent /*=""*/) const
 {
+  // Every parent is responsible for indenting its own children.
+  const auto child_indent = indent + std::string(2, ' ');
+
   std::stringstream yaml;
 
-  yaml << indent << m_name << ":";
+  const std::string node_title = m_name.empty() ? "" : m_name + ":";
 
+  yaml << node_title;
 
-
-  //=================================== Branch case this is NOT a subtree
-  if (m_children.empty())
+  switch (this->type())
   {
-    //============================ Single value
-    if (m_values.size() == 1)
-    {
-      yaml << " " << m_values.front().PrintStr(false) << "\n";
-    }
-    //============================ Array value
-    else
-    {
-      yaml << "[";
-      for (const auto& value : m_values)
+    case DataTreeType::NO_DATA:
+      yaml << " null # type=NO_DATA\n";
+      break;
+
+    case DataTreeType::SCALAR:
       {
-        yaml << value.PrintStr(/*with_type=*/false);
-        if (value != m_values.back()) yaml << ", ";
+        yaml << " " << m_value.PrintStr(/*with_type=*/false);
+        yaml << " # type=" << m_value.TypeName();
+        yaml << "\n";
       }
-      yaml << "]\n";
-    }
-  } // m_children.empty()
-  //=================================== Branch case: this is a subtree
-  else
-  {
-    yaml << "\n";
-    size_t k=0;
-    for (const auto& child : m_children)
-      yaml << child->toStringAsYAML(indent + std::string(4, ' '));
+      break;
+
+    case DataTreeType::SEQUENCE:
+      yaml << " # type=SEQUENCE";
+      yaml << "\n";
+      for (const auto& child : m_children)
+      {
+        yaml << child_indent << "-";
+        yaml << child->toStringAsYAML(child_indent);
+      }
+
+      break;
+
+    case DataTreeType::MAP:
+      yaml << " # type=MAP\n";
+      for (const auto& child : m_children)
+      {
+        yaml << child_indent;
+        yaml << child->toStringAsYAML(indent + std::string(2, ' '));
+      }
+      break;
   }
+
+  // //=================================== Branch case this is NOT a subtree
+  // if (m_children.empty())
+  // {
+  //   //============================ Single value
+  //   if (m_values.size() == 1)
+  //   {
+  //     yaml << " " << m_values.front().PrintStr(false) << "\n";
+  //   }
+  //   //============================ Array value
+  //   else
+  //   {
+  //     yaml << "[";
+  //     for (const auto& value : m_values)
+  //     {
+  //       yaml << value.PrintStr(/*with_type=*/false);
+  //       if (value != m_values.back()) yaml << ", ";
+  //     }
+  //     yaml << "]\n";
+  //   }
+  // } // m_children.empty()
+  // //=================================== Branch case: this is a subtree
+  // else
+  // {
+  //   yaml << "\n";
+  //   size_t k = 0;
+  //   for (const auto& child : m_children)
+  //     yaml << child->toStringAsYAML(indent + std::string(4, ' '));
+  // }
 
   return yaml.str();
 }
