@@ -20,6 +20,8 @@ class InputProcessor
   bool m_echo_input = false;
   bool m_echo_input_data = false;
 
+  elke::DataTree m_main_data_tree;
+
 public:
   /**Protected constructor.*/
   explicit InputProcessor(std::shared_ptr<elke::Logger> logger_ptr);
@@ -29,6 +31,12 @@ public:
 
   /**Parses input files into data trees using a file-appropriate parser.*/
   void parseInputFiles();
+
+  /**Consolidate blocks.*/
+  void consolidateBlocks();
+
+  // /**Returns the main data tree extracted from input*/
+  // const DataTree& mainDataTree() const { return m_main_data_tree; }
 
   /**Turns on/off the echoing of the input files.*/
   void setEchoInput(const bool value) { m_echo_input = value; }

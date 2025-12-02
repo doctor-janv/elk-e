@@ -62,26 +62,50 @@ void DataTree::setValue(const Varying& value)
 
 // ###################################################################
 /**Adds a child tree.*/
-void DataTree::addChild(const DataTreePtr& child)
+void DataTree::addChild(const DataTreePtr& child,
+                        const bool prevent_duplicate /*=false*/)
 {
+  //========================= Only sequences and maps may have children
   if (not(m_type == DataTreeType::SEQUENCE or m_type == DataTreeType::MAP))
     throw std::runtime_error(
       "Attempting to add child to DataTree " + m_name +
       " which is not designated as either a SEQUENCE or a MAP.");
-  const size_t id = m_children.size();
-  m_children.push_back(child);
 
-  const auto address_tag = m_tags.find("address");
-  if (address_tag == m_tags.end())
+  //========================= Establish the current tree's address
+  const auto address_tag_find = m_tags.find("address");
+
+  if (address_tag_find == m_tags.end())
     throw std::runtime_error("Address corruption.");
 
-  if (m_type == DataTreeType::SEQUENCE)
+  const std::string address_tag = address_tag_find->second;
+
+  //========================= Check for duplicate
+  if (prevent_duplicate)
   {
-    const std::string name = std::to_string(id);
-    child->setTag("address", address_tag->second + "/" + name);
+    bool duplicate_found = false;
+    for (const auto& sibling : m_children)
+      if (sibling->name() == child->name())
+      {
+        duplicate_found = true;
+        break;
+      }
+
+    if (duplicate_found)
+      throw std::logic_error("Cannot add child named \"" + child->name() +
+                             "\" to data-tree at \"" + address_tag + "\"");
   }
-  else
-    child->setTag("address", address_tag->second + "/" + child->name());
+
+  //========================= Set child tag
+  auto child_tag = address_tag + "/" + child->name();
+  if (this->m_type == DataTreeType::SEQUENCE)
+  {
+    const size_t id = m_children.size();
+    child_tag = address_tag + "/" +  std::to_string(id);
+  }
+  child->setTag("address", child_tag);
+
+  //========================= Add the child
+  m_children.push_back(child);
 }
 
 // ###################################################################
@@ -145,9 +169,9 @@ MainInput:
         param2:["abc", "def"]
         param3:["mixed", 123, 45.6]
 */
-std::string
-DataTree::toStringAsYAML(const std::string& indent,
-                         const std::vector<std::string>& tags_to_print/*={}*/) const
+std::string DataTree::toStringAsYAML(
+  const std::string& indent,
+  const std::vector<std::string>& tags_to_print /*={}*/) const
 {
   // Every parent is responsible for indenting its own children.
   const auto child_indent = indent + std::string(2, ' ');
@@ -203,7 +227,8 @@ DataTree::toStringAsYAML(const std::string& indent,
       for (const auto& child : m_children)
       {
         yaml << child_indent;
-        yaml << child->toStringAsYAML(indent + std::string(2, ' '), tags_to_print);
+        yaml << child->toStringAsYAML(indent + std::string(2, ' '),
+                                      tags_to_print);
       }
       break;
   }

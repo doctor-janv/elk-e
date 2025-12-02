@@ -13,8 +13,28 @@
 
 ## Requirement basic1 - Basic program philosophy
 There shall be the ability to instantiate the program via an executable as well
-as a dynamic library. Program instances shall commence with a `CoreModule`, which 
-shall be a singleton within each process, via an `execution` static method.
+as a dynamic library. Program instances shall commence with a core module, which 
+shall be a singleton within each process, via an `execution` static method. All 
+processes must have access to the core-module.
+
+<!--endreq-->
+
+## Requirement cli1 - Command Line Interface
+
+Elke based programs shall support command line arguments (CLAs) in the following form
+- a. Parameter value pairs. I.e., `-p value` and `--param value` where `p` is the
+  shorthand version of `param` and is interchangeable with any other.
+- b. Items marked as `value` can start with a `-` or a `--` as long as it does not
+  conflict with other command line arguments in the application. E.g., if the 
+  registed CLAs are `-n`/`--name` and `-l`/`--last-name` then the following 
+  would be illegal: `-n -l` (must trigger error requiring a "value" for `-n`).
+- c. The following standard CLAs should be supported
+  - `-h`/`--help`, with no value should print the Command Line Interface.
+  - `--nocolor`, with no value should turn off all color printing.
+  - `-v`/`--verbosity`, with an integer value should change the logger's 
+    verbosity.
+- c. A CLA does not necessarily have to have a value, and can thus be used as a flag.
+- d. Some CLAs could be used multiple times. Functionality should exist to allow for it.
 
 <!--endreq-->
 
@@ -23,20 +43,6 @@ During this phase all possible input processing
 shall be performed and all errors shall be collected to be displayed/conveyed at the end of the
 phase.
 <!--endreq-->
-
-## Requirement cli1 - Command Line Interface
-
-Elke based programs shall support command line arguments (CLAs) in the following form
-- Parameter value pairs. I.e., `-p value` and `--param value` where `p` is the
-  shorthand version of `param` and is interchangeable with any other.
-- Items marked as `value` can start with a `-` or a `--` as long as it does not
-  conflict with other command line arguments in the application.
-- A CLA does not have to have a value, and can thus be used as a flag.
-- Some CLAs could be used multiple times. Functionality should exist to allow for it.
-- The `-h` flag summons help
-
-<!--endreq-->
-
 
 ## Requirement utesting - Unit testing
 - As a CLA the user can use `basic` to execute unit-testing.

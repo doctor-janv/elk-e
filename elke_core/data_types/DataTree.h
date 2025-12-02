@@ -69,7 +69,7 @@ public:
   void setValue(const Varying& value);
 
   /**Adds a child tree.*/
-  void addChild(const DataTreePtr& child);
+  void addChild(const DataTreePtr& child, bool prevent_duplicate = false);
 
   /**Set address tag*/
   void setTag(const std::string& tag_name, const std::string& tag_value);

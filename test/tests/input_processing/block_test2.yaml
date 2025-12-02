@@ -1,2 +1,11 @@
 Simulation:
   offset: 3.0
+  offset: 2.0
+  scale: 4.0
+  duppy: "Duplicates"
+  duppy: "are not good"
+  zname: "NO"
+  sub_tree:
+    subsub_tree:
+      name: "Nice name"
+      name: "Bad name"

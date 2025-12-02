@@ -9,7 +9,6 @@
 namespace elke
 {
 
-
 #ifdef YAML_CPP_EXISTS
 namespace YAMLInputHelpers
 {
@@ -97,8 +96,8 @@ void YAMLInput::populateTree(elke::DataTree& tree,
   const auto mark = node.Mark();
 
   tree.setTag("mark",
-              m_current_file_name + " line " + std::to_string(mark.line + 1) + ":" +
-                std::to_string(mark.column + 1));
+              m_current_file_name + " line " + std::to_string(mark.line + 1) +
+                ":" + std::to_string(mark.column + 1));
 
   switch (node.Type())
   {
@@ -113,7 +112,9 @@ void YAMLInput::populateTree(elke::DataTree& tree,
     case YAML::NodeType::Sequence:
       if (test_mode) logger.log() << offset << "Sequence node\n";
       tree.setType(DataTreeType::SEQUENCE);
-      for (size_t i = 0; i < node.size(); i++)
+      // We cannot use a ranged based for loop here since it only
+      // works for maps.
+      for (size_t i = 0; i < node.size(); i++) // NOLINT(modernize-loop-convert)
       {
         auto sub_node_ptr = std::make_shared<DataTree>("");
         auto& sub_node = *sub_node_ptr;
@@ -129,8 +130,16 @@ void YAMLInput::populateTree(elke::DataTree& tree,
         auto sub_node_ptr =
           std::make_shared<DataTree>(it->first.as<std::string>());
         auto& sub_node = *sub_node_ptr;
-        tree.addChild(sub_node_ptr);
-        populateTree(sub_node, it->second, logger, level + 2, test_mode);
+
+        try
+        {
+          tree.addChild(sub_node_ptr, /*prevent_duplicate=*/true);
+          populateTree(sub_node, it->second, logger, level + 2, test_mode);
+        }
+        catch (const std::exception& e)
+        {
+          m_errors.emplace_back(e.what());
+        }
       }
       break;
     case YAML::NodeType::Undefined:
@@ -138,7 +147,6 @@ void YAMLInput::populateTree(elke::DataTree& tree,
   }
 }
 #endif
-
 
 // ###################################################################
 YAMLInput::YAMLInput(Logger& logger, const bool test_mode /*=false*/)
@@ -168,6 +176,7 @@ elke::DataTree YAMLInput::parseInputFile(const std::string file_name)
     m_errors.emplace_back(e.what());
   }
   data_tree = root_tree;
+  m_logger.log() << "Done reading YAML-file \"" << file_name << "\"\n";
 #endif
 
   return data_tree;

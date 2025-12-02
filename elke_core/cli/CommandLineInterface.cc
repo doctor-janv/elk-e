@@ -124,21 +124,21 @@ void CommandLineInterface::parseCommandLine(
 // ###################################################################
 void CommandLineInterface::registerCommonCLI_Items()
 {
-  auto cli0 = CommandLineArgument("help",
-                                  "h",
-                                  "Prints basic help for the program.",
-                                  /*default_value=*/Varying(0),
-                                  /*only_one_allowed=*/false,
-                                  /*requires_value=*/false);
-  auto cli1 = CommandLineArgument(
+  const auto cli0 = CommandLineArgument("help",
+                                        "h",
+                                        "Prints basic help for the program.",
+                                        /*default_value=*/Varying(0),
+                                        /*only_one_allowed=*/false,
+                                        /*requires_value=*/false);
+  const auto cli1 = CommandLineArgument(
     "verbosity", "v", "Verbosity level. 0=default, 1=more, 2=most.");
 
-  auto cli2 = CommandLineArgument("nocolor",
-                                  "",
-                                  "Suppresses color output.",
-                                  /*default_value=*/Varying(false),
-                                  /*only_one_allowed=*/true,
-                                  /*requires_value=*/false);
+  const auto cli2 = CommandLineArgument("nocolor",
+                                        "",
+                                        "Suppresses color output.",
+                                        /*default_value=*/Varying(false),
+                                        /*only_one_allowed=*/true,
+                                        /*requires_value=*/false);
 
   this->registerNewCLA(cli0);
   this->registerNewCLA(cli1);
@@ -151,18 +151,36 @@ void CommandLineInterface::respondToBasicCLAs() const
   const auto& supplied_clas = getSuppliedCommandLineArguments();
   auto& logger = *m_logger_ptr;
 
+  bool print_header = false;
 
-  if (supplied_clas.has("help")) this->printHelp();
+  if (supplied_clas.has("help")) print_header = true;
 
   if (supplied_clas.has("nocolor")) logger.setColorSuppression(true);
 
   if (supplied_clas.has("verbosity"))
   {
     const auto& cla = supplied_clas.getCLAbyName("verbosity");
-    logger.setVerbosity(
-      static_cast<int>(cla.m_values_assigned.front().integerValue()));
+    const auto str_verbosity =
+      cla.m_values_assigned.front().getValue<std::string>();
+
+    int verbosity = 0;
+    try
+    {
+      verbosity = std::stoi(str_verbosity);
+    }
+    catch (const std::exception& e)
+    {
+      logger.error() << "Invalid value, " + str_verbosity +
+                          ", for command line argument -v/--verbosity."
+                          "The value cannot be converted to an integer.";
+    }
+    logger.setVerbosity(verbosity);
+    // logger.setVerbosity(
+    //   static_cast<int>(cla.m_values_assigned.front().integerValue()));
+
   }
   this->printHeader();
+  if (print_header) this->printHelp();
 }
 
 // ###################################################################
@@ -176,7 +194,6 @@ void CommandLineInterface::setHeader(std::string new_header)
 {
   m_program_header = std::move(new_header);
 }
-
 
 // ###################################################################
 std::string CommandLineInterface::constructionHelperSetDefaultHeader()
@@ -214,6 +231,7 @@ void CommandLineInterface::printHelp() const
     else
       outstr << std::string(offset, ' ');
 
+    if (cla.m_requires_value) outstr << "Requires a value. ";
     outstr << cla.m_doc_string;
 
     outstr << "\n";

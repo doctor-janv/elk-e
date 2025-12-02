@@ -64,7 +64,7 @@ public:
   static int execute();
 
   /**Forcibly quits execution by throwing `std::runtime_error`.*/
-  static void ForcedQuit(const std::string& reason = "");
+  static void forcedQuit(const std::string& reason = "");
 
   /**Returns a constant reference to the warehouse.*/
   const Warehouse& warehouse() const;

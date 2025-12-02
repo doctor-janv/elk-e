@@ -1,20 +1,27 @@
 __executable: "bin/elke_test"
 
-unitTestCLI_help1:
+CLI_test_help1:
   args: "-h --nocolor"
   checks: [{type: ExitCodeCheck}]
   requirements: ["basic1", "cli1"]
 
-unitTestCLI_help2:
+CLI_test_help2:
   args: "--help --nocolor"
   checks: [{type: ExitCodeCheck}]
   requirements: ["basic1", "cli1"]
 
-unitTestCLIs.cc:
-  args: "-b 'call elke::unit_tests::unitTestVec3' --nocolor"
-  debug: True
+CLI_test_a1:
+  args: "-v 2 --nocolor"
+  checks: [ { type: ExitCodeCheck } ]
   requirements: ["basic1", "cli1"]
-  checks: [
-    {
-      type: ExitCodeCheck,
-    }]
+
+CLI_test_a2:
+  args: "-v --nocolor"
+  checks: [ { type: ExitCodeCheck, gold_value: 1 } ] # Should fail
+  requirements: ["basic1", "cli1"]
+
+unitTestCLIs.cc:
+  args: "-b 'call elke::unit_tests::unitTestVec3' -b 'call elke::unit_tests::unitTestVec3' --nocolor"
+#  debug: True
+  requirements: ["basic1", "cli1"]
+  checks: [ { type: ExitCodeCheck }]

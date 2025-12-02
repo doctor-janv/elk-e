@@ -11,8 +11,12 @@ block_test_errors:
 
 block_test1:
   args: "-i block_test1.yaml --nocolor --echo-input-data true --echo-input true"
-  checks: [
-    { type: ExitCodeCheck }
-  ]
+  checks: [ { type: ExitCodeCheck } ]
   requirements: [ "blocks"]
-  debug: True
+#  debug: True
+
+# This test checks whether duplicate parameters are handled appropriately
+block_test2:
+  args: "-i block_test2.yaml --nocolor --echo-input-data true --echo-input true"
+  checks: [ { type: ExitCodeCheck, gold_value: 1} ] # Should fail
+

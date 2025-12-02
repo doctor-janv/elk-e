@@ -70,7 +70,7 @@ int FrameworkCore::execute()
     core.respondToFrameworkCoreCLAs();
 
     core.m_input_processor.parseInputFiles();
-    //core.m_input_processor.consolidateBlocks();
+    core.m_input_processor.consolidateBlocks();
   }
   catch (const std::exception& exception_object)
   {
@@ -82,7 +82,7 @@ int FrameworkCore::execute()
 }
 
 // ###################################################################
-void FrameworkCore::ForcedQuit(const std::string& reason /*=""*/)
+void FrameworkCore::forcedQuit(const std::string& reason /*=""*/)
 {
   auto& core = FrameworkCore::getInstance();
   core.m_error_code = 1;

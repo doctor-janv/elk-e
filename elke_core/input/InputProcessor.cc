@@ -13,7 +13,7 @@ namespace elke
 
 /**Protected constructor.*/
 InputProcessor::InputProcessor(std::shared_ptr<elke::Logger> logger_ptr)
-  : m_logger_ptr(std::move(logger_ptr))
+  : m_logger_ptr(std::move(logger_ptr)), m_main_data_tree("")
 {
 }
 
@@ -107,10 +107,23 @@ void InputProcessor::parseInputFiles()
   if (not parsing_errors.empty())
   {
     std::stringstream out_stream;
+    out_stream << "\n";
     for (const auto& error : parsing_errors)
+    {
       out_stream << error;
-    elkLogicalError("Error(s) during input processing.\n" + out_stream.str());
+      if (not error.empty() and error.back() != '\n') out_stream << '\n';
+    }
+    elkLogicalError(out_stream.str() + "\nError(s) during input processing.");
   }
+}
+
+// ###################################################################
+void InputProcessor::consolidateBlocks()
+{
+  // TODO: Implement properly
+
+  if (not m_data_trees.empty())
+    m_main_data_tree = m_data_trees.begin()->second;
 }
 
 } // namespace elke
