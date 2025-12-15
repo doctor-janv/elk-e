@@ -5,7 +5,8 @@ namespace elke
 
 InputParametersBlock FactoryObject::getInputParameters()
 {
-  auto params = InputParametersBlock();
+  auto params = InputParametersBlock("FactoryObject",
+    "Basic required input parameters for a FactoryObject.");
 
   params.addRequiredParameter<std::string>("type", "The type of the object.");
 

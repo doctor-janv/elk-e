@@ -59,12 +59,21 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
     /*only_one_allowed=*/true,
     /*requires_value=*/true);
 
+  const auto cli6 =
+    CommandLineArgument("stop_after_input_parsing",
+                        "",
+                        "Stops execution after the input-parsing task.",
+                        /*default_value=*/Varying(false),
+                        /*only_one_allowed=*/true,
+                        /*requires_value=*/false);
+
   m_CLI.registerNewCLA(cli0);
   m_CLI.registerNewCLA(cli1);
   m_CLI.registerNewCLA(cli2);
   m_CLI.registerNewCLA(cli3);
   m_CLI.registerNewCLA(cli4);
   m_CLI.registerNewCLA(cli5);
+  m_CLI.registerNewCLA(cli6);
 }
 
 // ###################################################################
@@ -112,17 +121,19 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
 
     for (const auto& input : inputs)
       this->m_input_processor.addInputFilePath(input.stringValue());
-  }
+  } // if (supplied_clas.has("input"))
 
   if (supplied_clas.has("echo-input"))
   {
     const auto& input_CLA = supplied_clas.getCLAbyName("echo-input");
     const auto& inputs = input_CLA.m_values_assigned;
 
-    const bool value = inputs.front().stringValue() == "true";
+    bool value = false;
+    if (inputs.front().stringValue() == "true")
+      value = true;
 
     this->m_input_processor.setEchoInput(value);
-  }
+  } // if (supplied_clas.has("echo-input"))
 
   if (supplied_clas.has("echo-input-data"))
   {
@@ -132,7 +143,10 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
     const bool value = inputs.front().stringValue() == "true";
 
     this->m_input_processor.setEchoInputData(value);
-  }
+  } // if (supplied_clas.has("echo-input-data"))
+
+  if (supplied_clas.has("stop_after_input_parsing"))
+    m_task_at_which_to_stop = "input_parsing";
 }
 
 // ###################################################################
@@ -173,8 +187,9 @@ void FrameworkCore::basicCommandCall(const std::string& command_string) const
   }
   if (!function_found)
   {
-    logger.error() << "Nullary function '" << function_name
-                   << "' not found amount registered nullary functions.";
+    throw std::runtime_error(
+      "Nullary function '" + function_name +
+      "' not found amount registered nullary functions.");
   }
 }
 

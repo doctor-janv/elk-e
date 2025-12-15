@@ -38,16 +38,11 @@ Elke based programs shall support command line arguments (CLAs) in the following
 
 <!--endreq-->
 
-## Requirement input_processing - There shall be a distinct input processing phase
-During this phase all possible input processing
-shall be performed and all errors shall be collected to be displayed/conveyed at the end of the
-phase.
-<!--endreq-->
-
 ## Requirement utesting - Unit testing
 - As a CLA the user can use `basic` to execute unit-testing.
 
 <!--endreq-->
+
 
 ## Requirement input_style - Input-style shall follow a data-tree paradigm
 ```yaml
@@ -86,6 +81,20 @@ main_tree:
     be used for error reporting
   - `mark`-tag, used to indicate the origin file, line- and column number. Also
     used for error reporting.
+- No duplicates can be allowed (standard YAML)
+
+<!--endreq-->
+
+## Requirement input_parsing_phase - There shall be a distinct input parsing phase
+During this phase all possible input files shall be parsed to data trees.
+
+<!--endreq-->
+
+## Requirement input_checking_phase - There shall be a distinct input checking phase
+During this phase all possible input processing
+shall be performed and all errors shall be collected to be displayed/conveyed at the end of the
+phase.
+<!--endreq-->
 
 ## Requirement blocks - Input files have syntax-blocks
 - Input files shall be processed via syntax-blocks.
@@ -97,14 +106,35 @@ main_tree:
 ## Requirement inparams1 - Object instantiation via input parameters
 
 ### Definition of an input parameter
-An input parameter can be one of following:
-- A string
-- A number
-- An array of numbers
-- An array of strings
+- An input parameter can be one of following:
+  - A string
+  - A number
+  - A boolean
+  - An array of numbers
+  - An array of strings
+  - An array of booleans
+
+### Properties
+- An input parameter always has a name.
+- An input parameter can be any of the following class-types:
+  - OPTIONAL
+  - REQUIRED
+  - DEPRECATED
+- OPTIONAL parameters shall always have a default value.
+- 
+
+<!--endreq-->
+
+## Requirement invalid_parameters - Invalid parameter names
+If the input data contains a named data item that is NOT in the corresponding
+input parameters, an error shall be generated.
 
 <!--endreq-->
 
 ## Requirement friendly_errors - The code should output friendly errors
 - When a file is not found a friendly error should be printed at least showing
   which file could not be found.
+- When an input parameter is slighly mispelled, the code should provide a
+  "Did you mean..." type message providing a suggestion.
+
+<!--endreq-->

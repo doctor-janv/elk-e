@@ -23,5 +23,5 @@ CLI_test_a2:
 unitTestCLIs.cc:
   args: "-b 'call elke::unit_tests::unitTestVec3' -b 'call elke::unit_tests::unitTestVec3' --nocolor"
 #  debug: True
-  requirements: ["basic1", "cli1"]
+  requirements: ["basic1", "cli1", "utesting"]
   checks: [ { type: ExitCodeCheck }]

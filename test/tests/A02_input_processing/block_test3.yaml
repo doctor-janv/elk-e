@@ -1,0 +1,10 @@
+TestSyntaxBlock:
+  scale: 2.0
+  scalex: 1.0
+  offset: 2
+  scale2: [1,2,3]
+  array_of_objects:
+    - type: Father
+      scale: 1.0
+    - type: Mother
+      scale: 0.5

@@ -1,0 +1,110 @@
+__executable: "bin/elke_test"
+
+#====================================================================
+unitTestYAMLInput.cc:
+  args: "-b 'call elke::unit_tests::unitTestYAMLInput' --nocolor"
+  #  debug: True
+  checks: [
+    { type: ExitCodeCheck },
+    { type: HasStringCheck, line_key: '[0]  YAMLInput.yaml: # type=MAP address=YAMLInput.yaml'},
+    { type: HasStringCheck, line_key: '[0]    absolute: true # type=BOOL address=YAMLInput.yaml/absolute'},
+    { type: HasStringCheck, line_key: '[0]    never: "ever" # type=STRING address=YAMLInput.yaml/never'},
+    { type: HasStringCheck, line_key: '[0]    number: 123 # type=INTEGER address=YAMLInput.yaml/number'},
+    { type: HasStringCheck, line_key: '[0]    float: 123 # type=FLOAT address=YAMLInput.yaml/float'},
+    { type: HasStringCheck, line_key: '[0]    sci1: 1e+11 # type=FLOAT address=YAMLInput.yaml/sci1'},
+    { type: HasStringCheck, line_key: '[0]    sci2: 1e-13 # type=FLOAT address=YAMLInput.yaml/sci2'},
+    { type: HasStringCheck, line_key: '[0]    sci3: 1e-12 # type=FLOAT address=YAMLInput.yaml/sci3'},
+    { type: HasStringCheck, line_key: '[0]    sci4: 1.1e-12 # type=FLOAT address=YAMLInput.yaml/sci4'},
+    { type: HasStringCheck, line_key: '[0]    zero: 0 # type=INTEGER address=YAMLInput.yaml/zero'},
+    { type: HasStringCheck, line_key: '[0]    kneel: null # type=NO_DATA address=YAMLInput.yaml/kneel'},
+    { type: HasStringCheck, line_key: '[0]    sub: # type=MAP address=YAMLInput.yaml/sub'},
+    { type: HasStringCheck, line_key: '[0]      a: "A" # type=STRING address=YAMLInput.yaml/sub/a'},
+    { type: HasStringCheck, line_key: '[0]      b: "b" # type=STRING address=YAMLInput.yaml/sub/b'},
+    { type: HasStringCheck, line_key: '[0]      c: "3" # type=STRING address=YAMLInput.yaml/sub/c'},
+    { type: HasStringCheck, line_key: '[0]    arr: # type=SEQUENCE address=YAMLInput.yaml/arr'},
+    { type: HasStringCheck, line_key: '[0]      - 1 # type=INTEGER address=YAMLInput.yaml/arr/0'},
+    { type: HasStringCheck, line_key: '[0]      - 2 # type=INTEGER address=YAMLInput.yaml/arr/1'},
+    { type: HasStringCheck, line_key: '[0]      - true # type=BOOL address=YAMLInput.yaml/arr/2'},
+    { type: HasStringCheck, line_key: '[0]      - false # type=BOOL address=YAMLInput.yaml/arr/3'},
+    { type: HasStringCheck, line_key: '[0]      - 5 # type=INTEGER address=YAMLInput.yaml/arr/4'},
+    { type: HasStringCheck, line_key: '[0]      - true # type=BOOL address=YAMLInput.yaml/arr/5'},
+    { type: HasStringCheck, line_key: '[0]      - 55 # type=INTEGER address=YAMLInput.yaml/arr/6'},
+    { type: HasStringCheck, line_key: '[0]    arr2: # type=SEQUENCE address=YAMLInput.yaml/arr2'},
+    { type: HasStringCheck, line_key: '[0]      - # type=MAP address=YAMLInput.yaml/arr2/0'},
+    { type: HasStringCheck, line_key: '[0]        type: "objA" # type=STRING address=YAMLInput.yaml/arr2/0/type'},
+    { type: HasStringCheck, line_key: '[0]        param: "A" # type=STRING address=YAMLInput.yaml/arr2/0/param'},
+    { type: HasStringCheck, line_key: '[0]      - # type=MAP address=YAMLInput.yaml/arr2/1'},
+    { type: HasStringCheck, line_key: '[0]        type: "objB" # type=STRING address=YAMLInput.yaml/arr2/1/type'},
+    { type: HasStringCheck, line_key: '[0]        param: "B" # type=STRING address=YAMLInput.yaml/arr2/1/param'},
+  ]
+  requirements: ["utesting", "input_style"]
+
+
+#=========================================================================
+# Tests if multiple errors are presented
+block_test_errors:
+  args: "-i block_testA.yaml -i block_testB.yaml --nocolor"
+  checks: [
+    { type: ExitCodeCheck, gold_value: 1 }, # Should fail
+    { type: HasStringCheck, line_key: 'ERROR: There is no file at "block_testA.yaml"' },
+    { type: HasStringCheck, line_key: 'ERROR: There is no file at "block_testB.yaml"' }
+  ]
+  requirements: [ "input_parsing_phase", "friendly_errors" ]
+
+
+#=========================================================================
+# Enforces a stop after parsing, going past it.
+block_test1:
+  args: "-i block_test1.yaml --nocolor --echo-input-data true --echo-input true --stop_after_input_parsing"
+  checks: [ { type: ExitCodeCheck } ]
+  requirements: [ "input_parsing_phase", "input_style"]
+
+
+#=========================================================================
+# This test checks whether duplicate parameters on input files are handled appropriately
+# And also that it doesn't quit on the first failure
+block_test2:
+  args: "-i block_test2.yaml --nocolor --echo-input-data true --echo-input true"
+  checks:
+    -
+      type: ExitCodeCheck
+      gold_value: 1 # Should fail
+    -
+      type: HasStringCheck
+      line_key: '[0]  ERROR: Cannot add child named "offset" to data-tree at "block_test2.yaml/TestSyntaxBlock"'
+    - type: HasStringCheck
+      line_key: '[0]  ERROR: Cannot add child named "duppy" to data-tree at "block_test2.yaml/TestSyntaxBlock"'
+    - type: HasStringCheck
+      line_key: '[0]  ERROR: Cannot add child named "name" to data-tree at "block_test2.yaml/TestSyntaxBlock/sub_tree/subsub_tree"'
+  requirements: [ "input_style", "input_parsing_phase", "friendly_errors"]
+
+
+#=========================================================================
+# Checks whether an invalid input parameter is given an appropriate error string.
+# Also checks whether a "Did you mean..." message is printed.
+block_test3:
+  args: "-i block_test3.yaml --nocolor --echo-input-data true --echo-input true"
+  checks:
+    -
+      type: ExitCodeCheck
+      gold_value: 1 # Should fail
+    -
+      type: HasStringCheck
+      line_key: >-
+        [0]  ERROR: While checking input parameters for block "TestSyntaxBlock"
+        from data-tree "block_test3.yaml/TestSyntaxBlock":
+    -
+      type: HasStringCheck
+      line_key: '[0]  ERROR: The parameter name "array_of_objects" is invalid. No suggested parameter name could be determined.'
+    -
+      type: HasStringCheck
+      line_key: '[0]  ERROR: The parameter name "scalex" is invalid. Did you mean "scale2"?'
+  requirements: ["invalid_parameters", "friendly_errors"]
+
+#=========================================================================
+# Tests various aspects of robust input parameters and syntax blocks
+unitTest_InputParametersBlock:
+  args: "-b 'call elke::unit_tests::unitTestInputParameters' --nocolor --echo-input-data true --echo-input true"
+  checks:
+    - type: ExitCodeCheck
+      gold_value: 1 # Should fail

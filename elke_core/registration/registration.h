@@ -17,9 +17,9 @@
   static char RJoinWordsB(unique_var_name1_, __COUNTER__) =                    \
     elke::StaticRegister::registerNullaryFunction(#func_name, func_name)
 
-#define elkeRegisterSyntaxBlock(block_name, block_syntax)                      \
+#define elkeRegisterSyntaxBlock(class_name, block_syntax)                      \
   static char RJoinWordsB(unique_var_name2_, __COUNTER__) =                    \
-    elke::StaticRegister::registerSyntaxBlock<block_name>(#block_name,         \
+    elke::StaticRegister::registerSyntaxBlock<class_name>(#class_name,         \
                                                           #block_syntax)
 
 namespace elke
@@ -31,15 +31,15 @@ using NullaryFunction = void (*)();
 
 using GetParametersFunction = elke::InputParametersBlock (*)();
 
-using SyntaxSystemPtr = std::shared_ptr<SyntaxBlock>;
-using SystemConstructionFunction =
-  SyntaxSystemPtr (*)(const elke::InputParametersBlock&);
+using SyntaxBlockPtr = std::shared_ptr<SyntaxBlock>;
+using SyntaxBlockConstructionFunction =
+  SyntaxBlockPtr (*)(const elke::InputParametersBlock&);
 
-struct SyntaxSystemRegisterEntry
+struct SyntaxBlockRegisterEntry
 {
   std::string m_syntax;
   GetParametersFunction m_parameter_function = nullptr;
-  SystemConstructionFunction m_constructor_function = nullptr;
+  SyntaxBlockConstructionFunction m_constructor_function = nullptr;
 };
 
 // ###################################################################
@@ -47,12 +47,14 @@ struct SyntaxSystemRegisterEntry
 class StaticRegister
 {
   std::map<std::string, NullaryFunction> m_nullary_function_register;
-  std::map<std::string, SyntaxSystemRegisterEntry> m_syntax_system_register;
+  std::map<std::string, SyntaxBlockRegisterEntry> m_syntax_block_register;
 
 public:
   static StaticRegister& getInstance();
-  /**Returns the mapping of nullary functions.*/
+  /**Returns the nullary functions registry.*/
   static const std::map<std::string, NullaryFunction>& getNullaryFunctions();
+  /**Returns the syntax-block registry.*/
+  static const std::map<std::string, SyntaxBlockRegisterEntry>& getSyntaxSystemRegister();
 
   static char registerNullaryFunction(const std::string& function_name,
                                       NullaryFunction function);
@@ -63,14 +65,14 @@ public:
   {
     auto& registry = getInstance();
 
-    SyntaxSystemRegisterEntry new_entry;
+    SyntaxBlockRegisterEntry new_entry;
 
     new_entry.m_syntax = syntax;
     new_entry.m_parameter_function = TargetType::getInputParameters;
     new_entry.m_constructor_function =
       ProxyConstructor<TargetType, SyntaxBlock>;
 
-    registry.m_syntax_system_register[syntax_block_name] = new_entry;
+    registry.m_syntax_block_register[syntax_block_name] = new_entry;
 
     return 0;
   }

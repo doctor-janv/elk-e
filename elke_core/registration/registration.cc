@@ -1,8 +1,6 @@
 #include "registration.h"
 #include "elke_core/FrameworkCore.h"
 
-// #include <iostream> for testing
-
 namespace elke
 {
 
@@ -21,6 +19,15 @@ StaticRegister::getNullaryFunctions()
   auto& registry = getInstance();
   return registry.m_nullary_function_register;
 }
+
+// ###################################################################
+const std::map<std::string, SyntaxBlockRegisterEntry>&
+StaticRegister::getSyntaxSystemRegister()
+{
+  auto& registry = getInstance();
+  return registry.m_syntax_block_register;
+}
+
 
 // ###################################################################
 char StaticRegister::registerNullaryFunction(const std::string& function_name,

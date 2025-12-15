@@ -5,6 +5,7 @@ namespace elke
 {
 
 class InputParametersBlock;
+class DataTree;
 
 class SyntaxBlock
 {

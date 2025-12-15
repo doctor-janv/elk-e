@@ -16,7 +16,7 @@ int elke_DataTree_makeNew(int& errorCode, const char* c_str)
     std::cout << "Making new data tree " << c_str << std::endl;
     const auto new_data_tree = std::make_shared<elke::DataTree>(c_str);
 
-    new_data_tree->setType(elke::DataTreeType::MAP);
+    new_data_tree->setType(elke::DataGrossType::MAP);
 
     auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
 
@@ -58,16 +58,16 @@ void elke_DataTree_setType(int& errorCode,
         switch (type_id)
         {
           case 1:
-            current_tree.setType(elke::DataTreeType::SCALAR);
+            current_tree.setType(elke::DataGrossType::SCALAR);
             break;
           case 2:
-            current_tree.setType(elke::DataTreeType::SEQUENCE);
+            current_tree.setType(elke::DataGrossType::SEQUENCE);
             break;
           case 3:
-            current_tree.setType(elke::DataTreeType::MAP);
+            current_tree.setType(elke::DataGrossType::MAP);
             break;
           default:
-            current_tree.setType(elke::DataTreeType::NO_DATA);
+            current_tree.setType(elke::DataGrossType::NO_DATA);
         }
       } // if
     }; // End of callback
@@ -127,7 +127,7 @@ void elke_DataTree_addSubTree(int& errorCode,
       if (current_address == str_address)
       {
         const std::string allowed_name =
-          current_tree.type() == elke::DataTreeType::MAP ? str_name : "";
+          current_tree.grossType() == elke::DataGrossType::MAP ? str_name : "";
         current_tree.addChild(std::make_shared<elke::DataTree>(allowed_name));
         address_found = true;
       }

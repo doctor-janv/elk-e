@@ -2,6 +2,7 @@
 #define ELK_E_DATATREE_H
 
 #include "Varying.h"
+#include "DataGrossType.h"
 
 #include <string>
 #include <vector>
@@ -20,17 +21,6 @@
 namespace elke
 {
 
-enum class DataTreeType : int
-{
-  NO_DATA = 0,  ///< An unpopulated data-tree
-  SCALAR = 1,   ///< Contains a single value, no children
-  SEQUENCE = 2, ///< Contains multiple values, no children
-  MAP = 3       ///< Contains no values, multiple children
-};
-
-/**Returns a string representation of the type.*/
-std::string DataTreeTypeName(DataTreeType type);
-
 /**Class to support a data tree.*/
 class DataTree
 {
@@ -41,7 +31,7 @@ class DataTree
   using DataTreeConstPtr = std::shared_ptr<const DataTree>;
 
   std::string m_name;
-  DataTreeType m_type = DataTreeType::NO_DATA;
+  DataGrossType m_type = DataGrossType::NO_DATA;
   std::map<std::string, std::string> m_tags;
   Varying m_value;
   std::vector<DataTreePtr> m_children;
@@ -54,10 +44,10 @@ public:
   const std::string& name() const;
 
   /**Returns the general type of the data-tree.*/
-  DataTreeType type() const;
+  DataGrossType grossType() const;
 
   /**Sets the data-tree type.*/
-  void setType(DataTreeType type);
+  void setType(DataGrossType type);
 
   /**Assigns a new name.*/
   void rename(const std::string& new_name);
@@ -74,6 +64,9 @@ public:
   /**Set address tag*/
   void setTag(const std::string& tag_name, const std::string& tag_value);
 
+  /**Gets a tag.*/
+  std::string getTag(const std::string& tag_name) const;
+
   /**Traverses the tree and calls a callback function at each node.*/
   void traverseWithCallback(const std::string& running_address,
                             const DataTreeTraverseFunction& function,
@@ -87,8 +80,14 @@ public:
    * the name is not found std::logic_error is thrown.*/
   const DataTree& child(const std::string& child_name) const;
 
+  /**Determines if the data tree has the named child*/
+  bool hasChild(const std::string& child_name) const;
+
   /**Returns the number of children.*/
   size_t numChildren() const { return m_children.size(); }
+
+  /**Returns the list of children*/
+  const std::vector<DataTreePtr>& children() const;
 
   // /**Returns a const reference to a child at any level of the tree. If
   //  * the name is not found std::logic_error is thrown.*/

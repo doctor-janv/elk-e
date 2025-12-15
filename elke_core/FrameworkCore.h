@@ -30,6 +30,9 @@ class FrameworkCore final : public MPI_Interface,
   /**Saved execution error code.*/
   int m_error_code = 0;
 
+  /**Flag indicating a non-error quit exception*/
+  bool m_non_error_quit = false;
+
   /**Main command line interface.*/
   elke::CommandLineInterface m_CLI;
 
@@ -44,6 +47,10 @@ class FrameworkCore final : public MPI_Interface,
 
   /**This variable gets set to nullptr at runtime/libstart.*/
   static std::unique_ptr<FrameworkCore> m_instance_ptr;
+
+  /**As the name suggests, the program will exit at the conclusion of this task
+   * name.*/
+  std::string m_task_at_which_to_stop;
 
   // Constructors/Destructors
   /**Private constructor*/
@@ -63,8 +70,16 @@ public:
   /**Executes the Core module.*/
   static int execute();
 
+private:
+  /**Executes a named task by notifying all subscribers.*/
+  void executeTask(const std::string& task_name) const;
+
+public:
   /**Forcibly quits execution by throwing `std::runtime_error`.*/
   static void forcedQuit(const std::string& reason = "");
+
+  /**Given a user condition a quit has been initiated.*/
+  static void userMarkedQuit(const std::string& reason = "");
 
   /**Returns a constant reference to the warehouse.*/
   const Warehouse& warehouse() const;
@@ -76,6 +91,11 @@ public:
   const CommandLineArgumentList& getSuppliedCommandLineArguments() const
   {
     return m_CLI.getSuppliedCommandLineArguments();
+  }
+
+  InputProcessor& inputProcessor()
+  {
+    return m_input_processor;
   }
 
 protected:

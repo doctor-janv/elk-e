@@ -3,11 +3,15 @@
 
 #include "elke_core/data_types/DataTree.h"
 #include "elke_core/data_types/Varying.h"
+#include "elke_core/data_types/DataGrossType.h"
+#include "ParameterCheck.h"
 
 #include <string>
 
 namespace elke
 {
+
+class DataTree;
 
 enum class ParameterClass : int
 {
@@ -16,12 +20,7 @@ enum class ParameterClass : int
   DEPRECATED = 2
 };
 
-enum class ParameterType : int
-{
-  SCALAR = 0,
-  ARRAY = 1,
-  MAP = 2
-};
+using ParameterCheckPtr = std::shared_ptr<param_checks::ParameterCheck>;
 
 // ###################################################################
 /**Base class for input parameters.*/
@@ -29,15 +28,18 @@ class InputParameter
 {
   const std::string m_name;
   const ParameterClass m_class;
-  const ParameterType m_type;
+  const DataGrossType m_type;
   const std::string m_description;
+
+  const std::vector<ParameterCheckPtr> m_checks;
 
 protected:
   /**Constructor for a base-class input parameter.*/
   InputParameter(std::string name,
                  ParameterClass parameter_class,
-                 ParameterType type,
-                 std::string description);
+                 DataGrossType type,
+                 std::string description,
+                 const std::vector<ParameterCheckPtr>& checks);
 
 public:
   virtual ~InputParameter() = default;
@@ -45,6 +47,9 @@ public:
   const std::string& name() const;
   /**Returns the class type of the parameter, i.e. Optional, Required, etc.*/
   const ParameterClass& classType() const;
+
+  /**Returns the type of the parameter.*/
+  const DataGrossType& grossType() const;
 
   /**Returns the value of the parameter.*/
   template <typename T>
@@ -54,9 +59,12 @@ public:
     return scalar.getValue<T>();
   }
 
-protected:
+  /**Performs all the checks associated with the input parameter.*/
+  ParameterCheckResult performChecks(const DataTree& data) const;
+
   /**Fetches the scalar for the parameters.*/
   virtual Varying getScalar() const { return {}; }
+  virtual VaryingDataType scalarType() const { return VaryingDataType::VOID; }
 };
 
 // ###################################################################
@@ -71,34 +79,40 @@ class ScalarInputParameter final : public InputParameter
 
 public:
   /**Constructor for values not having a default value.*/
-  ScalarInputParameter(std::string name,
-                       const ParameterClass parameter_class,
-                       std::string description)
+  explicit ScalarInputParameter(
+    std::string name,
+    const ParameterClass parameter_class,
+    std::string description,
+    const std::vector<ParameterCheckPtr>& checks = {})
     : InputParameter(std::move(name),
                      parameter_class,
-                     ParameterType::SCALAR,
-                     std::move(description)),
+                     DataGrossType::SCALAR,
+                     std::move(description),
+                     checks),
       m_default_value(Varying(T())),
       m_scalar_type(m_default_value.type())
   {
   }
 
   /**Constructor for values WITH a default value.*/
-  ScalarInputParameter(std::string name,
-                       const ParameterClass parameter_class,
-                       T default_value,
-                       std::string description)
+  explicit ScalarInputParameter(
+    std::string name,
+    const ParameterClass parameter_class,
+    T default_value,
+    std::string description,
+    const std::vector<ParameterCheckPtr>& checks = {})
     : InputParameter(std::move(name),
                      parameter_class,
-                     ParameterType::SCALAR,
-                     std::move(description)),
+                     DataGrossType::SCALAR,
+                     std::move(description),
+                     checks),
       m_default_value(Varying(default_value)),
       m_scalar_type(m_default_value.type())
   {
   }
 
   /**Returns the scalar type (boolean, integer, real or string).*/
-  VaryingDataType scalarType() const { return m_scalar_type; }
+  VaryingDataType scalarType() const override { return m_scalar_type; }
 
 protected:
   /**Overriding base class.*/

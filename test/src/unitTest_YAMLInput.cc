@@ -10,7 +10,7 @@ void unitTestYAMLInput()
 
   YAMLInput input_processor(logger);
 
-  const auto data_tree = input_processor.parseInputFile("SampleYAMLInput.yaml");
+  const auto data_tree = input_processor.parseInputFile("YAMLInput.yaml");
   logger.log() << data_tree.toStringAsYAML("", {"type", "address", "mark"});
 }
 

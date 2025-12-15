@@ -10,6 +10,8 @@
 namespace elke
 {
 
+class InputParametersBlock;
+
 class Logger;
 /**A class for handling input processing.*/
 class InputProcessor
@@ -22,6 +24,8 @@ class InputProcessor
 
   elke::DataTree m_main_data_tree;
 
+  std::vector<std::string> m_input_check_errors;
+
 public:
   /**Protected constructor.*/
   explicit InputProcessor(std::shared_ptr<elke::Logger> logger_ptr);
@@ -32,8 +36,25 @@ public:
   /**Parses input files into data trees using a file-appropriate parser.*/
   void parseInputFiles();
 
+private:
   /**Consolidate blocks.*/
   void consolidateBlocks();
+
+public:
+  /**Cascades down from syntax blocks, first checking the input syntax for
+   *blocks themselves, then any child blocks.*/
+  void checkInputDataForSyntaxBlocks();
+
+  void clearInputCheckErrors() { m_input_check_errors.clear(); }
+
+  const std::vector<std::string>& getInputCheckErrors() const
+  {
+    return m_input_check_errors;
+  }
+
+  void checkInputParameters(const std::string& item_name,
+                            const InputParametersBlock& in_params,
+                            const DataTree& data);
 
   // /**Returns the main data tree extracted from input*/
   // const DataTree& mainDataTree() const { return m_main_data_tree; }

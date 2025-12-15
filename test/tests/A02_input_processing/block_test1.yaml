@@ -1,4 +1,4 @@
-Simulation:
+TestSyntaxBlock:
   scale: 2.0
   array_of_objects:
     - type: Father

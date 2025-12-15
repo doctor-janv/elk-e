@@ -12,7 +12,7 @@ std::shared_ptr<SimulationBlock>
 Factory::makeSimulationSystem(const std::string& registered_name,
                               const DataTree& unchecked_parameters) const
 {
-  auto input_parameters = InputParametersBlock();
+  auto input_parameters = InputParametersBlock("dummy", "dummy");
   auto system = std::make_shared<SimulationBlock>(input_parameters);
 
   m_warehouse.SimulationSystemStorage().depositItem(system);
