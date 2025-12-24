@@ -105,21 +105,42 @@ phase.
 
 ## Requirement inparams1 - Object instantiation via input parameters
 
-### Definition of an input parameter
-- An input parameter can be one of following:
-  - A string
-  - A number
-  - A boolean
-  - An array of numbers
-  - An array of strings
-  - An array of booleans
+Definitions:
+- Factory-object: An object created via a factory pattern
 
-### Properties
-- An input parameter always has a name.
-- An input parameter can be any of the following class-types:
+- A factory-object shall have a constructor that takes, as an argument, an 
+  `InputParametersBlock` class object.
+- A factory-object shall have a static method to build the basis of the 
+  `InputParametersBlock` it requires. I.e., the signature shall be
+  `static InputParametersBlock getInputParameters();`
+- An `InputParametersBlock` shall always have a name and a description.
+- An `InputParametersBlock` can inherit the input parameters of several
+  other blocks.
+
+- An input parameter shall always have a name.
+- An input parameter shall be assigned a class-type which can be:
   - OPTIONAL
   - REQUIRED
   - DEPRECATED
+- An input parameter shall be assigned a gross-type which can be:
+  - NO_DATA, signifying it holds no data
+  - SCALAR, holding a single value
+  - SEQUENCE, holding multiple un-named children
+  - MAP, holding multiple named children
+  
+### Definition of an input parameter
+- An input parameter can be one of following:
+  - A string
+  - A number (floating-point or integer)
+  - A boolean
+  - An array of numbers (floats and/or integer)
+  - An array of strings
+  - An array of booleans
+  - An array of input-blocks
+
+### Properties
+- An input parameter always has a name.
+
 - OPTIONAL parameters shall always have a default value.
 - 
 

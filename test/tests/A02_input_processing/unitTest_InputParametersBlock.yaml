@@ -1,10 +1,39 @@
 string_parameter_cross_check:
-  string_assignment_to_string:
-    string_par: Valid String
-  int_assignment_to_string:
-    string_par: 2
-  float_assignment_to_string:
-    string_par: 2.0
-  bool_assignment_to_string:
-    string_par: false
+  string_assignment:
+    test_param: Valid String
+  int_assignment:
+    test_param: 2
+  float_assignment:
+    test_param: 2.0
+  bool_assignment:
+    test_param: false
 
+boolean_parameter_cross_check:
+  string_assignment:
+    test_param: Valid String
+  int_assignment:
+    test_param: 2
+  float_assignment:
+    test_param: 2.0
+  bool_assignment:
+    test_param: false
+
+integer_parameter_cross_check:
+  string_assignment:
+    test_param: Valid String
+  int_assignment:
+    test_param: 2
+  float_assignment:
+    test_param: 2.0
+  bool_assignment:
+    test_param: false
+
+float_parameter_cross_check:
+  string_assignment:
+    test_param: Valid String
+  int_assignment:
+    test_param: 2
+  float_assignment:
+    test_param: 2.0
+  bool_assignment:
+    test_param: false

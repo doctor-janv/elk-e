@@ -10,8 +10,8 @@ enum class DataGrossType : int
 {
   NO_DATA = 0,  ///< An unpopulated data-tree
   SCALAR = 1,   ///< Contains a single value, no children
-  SEQUENCE = 2, ///< Contains multiple values, no children
-  MAP = 3       ///< Contains no values, multiple children
+  SEQUENCE = 2, ///< Contains multiple unnamed children
+  MAP = 3       ///< Contains multiple named children
 };
 
 /**Returns a string representation of the type.*/

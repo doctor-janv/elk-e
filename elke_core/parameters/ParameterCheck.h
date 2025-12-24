@@ -19,6 +19,7 @@ struct ParameterCheckResult
 namespace elke::param_checks
 {
 
+//###################################################################
 /**Base class for a parameter check.*/
 class ParameterCheck
 {
@@ -31,6 +32,7 @@ public:
   checkParameter(const DataTree& data, const InputParameter& parameter) = 0;
 };
 
+//###################################################################
 /**A strict type check on the gross type.*/
 class GrossTypeMustMatch final : public ParameterCheck
 {
@@ -39,6 +41,7 @@ public:
                                       const InputParameter& parameter) override;
 };
 
+//###################################################################
 /**A strict type check on the scalar type.*/
 class ScalarTypeMustMatch final : public ParameterCheck
 {

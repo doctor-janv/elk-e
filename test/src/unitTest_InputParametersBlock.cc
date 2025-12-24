@@ -28,30 +28,72 @@ void unitTestInputParameters()
   {
     const auto& check = data_tree.child(child_name);
 
-    for (const auto& check_data : check.children())
+    for (const auto& check_data_ptr : check.children())
     {
-      input_processor.clearInputCheckErrors();
+      const auto& check_data = *check_data_ptr;
+      WarningsAndErrorsData warnings_and_errors_data;
 
-      logger.log() << "Checking " << check_data->name();
+      input_processor.checkInputParameters(check_data.name(),
+                                           input_parameters,
+                                           check_data,
+                                           warnings_and_errors_data /*in/out*/);
 
-      input_processor.checkInputParameters(
-        check_data->name(), input_parameters, *check_data);
+      std::string status = "No error.";
+      if (not warnings_and_errors_data.m_errors.empty())
+        status = "Error(s) produced.";
 
-      const auto& errors = input_processor.getInputCheckErrors();
-
-      if (not errors.empty())
-        for (const auto& error : errors)
-          logger.error() << "-----\n" + error + "-----\n";
+      logger.log() << "Checking " << child_name << "/" << check_data.name()
+                   << ". " << status;
     } // for check_data
   };
 
-  //============================================= Test 1
+  //============================================= Test 1 string param
   {
     auto input_parameters = base_input_parameters;
 
-    input_parameters.addOptionalParameter("string_par", "", "");
+    input_parameters.addOptionalParameter("test_param", std::string(), "");
 
     const std::string check_name = "string_parameter_cross_check";
+
+    checking_function(input_parameters, check_name);
+  }
+  //============================================= Test 2 boolean param
+  {
+    auto input_parameters = base_input_parameters;
+
+    input_parameters.addOptionalParameter("test_param", bool(), "");
+
+    const std::string check_name = "boolean_parameter_cross_check";
+
+    checking_function(input_parameters, check_name);
+  }
+  //============================================= Test 3 integer param
+  {
+    auto input_parameters = base_input_parameters;
+
+    input_parameters.addOptionalParameter("test_param", int(), "");
+
+    const std::string check_name = "integer_parameter_cross_check";
+
+    checking_function(input_parameters, check_name);
+  }
+  //============================================= Test 4 float param
+  {
+    auto input_parameters = base_input_parameters;
+
+    input_parameters.addOptionalParameter("test_param", float(), "");
+
+    const std::string check_name = "float_parameter_cross_check";
+
+    checking_function(input_parameters, check_name);
+  }
+  //============================================= Test 5 vector of int param
+  {
+    auto input_parameters = base_input_parameters;
+
+    input_parameters.addOptionalParameter("test_param", std::vector<int>(), "");
+
+    const std::string check_name = "float_parameter_cross_check";
 
     checking_function(input_parameters, check_name);
   }

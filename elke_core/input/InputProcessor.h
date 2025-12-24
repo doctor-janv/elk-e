@@ -13,22 +13,28 @@ namespace elke
 class InputParametersBlock;
 
 class Logger;
+
+struct WarningsAndErrorsData
+{
+  std::vector<std::string> m_warnings;
+  std::vector<std::string> m_errors;
+};
+
 /**A class for handling input processing.*/
 class InputProcessor
 {
   const std::shared_ptr<elke::Logger> m_logger_ptr;
+
   std::vector<std::filesystem::path> m_input_file_paths;
   std::map<std::filesystem::path, elke::DataTree> m_data_trees;
+  elke::DataTree m_main_data_tree;
   bool m_echo_input = false;
   bool m_echo_input_data = false;
 
-  elke::DataTree m_main_data_tree;
-
-  std::vector<std::string> m_input_check_errors;
-
 public:
   /**Protected constructor.*/
-  explicit InputProcessor(std::shared_ptr<elke::Logger> logger_ptr);
+  explicit InputProcessor(
+    std::shared_ptr<elke::Logger> logger_ptr);
 
   /**Add a path from which to process an input file.*/
   void addInputFilePath(const std::filesystem::path& path);
@@ -43,18 +49,13 @@ private:
 public:
   /**Cascades down from syntax blocks, first checking the input syntax for
    *blocks themselves, then any child blocks.*/
-  void checkInputDataForSyntaxBlocks();
+  void checkInputDataForSyntaxBlocks() const;
 
-  void clearInputCheckErrors() { m_input_check_errors.clear(); }
-
-  const std::vector<std::string>& getInputCheckErrors() const
-  {
-    return m_input_check_errors;
-  }
-
-  void checkInputParameters(const std::string& item_name,
-                            const InputParametersBlock& in_params,
-                            const DataTree& data);
+  static void
+  checkInputParameters(const std::string& item_name,
+                       const InputParametersBlock& in_params,
+                       const DataTree& data,
+                       WarningsAndErrorsData& warnings_and_errors_data);
 
   // /**Returns the main data tree extracted from input*/
   // const DataTree& mainDataTree() const { return m_main_data_tree; }

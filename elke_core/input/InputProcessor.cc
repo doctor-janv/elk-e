@@ -139,8 +139,10 @@ void InputProcessor::consolidateBlocks()
 // ###################################################################
 /**Cascades down from syntax blocks, first checking the input syntax for
  *blocks themselves, then any child blocks.*/
-void InputProcessor::checkInputDataForSyntaxBlocks()
+void InputProcessor::checkInputDataForSyntaxBlocks() const
 {
+  WarningsAndErrorsData warnings_and_errors_data;
+
   const auto& syntax_block_reg_entries =
     StaticRegister::getSyntaxSystemRegister();
 
@@ -153,17 +155,21 @@ void InputProcessor::checkInputDataForSyntaxBlocks()
     for (const auto& block_tree_ptr : main_input_tree_blocks)
       if (block_tree_ptr->name() == block_reg_entry.m_syntax)
       {
-        checkInputParameters(
-          block_name, block_reg_entry.m_parameter_function(), *block_tree_ptr);
+        m_logger_ptr->log() << "Tree has " << block_tree_ptr->name() << "\n";
+        checkInputParameters(block_name,
+                             block_reg_entry.m_parameter_function(),
+                             *block_tree_ptr,
+                             warnings_and_errors_data/*in/out*/);
         break;
       }
   }
 
-  if (not m_input_check_errors.empty())
+  const auto& input_check_errors = warnings_and_errors_data.m_errors;
+  if (not input_check_errors.empty())
   {
     std::stringstream out_stream;
     out_stream << "\n";
-    for (const auto& error : m_input_check_errors)
+    for (const auto& error : input_check_errors)
     {
       out_stream << "-----\n" + error + "-----\n";
       if (not error.empty() and error.back() != '\n') out_stream << '\n';
@@ -174,14 +180,18 @@ void InputProcessor::checkInputDataForSyntaxBlocks()
 }
 
 // ###################################################################
-void InputProcessor::checkInputParameters(const std::string& item_name,
-                                          const InputParametersBlock& in_params,
-                                          const DataTree& data)
+void InputProcessor::checkInputParameters(
+  const std::string& item_name,
+  const InputParametersBlock& in_params,
+  const DataTree& data,
+  WarningsAndErrorsData& warnings_and_errors_data)
 {
   const std::string context = "While checking input parameters for "
                               "block \"" +
                               in_params.name() + "\" from data-tree \"" +
                               data.getTag("address") + "\":\n";
+
+  auto& input_check_errors = warnings_and_errors_data.m_errors;
 
   //=================================== First we check if the data is actually
   //                                    valid, if not we mark them to be skipped
@@ -211,9 +221,12 @@ void InputProcessor::checkInputParameters(const std::string& item_name,
           ? " No suggested parameter name could be determined.\n"
           : " Did you mean \"" + suggestion + "\"?\n";
 
-      m_input_check_errors.emplace_back(context + "The parameter name \"" + // NOLINT(*-inefficient-string-concatenation)
-                                        invalid_param_name + "\" is invalid." + // NOLINT(*-inefficient-string-concatenation)
-                                        suggestion_str);
+      input_check_errors.emplace_back(
+        context +
+        "The parameter name \"" + // NOLINT(*-inefficient-string-concatenation)
+        invalid_param_name +
+        "\" is invalid." + // NOLINT(*-inefficient-string-concatenation)
+        suggestion_str);
     }
   } // if (not invalid_param_names.empty())
 
@@ -230,7 +243,7 @@ void InputProcessor::checkInputParameters(const std::string& item_name,
     auto result = input_parameter.performChecks(child);
 
     if (not result.m_error.empty())
-      m_input_check_errors.emplace_back(context + result.m_error);
+      input_check_errors.emplace_back(context + result.m_error);
   } // for child
 
   //=================================== Now we check if required parameters
@@ -238,8 +251,8 @@ void InputProcessor::checkInputParameters(const std::string& item_name,
   for (const auto& parameter : in_params)
     if (parameter.classType() == ParameterClass::REQUIRED and
         not data.hasChild(parameter.name()))
-      m_input_check_errors.emplace_back(context + "Required parameter \"" +
-                                        parameter.name() + "\" not supplied.\n");
+      input_check_errors.emplace_back(context + "Required parameter \"" +
+                                      parameter.name() + "\" not supplied.\n");
 }
 
 } // namespace elke

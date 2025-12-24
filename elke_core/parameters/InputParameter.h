@@ -78,29 +78,12 @@ class ScalarInputParameter final : public InputParameter
   bool m_has_been_assigned = false;    ///< Flag to check for assignment
 
 public:
-  /**Constructor for values not having a default value.*/
-  explicit ScalarInputParameter(
-    std::string name,
-    const ParameterClass parameter_class,
-    std::string description,
-    const std::vector<ParameterCheckPtr>& checks = {})
-    : InputParameter(std::move(name),
-                     parameter_class,
-                     DataGrossType::SCALAR,
-                     std::move(description),
-                     checks),
-      m_default_value(Varying(T())),
-      m_scalar_type(m_default_value.type())
-  {
-  }
-
-  /**Constructor for values WITH a default value.*/
-  explicit ScalarInputParameter(
-    std::string name,
-    const ParameterClass parameter_class,
-    T default_value,
-    std::string description,
-    const std::vector<ParameterCheckPtr>& checks = {})
+  /**Constructor for scalar values.*/
+  explicit ScalarInputParameter(std::string name,
+                                const ParameterClass parameter_class,
+                                T default_value,
+                                std::string description,
+                                const std::vector<ParameterCheckPtr>& checks)
     : InputParameter(std::move(name),
                      parameter_class,
                      DataGrossType::SCALAR,
@@ -117,6 +100,44 @@ public:
 protected:
   /**Overriding base class.*/
   Varying getScalar() const override { return m_assigned_value; }
+};
+
+// ###################################################################
+/**An abstract array input parameter.*/
+template <typename T>
+class SequenceInputParameter final : public InputParameter
+{
+  std::vector<Varying> m_default_value;  ///< Default value to assign
+  std::vector<Varying> m_assigned_value; ///< Assigned value (after assignment)
+  bool m_has_been_assigned = false;      ///< Flag to check for assignment
+
+public:
+  /**Constructor for array values.*/
+  explicit SequenceInputParameter(
+    std::string name,
+    const ParameterClass parameter_class,
+    const std::enable_if_t<IsVector<T>::value, T>& default_value,
+    std::string description,
+    const std::vector<ParameterCheckPtr>& checks)
+    : InputParameter(std::move(name),
+                     parameter_class,
+                     DataGrossType::SEQUENCE,
+                     std::move(description),
+                     checks),
+      m_default_value(convertVectorTtoVectorVarying(default_value))
+  {
+  }
+
+private:
+  static std::vector<Varying>
+  convertVectorTtoVectorVarying(const T& default_value)
+  {
+    std::vector<Varying> var_vec;
+    for (const auto& value : default_value)
+      var_vec.emplace_back(value);
+
+    return var_vec;
+  }
 };
 
 } // namespace elke

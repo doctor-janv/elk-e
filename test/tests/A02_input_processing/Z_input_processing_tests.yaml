@@ -107,4 +107,11 @@ unitTest_InputParametersBlock:
   args: "-b 'call elke::unit_tests::unitTestInputParameters' --nocolor --echo-input-data true --echo-input true"
   checks:
     - type: ExitCodeCheck
-      gold_value: 1 # Should fail
+    - type: HasStringCheck
+      line_key: '[0]  Checking string_parameter_cross_check/string_assignment. No error.'
+    - type: HasStringCheck
+      line_key: '[0]  Checking string_parameter_cross_check/int_assignment. Error(s) produced.'
+    - type: HasStringCheck
+      line_key: '[0]  Checking string_parameter_cross_check/float_assignment. Error(s) produced.'
+    - type: HasStringCheck
+      line_key: '[0]  Checking string_parameter_cross_check/bool_assignment. Error(s) produced.'

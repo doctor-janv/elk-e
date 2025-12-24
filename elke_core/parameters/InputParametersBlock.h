@@ -27,18 +27,16 @@ public:
 
   /**Adds an optional parameter.*/
   template <typename T>
-  void
-  addOptionalParameter(std::string name,
-                       T default_value,
-                       std::string description,
-                       std::vector<ParameterCheckPtr> checks = {
-                         std::make_shared<param_checks::ScalarTypeMustMatch>()})
+  void addOptionalParameter(std::string name,
+                            T default_value,
+                            std::string description,
+                            std::vector<ParameterCheckPtr> checks = {})
   {
     if (this->hasParameter(name))
       throw std::runtime_error(m_name + ": Trying to add parameter \"" + name +
                                "\", but the parameter already exists.");
 
-    auto pointer = std::make_shared<ScalarInputParameter<T>>(
+    auto pointer = makeTemplatedInputParameter(
       name, ParameterClass::OPTIONAL, default_value, description, checks);
 
     m_parameters.push_back(pointer);
@@ -46,18 +44,17 @@ public:
 
   /**Adds a required parameter.*/
   template <typename T>
-  void
-  addRequiredParameter(std::string name,
-                       std::string description,
-                       std::vector<ParameterCheckPtr> checks = {
-                         std::make_shared<param_checks::ScalarTypeMustMatch>()})
+  void addRequiredParameter(std::string name,
+                            std::string description,
+                            std::vector<ParameterCheckPtr> checks = {})
   {
     if (this->hasParameter(name))
       throw std::runtime_error(m_name + ": Trying to add parameter \"" + name +
                                "\", but the parameter already exists.");
 
-    auto pointer = std::make_shared<ScalarInputParameter<T>>(
-      name, ParameterClass::REQUIRED, description, checks);
+    T default_value;
+    auto pointer = makeTemplatedInputParameter(
+      name, ParameterClass::REQUIRED, default_value, description, checks);
 
     m_parameters.push_back(pointer);
   }
@@ -137,6 +134,43 @@ public:
   const_iterator end() const { return {*this, m_parameters.size()}; }
 
   size_t size() const { return m_parameters.size(); }
+
+private:
+  /**Parameter maker for Scalar Input Parameters.*/
+  template <typename T>
+  std::enable_if_t<IsScalar<T>::value, InputParameterPtr>
+  makeTemplatedInputParameter(std::string name,
+                             ParameterClass param_class,
+                             T default_value,
+                             std::string description,
+                             std::vector<ParameterCheckPtr> checks)
+  {
+    if (checks.empty())
+      checks = {std::make_shared<param_checks::ScalarTypeMustMatch>()};
+
+    auto pointer = std::make_shared<ScalarInputParameter<T>>(
+      name, param_class, default_value, description, checks);
+
+    return pointer;
+  }
+
+  /**Parameter maker for Array Input Parameters.*/
+  template <typename T>
+  std::enable_if_t<IsVector<T>::value, InputParameterPtr>
+  makeTemplatedInputParameter(std::string name,
+                             ParameterClass param_class,
+                             T default_value,
+                             std::string description,
+                             std::vector<ParameterCheckPtr> checks)
+  {
+    if (checks.empty())
+      checks = {std::make_shared<param_checks::ScalarTypeMustMatch>()};
+
+    auto pointer = std::make_shared<SequenceInputParameter<T>>(
+      name, param_class, default_value, description, checks);
+
+    return pointer;
+  }
 };
 
 } // namespace elke

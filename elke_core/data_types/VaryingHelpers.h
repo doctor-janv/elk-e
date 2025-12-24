@@ -47,6 +47,27 @@ struct IsInteger
 };
 
 template <typename T>
+struct IsScalar
+{
+  static constexpr bool value = IsBool<T>::value or IsString<T>::value or
+                                IsInteger<T>::value or IsFloat<T>::value;
+};
+
+template <typename T>
+struct IsVector
+{
+  static constexpr bool value = false;
+};
+
+// Partial specialization for any std::vector
+// T is the element type, A is the allocator type (which has a default value)
+template <typename T, typename A>
+struct IsVector<std::vector<T, A>>
+{
+  static constexpr bool value = true;
+};
+
+template <typename T>
 using BoolType = std::enable_if_t<IsBool<T>::value, T>;
 template <typename T>
 using FloatType = std::enable_if_t<IsFloat<T>::value, T>;
