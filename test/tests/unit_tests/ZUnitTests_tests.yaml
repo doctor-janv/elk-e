@@ -1,0 +1,19 @@
+__executable: "bin/elke_test"
+
+unitTestVec3.cc:
+  args: "--nocolor -b 'call elke::unit_tests::unitTestVec3'"
+  debug: True
+  checks:
+    - type: ExitCodeCheck
+  requirements: ["utesting"]
+
+unitTest_StackTraces.cc:
+  args: "--bt --nocolor -b 'call elke::unit_tests::unitTest_StackTraces'"
+  debug: True
+  checks:
+    - type: ExitCodeCheck
+      gold_value: 1 # Expected to fail
+    - type: HasStringCheck
+      line_key: >-
+        [0]  ERROR: Quit has been called. Stack trace (most recent call first):
+  requirements: ["utesting", "friendly_runtime_errors"]

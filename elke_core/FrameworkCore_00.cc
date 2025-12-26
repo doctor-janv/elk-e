@@ -2,6 +2,8 @@
 
 #include "elke_core/output/elk_exceptions.h"
 
+#include "cpptrace/cpptrace.hpp"
+
 namespace elke
 {
 
@@ -110,7 +112,9 @@ void FrameworkCore::forcedQuit(const std::string& reason /*=""*/)
 {
   auto& core = FrameworkCore::getInstance();
   core.m_error_code = 1;
-  throw std::runtime_error("Quit has been called. " + reason);
+
+  throw std::runtime_error("Quit has been called. " + reason +
+                           FrameworkCore::getStacktrace());
 }
 
 // ###################################################################
@@ -127,6 +131,18 @@ const Warehouse& FrameworkCore::warehouse() const { return m_warehouse; }
 
 // ###################################################################
 Warehouse& FrameworkCore::warehouse() { return m_warehouse; }
+
+// ###################################################################
+std::string FrameworkCore::getStacktrace()
+{
+  const auto& core = FrameworkCore::getInstance();
+
+  std::string trace;
+
+  if (core.m_use_stacktrace) trace = cpptrace::generate_trace().to_string();
+
+  return trace;
+}
 
 } // namespace elke
 

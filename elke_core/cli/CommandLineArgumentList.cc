@@ -12,7 +12,7 @@ void CommandLineArgumentList::add(const CommandLineArgument& arg)
 
 bool CommandLineArgumentList::has(const std::string& name) const
 {
-  for (const auto& cla : m_list)
+  for (const auto& cla : m_list) // NOLINT(*-use-anyofallof)
     if (cla.m_name == name) return true;
 
   return false;
@@ -20,7 +20,7 @@ bool CommandLineArgumentList::has(const std::string& name) const
 
 bool CommandLineArgumentList::hasShortName(const std::string& short_name) const
 {
-  for (const auto& cla : m_list)
+  for (const auto& cla : m_list) // NOLINT(*-use-anyofallof)
     if (cla.m_short_name == short_name) return true;
 
   return false;

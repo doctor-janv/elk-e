@@ -170,6 +170,10 @@ input parameters, an error shall be generated.
 
 <!--endreq-->
 
+## Requirement friendly_runtime_errors - Developers need a means to generate runtime errors
 
+A routine should be callable to post an error message with a stack-trace.
+
+<!--endreq-->
 
 

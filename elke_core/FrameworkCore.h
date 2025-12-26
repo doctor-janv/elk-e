@@ -19,8 +19,7 @@ class SimulationBlock;
 
 /**The FrameworkCore is the center of entry points and operations. All objects
  *can interface with this singleton.*/
-class FrameworkCore final : public MPI_Interface,
-                            public OutputInterface
+class FrameworkCore final : public MPI_Interface, public OutputInterface
 {
   /**Command line argument count.*/
   int m_argc;
@@ -52,6 +51,9 @@ class FrameworkCore final : public MPI_Interface,
    * name.*/
   std::string m_task_at_which_to_stop;
 
+  /**Flag indicating whether or not to use stack traces for core errors.*/
+  bool m_use_stacktrace = false;
+
   // Constructors/Destructors
   /**Private constructor*/
   explicit FrameworkCore(MPI_Comm communicator, int argc, char** argv);
@@ -78,7 +80,9 @@ public:
   /**Forcibly quits execution by throwing `std::runtime_error`.*/
   static void forcedQuit(const std::string& reason = "");
 
-  /**Given a user condition a quit has been initiated.*/
+  /**Given a user condition a quit has been initiated. This will not result in
+   * a error code because the behavior is expected.
+   */
   static void userMarkedQuit(const std::string& reason = "");
 
   /**Returns a constant reference to the warehouse.*/
@@ -93,10 +97,9 @@ public:
     return m_CLI.getSuppliedCommandLineArguments();
   }
 
-  InputProcessor& inputProcessor()
-  {
-    return m_input_processor;
-  }
+  InputProcessor& inputProcessor() { return m_input_processor; }
+
+  static std::string getStacktrace();
 
 protected:
   /**Registers CLI items specific to the CoreModule.*/

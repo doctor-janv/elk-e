@@ -93,10 +93,17 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/external/yaml-cpp/CMakeLists.txt")
 
     add_compile_definitions(YAML_CPP_EXISTS)
 endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/external/cpptrace/CMakeLists.txt")
+    message(STATUS "Submodule found: cpptrace")
+    add_subdirectory("${PROJECT_SOURCE_DIR}/external/cpptrace/")
+    include_directories("${PROJECT_SOURCE_DIR}/external/cpptrace/include")
+
+    add_compile_definitions(CPPTRACE_EXISTS)
+endif()
 
 #========================================================== Main outputs
-target_link_libraries(elke_lib_static PUBLIC elke_lib_objects yaml-cpp::yaml-cpp)
-target_link_libraries(elke_lib_shared PUBLIC elke_lib_objects yaml-cpp::yaml-cpp)
+target_link_libraries(elke_lib_static PUBLIC elke_lib_objects yaml-cpp::yaml-cpp cpptrace::cpptrace)
+target_link_libraries(elke_lib_shared PUBLIC elke_lib_objects yaml-cpp::yaml-cpp cpptrace::cpptrace)
 
 # Test Executable
 file(GLOB_RECURSE elke_test_SRCS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/test/src/*.cc")

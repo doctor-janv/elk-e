@@ -67,6 +67,14 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
                         /*only_one_allowed=*/true,
                         /*requires_value=*/false);
 
+  const auto cli7 =
+    CommandLineArgument("bt",
+                        "",
+                        "Enable stack-tracing using cpptrace.",
+                        /*default_value=*/Varying(false),
+                        /*only_one_allowed=*/true,
+                        /*requires_value=*/false);
+
   m_CLI.registerNewCLA(cli0);
   m_CLI.registerNewCLA(cli1);
   m_CLI.registerNewCLA(cli2);
@@ -74,6 +82,7 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
   m_CLI.registerNewCLA(cli4);
   m_CLI.registerNewCLA(cli5);
   m_CLI.registerNewCLA(cli6);
+  m_CLI.registerNewCLA(cli7);
 }
 
 // ###################################################################
@@ -81,6 +90,9 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
 {
   const auto& supplied_clas = m_CLI.getSuppliedCommandLineArguments();
   auto& logger = this->getLogger();
+
+  if (supplied_clas.has("bt"))
+    m_use_stacktrace = true;
 
   if (supplied_clas.has("dump-registry")) dumpRegistry();
 

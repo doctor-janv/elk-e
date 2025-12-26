@@ -8,3 +8,6 @@
 [submodule "external/yaml-cpp"]
 	path = external/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "external/cpptrace"]
+	path = external/cpptrace
+	url = https://github.com/jeremy-rifkin/cpptrace.git

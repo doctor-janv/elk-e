@@ -6,17 +6,36 @@
 
 #define elkInvalidArgumentIf(condition, message)                               \
   if (condition)                                                               \
-  throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + ":\n" +        \
-                              message)
+  throw elke::exceptions::InvalidArgument(std::string(__PRETTY_FUNCTION__) +    \
+                                         ":\n" + message)
 #define elkInvalidArgument(message)                                            \
-  throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + ":\n" +        \
-                              message)
+  throw elke::exceptions::InvalidArgument(std::string(__PRETTY_FUNCTION__) +    \
+                                         ":\n" + message)
 
 #define elkLogicalErrorIf(condition, message)                                  \
   if (condition)                                                               \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ":\n" + message)
+  throw elke::exceptions::LogicError(std::string(__PRETTY_FUNCTION__) + ":\n" + \
+                                    message)
 
 #define elkLogicalError(message)                                               \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ":\n" + message)
+  throw elke::exceptions::LogicError(std::string(__PRETTY_FUNCTION__) + ":\n" + \
+                                    message)
+
+namespace elke::exceptions
+{
+
+class InvalidArgument final : public std::runtime_error
+{
+public:
+  explicit InvalidArgument(const std::string& message);
+};
+
+class LogicError final: public std::runtime_error
+{
+public:
+  explicit LogicError(const std::string& message);
+};
+
+} // namespace elke::exceptions
 
 #endif // ELK_EXCEPTIONS_H
