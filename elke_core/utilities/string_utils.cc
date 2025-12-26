@@ -93,7 +93,7 @@ bool stringListHasString(const std::vector<std::string>& string_list,
 std::string
 findClosestMatchingString(const std::string& input,
                           const std::unordered_set<std::string>& dict,
-                          const unsigned int distance_threshold/*=4*/)
+                          const unsigned int distance_threshold /*=4*/)
 {
   unsigned int min_dist = 1000000; // Large number
   std::string suggestion;
@@ -111,6 +111,7 @@ findClosestMatchingString(const std::string& input,
   return suggestion;
 }
 
+// ###################################################################
 /**Function to calculate Levenshtein distance.
  * The Levenshtein distance is a string metric for measuring the difference
  * between two sequences. */
@@ -161,6 +162,50 @@ unsigned int computeLevenshteinDistance(const std::string& s1,
 
   // The bottom-right cell contains the final Levenshtein distance
   return dp[m][n];
+}
+
+// ###################################################################
+/**Determines if a string is a number.*/
+bool isStringANumber(const std::string& input)
+{
+  try
+  {
+    // Attempt to convert the string to an integer
+    std::size_t pos;
+    std::stod(input, &pos);
+    // Check if the entire string was consumed during conversion
+    return pos == input.length();
+  }
+  catch (std::out_of_range const& ex)
+  {
+    // Number out of range for double
+    return false;
+  }
+  catch (std::invalid_argument const& ex)
+  {
+    // String does not contain a valid number
+    return false;
+  }
+}
+
+// ###################################################################
+/**Convert a string to int64_t.
+ *
+ * \warning The convertibility should be checked with isStringANumber.
+ */
+int64_t convertStringToInt64_t(const std::string& input)
+{
+  return std::stoll(input);
+}
+
+// ###################################################################
+/**Convert a string to double.
+ *
+\warning The convertibility should be checked with isStringANumber.
+ */
+int64_t convertStringToDouble(const std::string& input)
+{
+  return std::stod(input);
 }
 
 } // namespace elke::string_utils

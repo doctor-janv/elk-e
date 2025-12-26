@@ -28,6 +28,13 @@ StaticRegister::getSyntaxSystemRegister()
   return registry.m_syntax_block_register;
 }
 
+// ###################################################################
+const std::map<std::string, FactoryObjectRegisterEntry>&
+StaticRegister::getFactoryObjectRegister()
+{
+  auto& registry = getInstance();
+  return registry.m_factory_object_register;
+}
 
 // ###################################################################
 char StaticRegister::registerNullaryFunction(const std::string& function_name,

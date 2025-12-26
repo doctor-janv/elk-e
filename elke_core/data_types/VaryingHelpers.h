@@ -68,11 +68,27 @@ struct IsVector<std::vector<T, A>>
 };
 
 template <typename T>
+struct IsVectorOfScalars
+{
+  static constexpr bool value = false;
+};
+
+template <typename T, typename A>
+struct IsVectorOfScalars<std::vector<T, A>>
+{
+  static constexpr bool value = IsScalar<T>::value;;
+};
+
+template <typename T>
 using BoolType = std::enable_if_t<IsBool<T>::value, T>;
 template <typename T>
 using FloatType = std::enable_if_t<IsFloat<T>::value, T>;
 template <typename T>
 using IntegerType = std::enable_if_t<IsInteger<T>::value, T>;
+template <typename T>
+using ScalarType = std::enable_if_t<IsScalar<T>::value, T>;
+template <typename T>
+using VectorType = std::enable_if_t<IsVector<T>::value, T>;
 
 template <typename T>
 using BoolStorageType = std::enable_if_t<IsBool<T>::value, bool>;

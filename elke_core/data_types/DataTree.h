@@ -52,7 +52,7 @@ public:
   /**Assigns a new name.*/
   void rename(const std::string& new_name);
 
-  /**Returns a constant reference to the values.*/
+  /**Returns a constant reference to the value.*/
   const Varying& value() const;
 
   /**Adds a value to the node*/

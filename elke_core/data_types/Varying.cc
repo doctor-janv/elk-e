@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "elke_core/output/elk_exceptions.h"
+#include "elke_core/utilities/string_utils.h"
 
 namespace elke
 {
@@ -133,6 +134,66 @@ std::string Varying::convertToString(const bool with_type /*=false*/) const
     outstr << "NONE";
 
   return outstr.str();
+}
+
+// ###################################################################
+/**Determines if the value held is convertible to the target type.*/
+bool Varying::isConvertibleToType(const VaryingDataType target_type) const
+{
+  switch (m_type)
+  {
+    // Only a void can be converted to a void
+    case VaryingDataType::VOID:
+      switch (target_type)
+      {
+        case VaryingDataType::VOID:
+          return true;
+        default:
+          return false;
+      } // switch target_type
+
+    // Arbitrary bytes represent a black box.
+    case VaryingDataType::ARBITRARY_BYTES:
+      return false;
+
+    // Sometimes a string can be converted to numbers
+    case VaryingDataType::STRING:
+      switch (target_type)
+      {
+        case VaryingDataType::VOID:
+          return false;
+        case VaryingDataType::ARBITRARY_BYTES:
+        case VaryingDataType::BOOL:
+        {
+          const auto string_value = m_data->stringValue();
+          return string_value == "true" or string_value == "false";
+        }
+        case VaryingDataType::STRING:
+          return true;
+        case VaryingDataType::INTEGER:
+        case VaryingDataType::FLOAT:
+        {
+          return elke::string_utils::isStringANumber(this->stringValue());
+        }
+        default:
+          return false;
+      } // switch target_type
+
+    // Bools, integers and floats can generally be converted to other things
+    case VaryingDataType::BOOL:
+    case VaryingDataType::INTEGER:
+    case VaryingDataType::FLOAT:
+      switch (target_type)
+      {
+        case VaryingDataType::VOID:
+          return false;
+        default:
+          return true;
+      } // switch target_type
+
+    default:
+      return false;
+  } // switch (m_type)
 }
 
 } // namespace elke

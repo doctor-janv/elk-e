@@ -3,6 +3,8 @@
 
 #include "InputParameter.h"
 #include "ParameterCheck.h"
+#include "elke_core/utilities/general_utils.h"
+
 #include <vector>
 
 namespace elke
@@ -14,7 +16,7 @@ class InputParametersBlock
 {
   const std::string m_name;
   const std::string m_block_description;
-  std::vector<InputParameterPtr> m_parameters;
+  std::vector<InputParameter> m_parameters;
 
 public:
   /**Creates a barebones empty block.*/
@@ -23,6 +25,7 @@ public:
     std::string description,
     const std::vector<InputParametersBlock>& parent_blocks = {});
 
+  /**Returns the name of the input block.*/
   const std::string& name() const { return m_name; }
 
   /**Adds an optional parameter.*/
@@ -36,10 +39,22 @@ public:
       throw std::runtime_error(m_name + ": Trying to add parameter \"" + name +
                                "\", but the parameter already exists.");
 
-    auto pointer = makeTemplatedInputParameter(
-      name, ParameterClass::OPTIONAL, default_value, description, checks);
+    if (checks.empty() and IsScalar<T>::value)
+      checks = {std::make_unique<param_checks::ScalarTypeMustBeCompatible>()};
 
-    m_parameters.push_back(pointer);
+    if (checks.empty() and IsVectorOfScalars<T>::value)
+      checks = {
+        std::make_unique<param_checks::ScalarArrayEntriesTypeMustBeCompatible>()};
+
+    if (checks.empty() and IsRegisteredObjectProxy<T>::value)
+      checks = {std::make_unique<param_checks::RegisteredObjectMustExist>()};
+
+    if (checks.empty() and IsRegisteredObjectProxyArray<T>::value)
+      checks = {std::make_unique<
+        param_checks::RegisteredObjectArrayEntriesMustExist>()};
+
+    m_parameters.emplace_back(
+      name, ParameterClass::OPTIONAL, default_value, description, checks);
   }
 
   /**Adds a required parameter.*/
@@ -52,23 +67,35 @@ public:
       throw std::runtime_error(m_name + ": Trying to add parameter \"" + name +
                                "\", but the parameter already exists.");
 
-    T default_value;
-    auto pointer = makeTemplatedInputParameter(
-      name, ParameterClass::REQUIRED, default_value, description, checks);
+    if (checks.empty() and IsScalar<T>::value)
+      checks = {std::make_unique<param_checks::ScalarTypeMustBeCompatible>()};
 
-    m_parameters.push_back(pointer);
+    if (checks.empty() and IsVectorOfScalars<T>::value)
+      checks = {
+        std::make_unique<param_checks::ScalarArrayEntriesTypeMustBeCompatible>()};
+
+    if (checks.empty() and IsRegisteredObjectProxy<T>::value)
+      checks = {std::make_unique<param_checks::RegisteredObjectMustExist>()};
+
+    if (checks.empty() and IsRegisteredObjectProxyArray<T>::value)
+      checks = {std::make_unique<
+        param_checks::RegisteredObjectArrayEntriesMustExist>()};
+
+    T default_value;
+    m_parameters.emplace_back(
+      name, ParameterClass::REQUIRED, default_value, description, checks);
   }
 
   /**Checks whether the parameter with the given name is present.*/
   bool hasParameter(const std::string& name) const
   {
-    for (const auto& parameter_ptr : m_parameters) // NOLINT(*-use-anyofallof)
-      if (parameter_ptr->name() == name) return true;
+    for (const auto& parameter : m_parameters) // NOLINT(*-use-anyofallof)
+      if (parameter.name() == name) return true;
 
     return false;
   }
 
-  /**Obtains a parameter name.*/
+  /**Obtains a parameter by name.*/
   const InputParameter& getParameter(const std::string& name) const;
 
   /**Obtains the value of a named parameter.*/
@@ -96,7 +123,7 @@ public:
     iterator operator++() { const iterator i = *this; m_index++; return i; }
     iterator operator++(int) { m_index++; return *this; }
 
-    InputParameter& operator*() const { return *m_reference_block.m_parameters[m_index]; }
+    InputParameter& operator*() const { return m_reference_block.m_parameters[m_index]; }
     bool operator==(const iterator& rhs) const { return m_index == rhs.m_index; }
     bool operator!=(const iterator& rhs) const { return m_index != rhs.m_index; }
     // clang-format on
@@ -119,7 +146,7 @@ public:
     const_iterator operator++() { const const_iterator i = *this; m_index++; return i; }
     const_iterator operator++(int) { m_index++; return *this; }
 
-    const InputParameter& operator*() const { return *m_reference_block.m_parameters[m_index]; }
+    const InputParameter& operator*() const { return m_reference_block.m_parameters[m_index]; }
     bool operator==(const const_iterator& rhs) const { return m_index == rhs.m_index; }
     bool operator!=(const const_iterator& rhs) const { return m_index != rhs.m_index; }
     // clang-format on
@@ -135,42 +162,9 @@ public:
 
   size_t size() const { return m_parameters.size(); }
 
-private:
-  /**Parameter maker for Scalar Input Parameters.*/
-  template <typename T>
-  std::enable_if_t<IsScalar<T>::value, InputParameterPtr>
-  makeTemplatedInputParameter(std::string name,
-                             ParameterClass param_class,
-                             T default_value,
-                             std::string description,
-                             std::vector<ParameterCheckPtr> checks)
-  {
-    if (checks.empty())
-      checks = {std::make_shared<param_checks::ScalarTypeMustMatch>()};
-
-    auto pointer = std::make_shared<ScalarInputParameter<T>>(
-      name, param_class, default_value, description, checks);
-
-    return pointer;
-  }
-
-  /**Parameter maker for Array Input Parameters.*/
-  template <typename T>
-  std::enable_if_t<IsVector<T>::value, InputParameterPtr>
-  makeTemplatedInputParameter(std::string name,
-                             ParameterClass param_class,
-                             T default_value,
-                             std::string description,
-                             std::vector<ParameterCheckPtr> checks)
-  {
-    if (checks.empty())
-      checks = {std::make_shared<param_checks::ScalarTypeMustMatch>()};
-
-    auto pointer = std::make_shared<SequenceInputParameter<T>>(
-      name, param_class, default_value, description, checks);
-
-    return pointer;
-  }
+  void checkInputDataValidity(const DataTree& data,
+                              WarningsAndErrorsData& warnings_and_errors_data,
+                              unsigned int nest_depth) const;
 };
 
 } // namespace elke

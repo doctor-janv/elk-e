@@ -148,6 +148,7 @@ void InputProcessor::checkInputDataForSyntaxBlocks() const
 
   const auto& main_input_tree_blocks = m_main_data_tree.children();
 
+  //============================================= Check each syntax block
   for (const auto& [block_name, block_reg_entry] : syntax_block_reg_entries)
   {
     m_logger_ptr->log() << "Processing " << block_reg_entry.m_syntax
@@ -156,103 +157,61 @@ void InputProcessor::checkInputDataForSyntaxBlocks() const
       if (block_tree_ptr->name() == block_reg_entry.m_syntax)
       {
         m_logger_ptr->log() << "Tree has " << block_tree_ptr->name() << "\n";
-        checkInputParameters(block_name,
-                             block_reg_entry.m_parameter_function(),
-                             *block_tree_ptr,
-                             warnings_and_errors_data/*in/out*/);
+        const auto block_parameters = block_reg_entry.m_parameter_function();
+        block_parameters.checkInputDataValidity(*block_tree_ptr,
+                                                warnings_and_errors_data,
+                                                /*nest_depth=*/0);
+
         break;
       }
   }
 
-  const auto& input_check_errors = warnings_and_errors_data.m_errors;
-  if (not input_check_errors.empty())
+  //============================================= Print warnings
   {
+    const auto& warnings = warnings_and_errors_data.m_warnings;
     std::stringstream out_stream;
-    out_stream << "\n";
-    for (const auto& error : input_check_errors)
-    {
-      out_stream << "-----\n" + error + "-----\n";
-      if (not error.empty() and error.back() != '\n') out_stream << '\n';
-    }
-    elkLogicalError(out_stream.str() +
-                    "\nError(s) during input processing (checking).");
+    for (const auto& warning : warnings)
+      out_stream << warning << "\n";
+    m_logger_ptr->warn() << out_stream.str();
   }
+
+  //============================================= Print warnings and errors
+  postWarningsAndErrors(warnings_and_errors_data);
+  if (not warnings_and_errors_data.m_errors.empty())
+    elkLogicalError("\nError(s) during input processing (checking).");
 }
 
 // ###################################################################
-void InputProcessor::checkInputParameters(
-  const std::string& item_name,
-  const InputParametersBlock& in_params,
-  const DataTree& data,
-  WarningsAndErrorsData& warnings_and_errors_data)
+/**Formats and prints warnings and errors.*/
+void InputProcessor::postWarningsAndErrors(
+  const WarningsAndErrorsData& warnings_and_errors_data) const
 {
-  const std::string context = "While checking input parameters for "
-                              "block \"" +
-                              in_params.name() + "\" from data-tree \"" +
-                              data.getTag("address") + "\":\n";
+  const auto& warnings = warnings_and_errors_data.m_warnings;
+  const auto& errors = warnings_and_errors_data.m_errors;
 
-  auto& input_check_errors = warnings_and_errors_data.m_errors;
-
-  //=================================== First we check if the data is actually
-  //                                    valid, if not we mark them to be skipped
-  //                                    because we provide an error for them
-  //                                    once
-  std::vector<std::string> invalid_param_names;
-
-  for (const auto& child : data.children())
-    if (not in_params.hasParameter(child->name()))
-      invalid_param_names.emplace_back(child->name());
-
-  //=================================== For each of the invalid parameters
-  //                                    check if we have a suggestion.
-  if (not invalid_param_names.empty())
+  if (not warnings.empty())
   {
-    std::unordered_set<std::string> valid_param_names_set;
-    for (const auto& child : in_params)
-      valid_param_names_set.insert(child.name());
-
-    for (const auto& invalid_param_name : invalid_param_names)
+    std::stringstream out_stream;
+    out_stream << "\n";
+    for (const auto& message : warnings)
     {
-      const auto suggestion = string_utils::findClosestMatchingString(
-        invalid_param_name, valid_param_names_set);
-
-      const std::string suggestion_str =
-        suggestion.empty()
-          ? " No suggested parameter name could be determined.\n"
-          : " Did you mean \"" + suggestion + "\"?\n";
-
-      input_check_errors.emplace_back(
-        context +
-        "The parameter name \"" + // NOLINT(*-inefficient-string-concatenation)
-        invalid_param_name +
-        "\" is invalid." + // NOLINT(*-inefficient-string-concatenation)
-        suggestion_str);
+      out_stream << "-----\n" + message + "-----\n";
+      if (not message.empty() and message.back() != '\n') out_stream << '\n';
     }
-  } // if (not invalid_param_names.empty())
+    this->m_logger_ptr->warn() << out_stream.str();
+  }
 
-  //=================================== Now for each data entry, if not skipped,
-  //                                    check whether the value is valid.
-  for (const auto& child_ptr : data.children())
+  if (not errors.empty())
   {
-    const auto& child = *child_ptr;
-    if (string_utils::stringListHasString(invalid_param_names, child.name()))
-      continue;
-
-    const auto& input_parameter = in_params.getParameter(child.name());
-
-    auto result = input_parameter.performChecks(child);
-
-    if (not result.m_error.empty())
-      input_check_errors.emplace_back(context + result.m_error);
-  } // for child
-
-  //=================================== Now we check if required parameters
-  //                                    have been supplied
-  for (const auto& parameter : in_params)
-    if (parameter.classType() == ParameterClass::REQUIRED and
-        not data.hasChild(parameter.name()))
-      input_check_errors.emplace_back(context + "Required parameter \"" +
-                                      parameter.name() + "\" not supplied.\n");
+    std::stringstream out_stream;
+    out_stream << "\n";
+    for (const auto& message : errors)
+    {
+      out_stream << "-----\n" + message + "-----\n";
+      if (not message.empty() and message.back() != '\n') out_stream << '\n';
+    }
+    this->m_logger_ptr->error() << out_stream.str();
+  }
 }
 
 } // namespace elke

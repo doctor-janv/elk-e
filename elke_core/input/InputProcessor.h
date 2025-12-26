@@ -6,6 +6,7 @@
 #include <map>
 
 #include "elke_core/data_types/DataTree.h"
+#include "elke_core/utilities/general_utils.h"
 
 namespace elke
 {
@@ -13,12 +14,6 @@ namespace elke
 class InputParametersBlock;
 
 class Logger;
-
-struct WarningsAndErrorsData
-{
-  std::vector<std::string> m_warnings;
-  std::vector<std::string> m_errors;
-};
 
 /**A class for handling input processing.*/
 class InputProcessor
@@ -33,8 +28,7 @@ class InputProcessor
 
 public:
   /**Protected constructor.*/
-  explicit InputProcessor(
-    std::shared_ptr<elke::Logger> logger_ptr);
+  explicit InputProcessor(std::shared_ptr<elke::Logger> logger_ptr);
 
   /**Add a path from which to process an input file.*/
   void addInputFilePath(const std::filesystem::path& path);
@@ -51,11 +45,14 @@ public:
    *blocks themselves, then any child blocks.*/
   void checkInputDataForSyntaxBlocks() const;
 
-  static void
-  checkInputParameters(const std::string& item_name,
-                       const InputParametersBlock& in_params,
-                       const DataTree& data,
-                       WarningsAndErrorsData& warnings_and_errors_data);
+  /**Formats and prints warnings and errors.*/
+  void
+  postWarningsAndErrors(const WarningsAndErrorsData& warnings_and_errors_data) const;
+
+  // static void
+  // checkInputParameters(const InputParametersBlock& in_params,
+  //                      const DataTree& data,
+  //                      WarningsAndErrorsData& warnings_and_errors_data);
 
   // /**Returns the main data tree extracted from input*/
   // const DataTree& mainDataTree() const { return m_main_data_tree; }

@@ -19,7 +19,7 @@ struct ParameterCheckResult
 namespace elke::param_checks
 {
 
-//###################################################################
+// ###################################################################
 /**Base class for a parameter check.*/
 class ParameterCheck
 {
@@ -28,20 +28,22 @@ protected:
 
 public:
   virtual ~ParameterCheck() = default;
-  virtual ParameterCheckResult
-  checkParameter(const DataTree& data, const InputParameter& parameter) = 0;
+  virtual ParameterCheckResult checkParameter(const DataTree& data,
+                                              const InputParameter& parameter,
+                                              unsigned int nest_depth) = 0;
 };
 
-//###################################################################
+// ###################################################################
 /**A strict type check on the gross type.*/
 class GrossTypeMustMatch final : public ParameterCheck
 {
 public:
   ParameterCheckResult checkParameter(const DataTree& data,
-                                      const InputParameter& parameter) override;
+                                      const InputParameter& parameter,
+                                      unsigned int nest_depth) override;
 };
 
-//###################################################################
+// ###################################################################
 /**A strict type check on the scalar type.*/
 class ScalarTypeMustMatch final : public ParameterCheck
 {
@@ -49,7 +51,56 @@ class ScalarTypeMustMatch final : public ParameterCheck
 
 public:
   ParameterCheckResult checkParameter(const DataTree& data,
-                                      const InputParameter& parameter) override;
+                                      const InputParameter& parameter,
+                                      unsigned int nest_depth) override;
+};
+
+// ###################################################################
+/**A loose type check on the scalar type.*/
+class ScalarTypeMustBeCompatible final : public ParameterCheck
+{
+  GrossTypeMustMatch m_gross_check;
+
+public:
+  ParameterCheckResult checkParameter(const DataTree& data,
+                                      const InputParameter& parameter,
+                                      unsigned int nest_depth) override;
+};
+
+// ###################################################################
+class ScalarArrayEntriesTypeMustMatch final : public ParameterCheck
+{
+public:
+  ParameterCheckResult checkParameter(const DataTree& data,
+                                      const InputParameter& parameter,
+                                      unsigned int nest_depth) override;
+};
+
+// ###################################################################
+class ScalarArrayEntriesTypeMustBeCompatible final : public ParameterCheck
+{
+public:
+  ParameterCheckResult checkParameter(const DataTree& data,
+                                      const InputParameter& parameter,
+                                      unsigned int nest_depth) override;
+};
+
+// ###################################################################
+class RegisteredObjectMustExist final : public ParameterCheck
+{
+public:
+  ParameterCheckResult checkParameter(const DataTree& data,
+                                      const InputParameter&,
+                                      unsigned int nest_depth) override;
+};
+
+// ###################################################################
+class RegisteredObjectArrayEntriesMustExist final : public ParameterCheck
+{
+public:
+  ParameterCheckResult checkParameter(const DataTree& data,
+                                      const InputParameter& parameter,
+                                      unsigned int nest_depth) override;
 };
 
 } // namespace elke::param_checks

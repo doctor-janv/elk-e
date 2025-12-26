@@ -28,6 +28,21 @@ findClosestMatchingString(const std::string& input,
 unsigned int computeLevenshteinDistance(const std::string& s1,
                                         const std::string& s2);
 
+/**Determines if a string is a number.*/
+bool isStringANumber(const std::string& input);
+
+/**Convert a string to int64_t.
+ *
+ * \warning The convertibility should be checked with isStringANumber.
+ */
+int64_t convertStringToInt64_t(const std::string& input);
+
+/**Convert a string to double.
+ *
+\warning The convertibility should be checked with isStringANumber.
+ */
+int64_t convertStringToDouble(const std::string& input);
+
 } // namespace elke::string_utils
 
 #endif // ELKE_CORE_UTILITIES_STRING_UTILS_H

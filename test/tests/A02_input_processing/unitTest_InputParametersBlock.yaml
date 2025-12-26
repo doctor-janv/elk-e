@@ -1,3 +1,5 @@
+#==========================================================
+# SCALAR Checks
 string_parameter_cross_check:
   string_assignment:
     test_param: Valid String
@@ -7,10 +9,16 @@ string_parameter_cross_check:
     test_param: 2.0
   bool_assignment:
     test_param: false
+  array_assignment:
+    test_param: [1,2,3]
 
 boolean_parameter_cross_check:
   string_assignment:
     test_param: Valid String
+  string_assignment2:
+    test_param: "true"
+  string_assignment3:
+    test_param: "false"
   int_assignment:
     test_param: 2
   float_assignment:
@@ -21,6 +29,10 @@ boolean_parameter_cross_check:
 integer_parameter_cross_check:
   string_assignment:
     test_param: Valid String
+  string_assignment2:
+    test_param: "1234"
+  string_assignment3:
+    test_param: "1234.323"
   int_assignment:
     test_param: 2
   float_assignment:
@@ -31,9 +43,49 @@ integer_parameter_cross_check:
 float_parameter_cross_check:
   string_assignment:
     test_param: Valid String
+  string_assignment2:
+    test_param: "1234"
+  string_assignment3:
+    test_param: "1234.323"
   int_assignment:
     test_param: 2
   float_assignment:
     test_param: 2.0
   bool_assignment:
     test_param: false
+
+#================================================
+# ARRAY CHECKS
+array_parameter_cross_check:
+  string_assignment:
+    test_param: ["A", "B", "C"]
+  string_assignment2:
+    test_param: [ "true", "false", "true" ]
+  int_assignment:
+    test_param: [1, 2, 3]
+  float_assignment:
+    test_param: [1.0, 2.0, 3.0]
+  number_assignment:
+    test_param: [ 12, 123, 123.4 ]
+  bool_assignment:
+    test_param: [true, false, true]
+  wrong_gross_type:
+    test_param: ["true", [1,2]]
+
+#================================================
+# Registered object checks
+reg_obj_parameter_cross_check:
+  sub_check1:
+    ill_param: Yes
+    sub_object:
+      type: elke::TestObject1
+    sub_object_array:
+      - type: elke::TestObject1
+      - type: elke::TestObject2
+        sub_object:
+          type: elke::TestObject1
+  sub_check2:
+    illeparam: Yes
+    sub_object_array:
+      type: elke::TestObject1
+

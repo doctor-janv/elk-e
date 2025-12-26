@@ -3,6 +3,7 @@
 
 #include "elke_core/parameters/InputParametersBlock.h"
 #include "elke_core/syntax_blocks/SyntaxBlock.h"
+#include "elke_core/factory/FactoryObject.h"
 
 #include <map>
 #include <string>
@@ -21,6 +22,10 @@
   static char RJoinWordsB(unique_var_name2_, __COUNTER__) =                    \
     elke::StaticRegister::registerSyntaxBlock<class_name>(#class_name,         \
                                                           #block_syntax)
+
+#define elkeRegisterObject(class_name)                                         \
+  static char RJoinWordsB(unique_var_name2_, __COUNTER__) =                    \
+    elke::StaticRegister::registerObject<class_name>(#class_name)
 
 namespace elke
 {
@@ -42,19 +47,34 @@ struct SyntaxBlockRegisterEntry
   SyntaxBlockConstructionFunction m_constructor_function = nullptr;
 };
 
+using FactoryObjectPtr = std::shared_ptr<FactoryObject>;
+using FactoryObjectConstructionFunction =
+  FactoryObjectPtr (*)(const elke::InputParametersBlock&);
+
+struct FactoryObjectRegisterEntry
+{
+  GetParametersFunction m_parameter_function = nullptr;
+  FactoryObjectConstructionFunction m_constructor_function = nullptr;
+};
+
 // ###################################################################
 /**A singleton for static registration.*/
 class StaticRegister
 {
   std::map<std::string, NullaryFunction> m_nullary_function_register;
   std::map<std::string, SyntaxBlockRegisterEntry> m_syntax_block_register;
+  std::map<std::string, FactoryObjectRegisterEntry> m_factory_object_register;
 
 public:
   static StaticRegister& getInstance();
   /**Returns the nullary functions registry.*/
   static const std::map<std::string, NullaryFunction>& getNullaryFunctions();
   /**Returns the syntax-block registry.*/
-  static const std::map<std::string, SyntaxBlockRegisterEntry>& getSyntaxSystemRegister();
+  static const std::map<std::string, SyntaxBlockRegisterEntry>&
+  getSyntaxSystemRegister();
+  /**Returns the factory-object register.*/
+  static const std::map<std::string, FactoryObjectRegisterEntry>&
+  getFactoryObjectRegister();
 
   static char registerNullaryFunction(const std::string& function_name,
                                       NullaryFunction function);
@@ -70,9 +90,27 @@ public:
     new_entry.m_syntax = syntax;
     new_entry.m_parameter_function = TargetType::getInputParameters;
     new_entry.m_constructor_function =
-      ProxyConstructor<TargetType, SyntaxBlock>;
+      ProxySyntaxBlockConstructor<TargetType, SyntaxBlock>;
 
     registry.m_syntax_block_register[syntax_block_name] = new_entry;
+    // TODO: Check for duplicates
+
+    return 0;
+  }
+
+  template <typename TargetType>
+  static char registerObject(const std::string& object_name)
+  {
+    auto& registry = getInstance();
+
+    FactoryObjectRegisterEntry new_entry;
+
+    new_entry.m_parameter_function = TargetType::getInputParameters;
+    new_entry.m_constructor_function =
+      ProxyFactoryObjectConstructor<TargetType, FactoryObject>;
+
+    registry.m_factory_object_register[object_name] = new_entry;
+    // TODO: Check for duplicates
 
     return 0;
   }
@@ -89,7 +127,13 @@ private:
 
   template <typename TargetType, typename BaseType>
   static std::shared_ptr<BaseType>
-  ProxyConstructor(const InputParametersBlock& params)
+  ProxySyntaxBlockConstructor(const InputParametersBlock& params)
+  {
+    return std::make_shared<TargetType>(params);
+  }
+  template <typename TargetType, typename BaseType>
+  static std::shared_ptr<BaseType>
+  ProxyFactoryObjectConstructor(const InputParametersBlock& params)
   {
     return std::make_shared<TargetType>(params);
   }

@@ -108,6 +108,7 @@ phase.
 Definitions:
 - Factory-object: An object created via a factory pattern
 
+Requirements:
 - A factory-object shall have a constructor that takes, as an argument, an 
   `InputParametersBlock` class object.
 - A factory-object shall have a static method to build the basis of the 
@@ -127,6 +128,15 @@ Definitions:
   - SCALAR, holding a single value
   - SEQUENCE, holding multiple un-named children
   - MAP, holding multiple named children
+- For scalar parameters, a scalar-type shall be assigned which can be:
+  - STRING
+  - BOOL
+  - INTEGER
+  - FLOAT
+- Scalar assignment for non-matching scalars shall be possible, with appropriate 
+  controls. In other words, by default if one scalar-type "can" be assigned to
+  another it should be allowed. If the developer wants to enforce strict typing,
+  it should also be possible to do so.
   
 ### Definition of an input parameter
 - An input parameter can be one of following:
@@ -159,3 +169,7 @@ input parameters, an error shall be generated.
   "Did you mean..." type message providing a suggestion.
 
 <!--endreq-->
+
+
+
+

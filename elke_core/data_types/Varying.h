@@ -194,6 +194,9 @@ public:
   /**Returns a string value for the value.*/
   std::string convertToString(bool with_type = true) const;
 
+  /**Determines if the value held is convertible to the target type.*/
+  bool isConvertibleToType(VaryingDataType target_type) const;
+
   ~Varying() = default;
 
 private:

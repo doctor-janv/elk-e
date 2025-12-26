@@ -91,27 +91,25 @@ block_test3:
     -
       type: HasStringCheck
       line_key: >-
-        [0]  ERROR: While checking input parameters for block "TestSyntaxBlock"
+        [0]  ERROR: While checking input parameter validity for block "TestSyntaxBlock"
         from data-tree "block_test3.yaml/TestSyntaxBlock":
     -
       type: HasStringCheck
-      line_key: '[0]  ERROR: The parameter name "array_of_objects" is invalid. No suggested parameter name could be determined.'
+      line_key: '[0]  ERROR:   The parameter name "array_of_objects" is invalid. No suggested parameter name could be determined.'
     -
       type: HasStringCheck
-      line_key: '[0]  ERROR: The parameter name "scalex" is invalid. Did you mean "scale2"?'
+      line_key: '[0]  ERROR:   The parameter name "scalex" is invalid. Did you mean "scale2"?'
   requirements: ["invalid_parameters", "friendly_errors"]
 
 #=========================================================================
 # Tests various aspects of robust input parameters and syntax blocks
 unitTest_InputParametersBlock:
   args: "-b 'call elke::unit_tests::unitTestInputParameters' --nocolor --echo-input-data true --echo-input true"
+  requirements: ["inparams1"]
+  precheck_script: >-
+      sed -n "/UNIT_TEST_BEGIN/,/UNIT_TEST_END/p" out/unitTest_InputParametersBlock.cout > out/unitTest_InputParametersBlock.cout_test
   checks:
     - type: ExitCodeCheck
-    - type: HasStringCheck
-      line_key: '[0]  Checking string_parameter_cross_check/string_assignment. No error.'
-    - type: HasStringCheck
-      line_key: '[0]  Checking string_parameter_cross_check/int_assignment. Error(s) produced.'
-    - type: HasStringCheck
-      line_key: '[0]  Checking string_parameter_cross_check/float_assignment. Error(s) produced.'
-    - type: HasStringCheck
-      line_key: '[0]  Checking string_parameter_cross_check/bool_assignment. Error(s) produced.'
+    - type: TextFileDiffCheck
+      gold_file: gold/unitTest_InputParametersBlock.cout_gold
+      check_file: out/unitTest_InputParametersBlock.cout_test
