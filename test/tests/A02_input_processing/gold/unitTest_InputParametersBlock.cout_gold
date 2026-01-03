@@ -125,7 +125,6 @@
 [0]  ERROR: 
 [0]  ERROR: -----
 [0]  ERROR: While checking input parameter validity for block "TestBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check1":
-[0]  ERROR:   The parameter name "ill_param" is invalid. Did you mean "illeparam"?
 [0]  ERROR:   sub_object: While checking input parameter validity for block "elke::TestObject1" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check1/sub_object":
 [0]  ERROR:     Required parameter "num_refinements" not supplied.
 [0]  ERROR:   sub_object_array[0]: While checking input parameter validity for block "elke::TestObject1" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check1/sub_object_array/0":
@@ -134,14 +133,48 @@
 [0]  ERROR:     sub_object: While checking input parameter validity for block "elke::TestObject1" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check1/sub_object_array/1/sub_object":
 [0]  ERROR:       Required parameter "num_refinements" not supplied.
 [0]  ERROR:     Required parameter "num_refinements" not supplied.
-[0]  ERROR:   Required parameter "scale" not supplied.
+[0]  ERROR:   sub_object_map:   object_2: While checking input parameter validity for block "elke::TestObject1" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check1/sub_object_map/object_2":
+[0]  ERROR:     Required parameter "num_refinements" not supplied.
 [0]  ERROR: -----
 [0]  Checking reg_obj_parameter_cross_check/sub_check2. Error(s) produced.
-[0]  ERROR: 
+[0]  ERROR:
 [0]  ERROR: -----
 [0]  ERROR: While checking input parameter validity for block "TestBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check2":
 [0]  ERROR:   sub_object_array: The data-input must be of gross-type SEQUENCE but is of type MAP. I.e., it is expected to be an array of MAP types.
-[0]  ERROR:   Required parameter "scale" not supplied.
+[0]  ERROR:   geometry: While checking input parameter validity for block "TestNamedBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check2/geometry":
+[0]  ERROR:     The parameter name "volume2" is invalid. Did you mean "volume"?
+[0]  ERROR:   geometries[0]: While checking input parameter validity for block "TestNamedBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check2/geometries/0":
+[0]  ERROR:     The parameter name "volume2" is invalid. Did you mean "volume"?
+[0]  ERROR:   geometries[1]: While checking input parameter validity for block "TestNamedBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check2/geometries/1":
+[0]  ERROR:     The parameter name "area2" is invalid. Did you mean "area"?
+[0]  ERROR:   geometries[2]: While checking input parameter validity for block "TestNamedBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check2/geometries/2":
+[0]  ERROR:     The parameter name "length2" is invalid. Did you mean "length"?
+[0]  ERROR:   geometries2: Data tree has 3 entries but requires entries for block names ["elke::unit_tests::TestNamedBlock","elke::unit_tests::TestNamedBlock2"] (2 block name(s)).
+[0]  ERROR:   geometries2[0]: While checking input parameter validity for block "TestNamedBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check2/geometries2/0":
+[0]  ERROR:     The parameter name "volume2" is invalid. Did you mean "volume"?
+[0]  ERROR:   geometries2[1]: While checking input parameter validity for block "TestNamedBlock2" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check2/geometries2/1":
+[0]  ERROR:     The parameter name "volume2" is invalid. Did you mean "volume"?
+[0]  ERROR:     Required parameter "num_volumes" not supplied.
+[0]  ERROR: -----
+[0]  Checking reg_obj_parameter_cross_check/sub_check3. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "TestBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check3":
+[0]  ERROR:   geometries2[0]: While checking input parameter validity for block "TestNamedBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check3/geometries2/0":
+[0]  ERROR:     The parameter name "volume2" is invalid. Did you mean "volume"?
+[0]  ERROR:   geometries2[1]: While checking input parameter validity for block "TestNamedBlock2" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check3/geometries2/1":
+[0]  ERROR:     The parameter name "volume2" is invalid. Did you mean "volume"?
+[0]  ERROR:     The parameter name "num_volumes2" is invalid. Did you mean "num_volumes"?
+[0]  ERROR:     Required parameter "num_volumes" not supplied.
+[0]  ERROR: -----
+[0]  Checking reg_obj_parameter_cross_check/sub_check4. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "TestBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check4":
+[0]  ERROR:   geometries3["sub_object1"]: While checking input parameter validity for block "TestNamedBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check4/geometries3/sub_object1":
+[0]  ERROR:     The parameter name "length2" is invalid. Did you mean "length"?
+[0]  ERROR:   geometries3["mimi"]: While checking input parameter validity for block "TestNamedBlock" from data-tree "unitTest_InputParametersBlock.yaml/reg_obj_parameter_cross_check/sub_check4/geometries3/mimi":
+[0]  ERROR:     The parameter name "area2" is invalid. Did you mean "area"?
 [0]  ERROR: -----
 [0]  
 [0]  UNIT_TEST_END

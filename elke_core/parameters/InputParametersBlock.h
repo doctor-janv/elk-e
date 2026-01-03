@@ -4,19 +4,25 @@
 #include "InputParameter.h"
 #include "ParameterCheck.h"
 #include "elke_core/utilities/general_utils.h"
+#include "elke_core/utilities/special_iterators.h"
+#include "parameter_types/ScalarInputParameter.h"
+#include "parameter_types/VectorOfScalarsInputParameter.h"
+#include "parameter_types/RegisteredObjectInputParameter.h"
+#include "parameter_types/VectorOfRegisteredObjectsInputParameter.h"
+#include "parameter_types/MapOfRegisteredObjectsInputParameter.h"
 
 #include <vector>
 
 namespace elke
 {
 
-using InputParameterPtr = std::shared_ptr<InputParameter>;
+using InputParameterPtr = std::unique_ptr<InputParameter>;
 
 class InputParametersBlock
 {
   const std::string m_name;
   const std::string m_block_description;
-  std::vector<InputParameter> m_parameters;
+  std::vector<InputParameterPtr> m_parameters;
 
 public:
   /**Creates a barebones empty block.*/
@@ -24,6 +30,14 @@ public:
     std::string name,
     std::string description,
     const std::vector<InputParametersBlock>& parent_blocks = {});
+
+  /**Copy constructor.*/
+  InputParametersBlock(const InputParametersBlock& rhs)
+    : m_name(rhs.m_name),
+      m_block_description(rhs.m_block_description),
+      m_parameters(elke::copyVectorOfUniquePointers(rhs.m_parameters))
+  {
+  }
 
   /**Returns the name of the input block.*/
   const std::string& name() const { return m_name; }
@@ -33,67 +47,52 @@ public:
   void addOptionalParameter(std::string name,
                             T default_value,
                             std::string description,
-                            std::vector<ParameterCheckPtr> checks = {})
+                            const std::vector<ParameterCheckPtr>& checks = {})
   {
-    if (this->hasParameter(name))
-      throw std::runtime_error(m_name + ": Trying to add parameter \"" + name +
-                               "\", but the parameter already exists.");
-
-    if (checks.empty() and IsScalar<T>::value)
-      checks = {std::make_unique<param_checks::ScalarTypeMustBeCompatible>()};
-
-    if (checks.empty() and IsVectorOfScalars<T>::value)
-      checks = {
-        std::make_unique<param_checks::ScalarArrayEntriesTypeMustBeCompatible>()};
-
-    if (checks.empty() and IsRegisteredObjectProxy<T>::value)
-      checks = {std::make_unique<param_checks::RegisteredObjectMustExist>()};
-
-    if (checks.empty() and IsRegisteredObjectProxyArray<T>::value)
-      checks = {std::make_unique<
-        param_checks::RegisteredObjectArrayEntriesMustExist>()};
-
-    m_parameters.emplace_back(
-      name, ParameterClass::OPTIONAL, default_value, description, checks);
+    this->addParameter(
+      ParameterClass::OPTIONAL, name, default_value, description, checks);
   }
 
   /**Adds a required parameter.*/
   template <typename T>
-  void addRequiredParameter(std::string name,
-                            std::string description,
-                            std::vector<ParameterCheckPtr> checks = {})
+  void addRequiredParameter(const std::string name,
+                            const std::string description,
+                            const std::vector<ParameterCheckPtr>& checks = {})
   {
-    if (this->hasParameter(name))
-      throw std::runtime_error(m_name + ": Trying to add parameter \"" + name +
-                               "\", but the parameter already exists.");
-
-    if (checks.empty() and IsScalar<T>::value)
-      checks = {std::make_unique<param_checks::ScalarTypeMustBeCompatible>()};
-
-    if (checks.empty() and IsVectorOfScalars<T>::value)
-      checks = {
-        std::make_unique<param_checks::ScalarArrayEntriesTypeMustBeCompatible>()};
-
-    if (checks.empty() and IsRegisteredObjectProxy<T>::value)
-      checks = {std::make_unique<param_checks::RegisteredObjectMustExist>()};
-
-    if (checks.empty() and IsRegisteredObjectProxyArray<T>::value)
-      checks = {std::make_unique<
-        param_checks::RegisteredObjectArrayEntriesMustExist>()};
-
-    T default_value;
-    m_parameters.emplace_back(
-      name, ParameterClass::REQUIRED, default_value, description, checks);
+    this->addParameter<T>(ParameterClass::REQUIRED,
+                          name,
+                          /*default_value=*/T(),
+                          description,
+                          checks);
   }
+
+  void addParameterAsNamedInputBlock(const std::string& name,
+                                     const std::string& description,
+                                     ParameterClass parameter_class,
+                                     const std::string& name_of_block);
+  void addParameterAsArrayOfNamedInputBlocks(const std::string& name,
+                                             const std::string& description,
+                                             ParameterClass parameter_class,
+                                             const std::string& name_of_blocks);
+  void addParameterAsFixedArrayOfNamedInputBlocks(
+    const std::string& name,
+    const std::string& description,
+    ParameterClass parameter_class,
+    const std::vector<std::string>& name_of_blocks);
+  void addParameterAsMapOfNamedInputBlocks(const std::string& name,
+                                           const std::string& description,
+                                           ParameterClass parameter_class,
+                                           const std::string& name_of_blocks);
+
+  // clang-format off
+  /**Returns an iterable container for the parameters in this block.*/
+  auto iterableParameters() { return VectorOfPointersIterable(m_parameters); }
+  /**Returns a const-iterable container for the parameters in this block.*/
+  auto iterableParameters() const { return VectorOfPointersConstIterable(m_parameters);}
+  // clang-format on
 
   /**Checks whether the parameter with the given name is present.*/
-  bool hasParameter(const std::string& name) const
-  {
-    for (const auto& parameter : m_parameters) // NOLINT(*-use-anyofallof)
-      if (parameter.name() == name) return true;
-
-    return false;
-  }
+  bool hasParameter(const std::string& name) const;
 
   /**Obtains a parameter by name.*/
   const InputParameter& getParameter(const std::string& name) const;
@@ -107,64 +106,75 @@ public:
     return param.getValue<T>();
   }
 
-  /**Iterates over parameters.*/
-  class iterator
-  {
-    InputParametersBlock& m_reference_block;
-    size_t m_index;
-
-  public:
-    iterator(InputParametersBlock& reference_block, const size_t index)
-      : m_reference_block(reference_block), m_index(index)
-    {
-    }
-
-    // clang-format off
-    iterator operator++() { const iterator i = *this; m_index++; return i; }
-    iterator operator++(int) { m_index++; return *this; }
-
-    InputParameter& operator*() const { return m_reference_block.m_parameters[m_index]; }
-    bool operator==(const iterator& rhs) const { return m_index == rhs.m_index; }
-    bool operator!=(const iterator& rhs) const { return m_index != rhs.m_index; }
-    // clang-format on
-  };
-
-  /**Iterates over parameters of a constant block.*/
-  class const_iterator
-  {
-    const InputParametersBlock& m_reference_block;
-    size_t m_index;
-
-  public:
-    const_iterator(const InputParametersBlock& reference_block,
-                   const size_t index)
-      : m_reference_block(reference_block), m_index(index)
-    {
-    }
-
-    // clang-format off
-    const_iterator operator++() { const const_iterator i = *this; m_index++; return i; }
-    const_iterator operator++(int) { m_index++; return *this; }
-
-    const InputParameter& operator*() const { return m_reference_block.m_parameters[m_index]; }
-    bool operator==(const const_iterator& rhs) const { return m_index == rhs.m_index; }
-    bool operator!=(const const_iterator& rhs) const { return m_index != rhs.m_index; }
-    // clang-format on
-  };
-
-  iterator begin() { return {*this, 0}; }
-
-  iterator end() { return {*this, m_parameters.size()}; }
-
-  const_iterator begin() const { return {*this, 0}; }
-
-  const_iterator end() const { return {*this, m_parameters.size()}; }
-
-  size_t size() const { return m_parameters.size(); }
-
   void checkInputDataValidity(const DataTree& data,
                               WarningsAndErrorsData& warnings_and_errors_data,
                               unsigned int nest_depth) const;
+
+private:
+  /**Templated method to add a parameter*/
+  template <typename T>
+  void addParameter(const ParameterClass parameter_class,
+                    const std::string name,
+                    T default_value,
+                    const std::string description,
+                    const std::vector<ParameterCheckPtr> checks)
+  {
+    if (this->hasParameter(name))
+      throw std::runtime_error(m_name + ": Trying to add parameter \"" + name +
+                               "\", but the parameter already exists.");
+
+    auto meta_data =
+      InputParameterMetaData{name, parameter_class, description, checks};
+    using namespace param_checks;
+    using std::make_unique;
+
+    auto new_param = makeParameter(meta_data, default_value);
+
+    m_parameters.push_back(std::move(new_param));
+  }
+
+  // clang-format off
+  /**Make a scalar input parameter.*/
+  template <typename T, std::enable_if_t<IsScalar<T>::value, bool> = true>
+  std::unique_ptr<InputParameter> makeParameter(const InputParameterMetaData& meta_data, T default_value)
+  {
+    return std::make_unique<ScalarInputParameter>(meta_data, default_value);
+  }
+
+  /**Make an array of scalars parameter.*/
+  template <typename T, std::enable_if_t<IsVectorOfScalars<T>::value, bool> = true>
+  std::unique_ptr<InputParameter> makeParameter(const InputParameterMetaData& meta_data, T default_value)
+  {
+    return std::make_unique<VectorOfScalarsInputParameter>(meta_data, default_value);
+  }
+
+  /**Make a parameter used to create a registered object.*/
+  template <typename T, std::enable_if_t<IsRegisteredObjectProxy<T>::value, bool> = true>
+  std::unique_ptr<InputParameter> makeParameter(const InputParameterMetaData& meta_data, T default_value)
+  {
+    return std::make_unique<RegisteredObjectInputParameter>(meta_data, default_value);
+  }
+
+  /**Make a parameter used to create an array of registered objects.*/
+  template <typename T, std::enable_if_t<IsRegisteredObjectProxyArray<T>::value, bool> = true>
+  std::unique_ptr<InputParameter> makeParameter(const InputParameterMetaData& meta_data, T default_value)
+  {
+    return std::make_unique<VectorOfRegisteredObjectsInputParameter>(meta_data, default_value);
+  }
+
+  /**Make a parameter used to create a map of registered objects.*/
+  template <typename T, std::enable_if_t<IsRegisteredObjectProxyMap<T>::value, bool> = true>
+  std::unique_ptr<InputParameter> makeParameter(const InputParameterMetaData& meta_data, T default_value)
+  {
+    return std::make_unique<MapOfRegisteredObjectsInputParameter>(meta_data, default_value);
+  }
+  // clang-format on
+
+  /**Clones and adds a parameter to the block.*/
+  void cloneAndAddParameter(const InputParameter& parameter)
+  {
+    m_parameters.push_back(parameter.clone());
+  }
 };
 
 } // namespace elke

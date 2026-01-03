@@ -27,6 +27,11 @@
   static char RJoinWordsB(unique_var_name2_, __COUNTER__) =                    \
     elke::StaticRegister::registerObject<class_name>(#class_name)
 
+#define elkeRegisterInputBlock(class_name)                                     \
+  static char RJoinWordsB(unique_var_name2_, __COUNTER__) =                    \
+    elke::StaticRegister::registerInputParametersBlock<class_name>(            \
+      #class_name)
+
 namespace elke
 {
 
@@ -57,6 +62,11 @@ struct FactoryObjectRegisterEntry
   FactoryObjectConstructionFunction m_constructor_function = nullptr;
 };
 
+struct InputParametersBlockRegistryEntry
+{
+  GetParametersFunction m_parameter_function = nullptr;
+};
+
 // ###################################################################
 /**A singleton for static registration.*/
 class StaticRegister
@@ -64,6 +74,8 @@ class StaticRegister
   std::map<std::string, NullaryFunction> m_nullary_function_register;
   std::map<std::string, SyntaxBlockRegisterEntry> m_syntax_block_register;
   std::map<std::string, FactoryObjectRegisterEntry> m_factory_object_register;
+  std::map<std::string, InputParametersBlockRegistryEntry>
+    m_input_blocks_register;
 
 public:
   static StaticRegister& getInstance();
@@ -75,6 +87,9 @@ public:
   /**Returns the factory-object register.*/
   static const std::map<std::string, FactoryObjectRegisterEntry>&
   getFactoryObjectRegister();
+  /**Returns the input block register.*/
+  static const std::map<std::string, InputParametersBlockRegistryEntry>&
+  getInputParameterBlockRegistry();
 
   static char registerNullaryFunction(const std::string& function_name,
                                       NullaryFunction function);
@@ -111,6 +126,20 @@ public:
 
     registry.m_factory_object_register[object_name] = new_entry;
     // TODO: Check for duplicates
+
+    return 0;
+  }
+
+  template <typename TargetType>
+  static char registerInputParametersBlock(const std::string& block_name)
+  {
+    auto& registry = getInstance();
+
+    InputParametersBlockRegistryEntry new_entry;
+
+    new_entry.m_parameter_function = TargetType::getInputParameters;
+
+    registry.m_input_blocks_register[block_name] = new_entry;
 
     return 0;
   }

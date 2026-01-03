@@ -84,8 +84,16 @@ Varying& Varying::operator=(const std::string& value)
 
 // ###################################################################
 //  Get values
+/**Returns the bytes value if valid. Otherwise, throws std::logic_error.*/
+const std::vector<std::byte>& Varying::bytesValue() const
+{
+  assertTypeMatch(m_type, VaryingDataType::ARBITRARY_BYTES);
+
+  return m_data->bytesValue();
+}
+
 /**Returns the string value if valid. Otherwise, throws std::logic_error.*/
-std::string Varying::stringValue() const
+const std::string& Varying::stringValue() const
 {
   assertTypeMatch(m_type, VaryingDataType::STRING);
 
@@ -93,7 +101,7 @@ std::string Varying::stringValue() const
 }
 
 /**Returns the bool value if valid. Otherwise, throws std::logic_error.*/
-bool Varying::boolValue() const
+const bool& Varying::boolValue() const
 {
   assertTypeMatch(m_type, VaryingDataType::BOOL);
 
@@ -101,7 +109,7 @@ bool Varying::boolValue() const
 }
 
 /**Returns the integer value if valid. Otherwise, throws std::logic_error.*/
-int64_t Varying::integerValue() const
+const int64_t& Varying::integerValue() const
 {
   assertTypeMatch(m_type, VaryingDataType::INTEGER);
 
@@ -109,7 +117,7 @@ int64_t Varying::integerValue() const
 }
 
 /**Returns the float value if valid. Otherwise, throws std::logic_error.*/
-double Varying::floatValue() const
+const double& Varying::floatValue() const
 {
   assertTypeMatch(m_type, VaryingDataType::FLOAT);
 
@@ -122,14 +130,26 @@ std::string Varying::convertToString(const bool with_type /*=false*/) const
 {
   std::stringstream outstr; ///< output stream
 
-  if (this->type() == VaryingDataType::STRING)
-    outstr << "\"" << this->stringValue() << "\"";
+  if (this->type() == VaryingDataType::ARBITRARY_BYTES)
+  {
+    const auto byte_values = this->m_data->bytesValue();
+    for (const auto& value : byte_values)
+    {
+      const auto int_val = static_cast<unsigned int>(value);
+      outstr << std::bitset<8>(int_val).to_string();
+      if (value != byte_values.back())
+        outstr << ",";
+    }
+    outstr << (with_type ? "(bytes)" : "");
+  }
+  else if (this->type() == VaryingDataType::STRING)
+    outstr << "\"" << this->stringValue() << "\"" << (with_type ? "(string)" : "");
   else if (this->type() == VaryingDataType::FLOAT)
     outstr << this->floatValue() << (with_type ? "(double)" : "");
   else if (this->type() == VaryingDataType::INTEGER)
-    outstr << this->integerValue();
+    outstr << this->integerValue() << (with_type ? "(integer)" : "");
   else if (this->type() == VaryingDataType::BOOL)
-    outstr << (this->boolValue() ? "true" : "false");
+    outstr << (this->boolValue() ? "true" : "false") << (with_type ? "(bool)" : "");
   else
     outstr << "NONE";
 

@@ -5,6 +5,35 @@
 namespace elke::unit_tests
 {
 
+struct TestNamedBlock
+{
+  static InputParametersBlock getInputParameters()
+  {
+    auto params = InputParametersBlock(/*name=       */ "TestNamedBlock",
+                                       /*description=*/"No description");
+    params.addOptionalParameter("volume", 1.0, "Volume of the volume.");
+    params.addOptionalParameter("area", 1.0, "Area of the volume.");
+    params.addOptionalParameter("length", 1.0, "Length of the volume.");
+
+    return params;
+  }
+};
+
+struct TestNamedBlock2
+{
+  static InputParametersBlock getInputParameters()
+  {
+    auto params = InputParametersBlock(/*name=       */ "TestNamedBlock2",
+                                       /*description=*/"No description");
+    params.addOptionalParameter("volume", 1.0, "Volume of the volume.");
+    params.addOptionalParameter("area", 1.0, "Area of the volume.");
+    params.addOptionalParameter("length", 1.0, "Length of the volume.");
+    params.addRequiredParameter<int>("num_volumes", "Yes");
+
+    return params;
+  }
+};
+
 void unitTestInputParameters()
 {
   auto& core = FrameworkCore::getInstance();
@@ -37,7 +66,8 @@ void unitTestInputParameters()
       WarningsAndErrorsData warnings_and_errors_data;
 
       input_parameters.checkInputDataValidity(
-        check_data, warnings_and_errors_data /*in/out*/,
+        check_data,
+        warnings_and_errors_data /*in/out*/,
         /*nest_depth=*/0);
 
       std::string status = "No error.";
@@ -153,6 +183,39 @@ void unitTestInputParameters()
     input_parameters.addOptionalParameter(
       "sub_object_array", std::vector<RegisteredObjectProxy>(), "");
 
+    input_parameters.addOptionalParameter(
+      "sub_object_map", std::map<std::string, RegisteredObjectProxy>(), "");
+
+    input_parameters.addParameterAsNamedInputBlock(
+      "geometry",
+      "Geometry of the volume.",
+      ParameterClass::OPTIONAL,
+      "elke::unit_tests::TestNamedBlock");
+
+    //===================
+
+    input_parameters.addParameterAsArrayOfNamedInputBlocks(
+      "geometries",
+      "Multiple geometries",
+      ParameterClass::OPTIONAL,
+      "elke::unit_tests::TestNamedBlock");
+
+    input_parameters.addParameterAsFixedArrayOfNamedInputBlocks(
+      "geometries2",
+      "Multiple geometries again",
+      ParameterClass::OPTIONAL,
+      {"elke::unit_tests::TestNamedBlock",
+      "elke::unit_tests::TestNamedBlock2"});
+
+    //===================
+
+    input_parameters.addParameterAsMapOfNamedInputBlocks(
+      "geometries3",
+      "Multiple geometries",
+      ParameterClass::OPTIONAL,
+      "elke::unit_tests::TestNamedBlock");
+
+
     const std::string check_name = "reg_obj_parameter_cross_check";
 
     checking_function(input_parameters, check_name, true);
@@ -164,4 +227,6 @@ void unitTestInputParameters()
 
 } // namespace elke::unit_tests
 
+elkeRegisterInputBlock(elke::unit_tests::TestNamedBlock);
+elkeRegisterInputBlock(elke::unit_tests::TestNamedBlock2);
 elkeRegisterNullaryFunction(elke::unit_tests::unitTestInputParameters);

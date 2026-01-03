@@ -13,9 +13,9 @@ const ItemStorage<DataTree>& Warehouse::DataTreeStorage() const
   return m_data_tree_storage;
 }
 
-ItemStorage<SimulationBlock>& Warehouse::SimulationSystemStorage()
+ItemStorage<SyntaxBlock>& Warehouse::SyntaxBlockStorage()
 {
-  return m_simulation_system_storage;
+  return m_syntax_block_storage;
 }
 
 } // namespace elke

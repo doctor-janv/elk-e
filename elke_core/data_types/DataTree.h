@@ -21,7 +21,47 @@
 namespace elke
 {
 
-/**Class to support a data tree.*/
+/**Class to support a data tree2. The constructor options for this class is
+ * super simple... there is only one choice. Create a DataTree by calling
+ * the basic constructor
+ * ```c++
+ * auto root_tree = DataTree("NameOfTheTree");
+ * ```
+ * Once you have a tree you change or set several properties, the most important
+ * of which are:
+ * - `DataTree::rename`, which will change the name.
+ * - `DataTree::setGrossType`, which will change its gross-type.
+ * - `DataTree:setTag`, which will add a string name+value pair to the
+ * tree.
+ * - `DataTree::setValue`, which will assign a scalar value to the tree.
+ * - `DataTree::addChild`, which will add a child tree.
+ *
+ * Reading from, or using, a DataTree is mostly done with the following methods:
+ * - `DataTree::name`, which returns the name of the DataTree element.
+ * - `DataTree::grossType`, which returns the gross-type.
+ * - `DataTree::getTag`, which returns a named tag.
+ * - `DataTree::value`, returns the scalar value if the tree has a
+ *    gross-type of SCALAR. Implemented via `elke::Varying`.
+ * - `DataTree::child`, returns a child by name.
+ * - `DataTree::children`, which returns an iterable list of all the
+ *   tree's children.
+ *
+ * The Gross-Type:\n
+ * Super simple, a DataTree can be any of the following:
+ * - `DataGrossType::NO_DATA`, e.g. `scale: Null`, use this type
+ *   sparingly
+ * - `DataGrossType::SCALAR`, e.g. `scale: 1.2`
+ * - `DataGrossType::SEQUENCE`, e.g. `scales: [1, 2, 3]`
+ * - `DataGrossType::MAP`, e.g. `scales: {scalex: 1.1, scaley: 1.2}`
+ *
+ * Tags:\n
+ * Tags are super useful for shuttling metadata from source files. Examples
+ * - `DataTree::setTag("mark")` can be used to mark the file location (i.e.
+ *   file-name, line-number and column-number).
+ * - `DataTree::setTag("address")` can be used to find the address of a "leaf"
+ *   within a hierarchy, e.g., `Input.yaml/systems/sub_object1/scale`. Useful
+ *   for printing errors.
+ */
 class DataTree
 {
   /**Function called during traversals.*/
@@ -30,8 +70,10 @@ class DataTree
   using DataTreePtr = std::shared_ptr<DataTree>;
   using DataTreeConstPtr = std::shared_ptr<const DataTree>;
 
+  /// Name of the element
   std::string m_name;
-  DataGrossType m_type = DataGrossType::NO_DATA;
+  /// Gross-type
+  DataGrossType m_gross_type = DataGrossType::NO_DATA;
   std::map<std::string, std::string> m_tags;
   Varying m_value;
   std::vector<DataTreePtr> m_children;
@@ -47,7 +89,7 @@ public:
   DataGrossType grossType() const;
 
   /**Sets the data-tree type.*/
-  void setType(DataGrossType type);
+  void setGrossType(DataGrossType type);
 
   /**Assigns a new name.*/
   void rename(const std::string& new_name);
@@ -88,10 +130,6 @@ public:
 
   /**Returns the list of children*/
   const std::vector<DataTreePtr>& children() const;
-
-  // /**Returns a const reference to a child at any level of the tree. If
-  //  * the name is not found std::logic_error is thrown.*/
-  // const DataTree& childByAddress(const std::string& address) const;
 
   /**Produces a string in YAML format of the entire tree.*/
   std::string

@@ -103,15 +103,15 @@ void YAMLInput::populateTree(elke::DataTree& tree,
   {
     case YAML::NodeType::Null:
       if (test_mode) logger.log() << offset << "Null node\n";
-      tree.setType(DataGrossType::NO_DATA);
+      tree.setGrossType(DataGrossType::NO_DATA);
       break;
     case YAML::NodeType::Scalar:
-      tree.setType(DataGrossType::SCALAR);
+      tree.setGrossType(DataGrossType::SCALAR);
       YAMLInputHelpers::populateValue(tree, node, logger, level, test_mode);
       break;
     case YAML::NodeType::Sequence:
       if (test_mode) logger.log() << offset << "Sequence node\n";
-      tree.setType(DataGrossType::SEQUENCE);
+      tree.setGrossType(DataGrossType::SEQUENCE);
       // We cannot use a ranged based for loop here since it only
       // works for maps.
       for (size_t i = 0; i < node.size(); i++) // NOLINT(modernize-loop-convert)
@@ -124,7 +124,7 @@ void YAMLInput::populateTree(elke::DataTree& tree,
       break;
     case YAML::NodeType::Map:
       if (test_mode) logger.log() << offset << "Map node\n";
-      tree.setType(DataGrossType::MAP);
+      tree.setGrossType(DataGrossType::MAP);
       for (auto it = node.begin(); it != node.end(); ++it)
       {
         auto sub_node_ptr =

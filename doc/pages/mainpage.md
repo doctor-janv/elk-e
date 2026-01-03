@@ -5,6 +5,7 @@ Welcome to the developer's manual for the ELKE framework.
 ## Quick links:
 - \ref DesignRequirements
 - \ref CodingConventions
+- \ref ParameterSystem
 - \ref RTM
 
 ## 1. Execution principles

@@ -48,4 +48,12 @@ char StaticRegister::registerNullaryFunction(const std::string& function_name,
   return 0;
 }
 
+// ###################################################################
+const std::map<std::string, InputParametersBlockRegistryEntry>&
+StaticRegister::getInputParameterBlockRegistry()
+{
+  auto& registry = getInstance();
+  return registry.m_input_blocks_register;
+}
+
 } // namespace elke

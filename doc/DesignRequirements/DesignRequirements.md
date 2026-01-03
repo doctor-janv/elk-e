@@ -86,7 +86,13 @@ main_tree:
 <!--endreq-->
 
 ## Requirement input_parsing_phase - There shall be a distinct input parsing phase
-During this phase all possible input files shall be parsed to data trees.
+During this phase all possible input files shall be parsed to data trees
+(see `elke::DataTree`). A `DataTree` is a source-independent data structure
+implementing a human-readable means of supplying input data (like yaml, json, xml).
+
+The "leaves" of a data-tree is ultimately a scalar. If a data-tree node is not
+a scalar it is either a sequence (i.e., sub-objects are in the form of an 
+unnamed array, e.g. [item0, item1, etc]) or a map(e.g. {nameA: item0, nameB: item1}).
 
 <!--endreq-->
 
@@ -106,37 +112,47 @@ phase.
 ## Requirement inparams1 - Object instantiation via input parameters
 
 Definitions:
-- Factory-object: An object created via a factory pattern
+- `FactoryObject`: An object created via a factory pattern
+- `NamedInputParameterBlock`: An input-parameter block that has been registered
+  to be used as a stand-alone entity.
 
 Requirements:
 - A factory-object shall have a constructor that takes, as an argument, an 
-  `InputParametersBlock` class object.
+  `elke::InputParametersBlock` class object.
 - A factory-object shall have a static method to build the basis of the 
   `InputParametersBlock` it requires. I.e., the signature shall be
   `static InputParametersBlock getInputParameters();`
-- An `InputParametersBlock` shall always have a name and a description.
+- An `InputParametersBlock` shall always have a name and a description, enforced
+  by means of constructors.
 - An `InputParametersBlock` can inherit the input parameters of several
   other blocks.
+- An `InputParametersBlock` shall contain one or more `elke::InputParameter`s.
 
-- An input parameter shall always have a name.
-- An input parameter shall be assigned a class-type which can be:
+- An `InputParameter` shall always have a name.
+- An input parameter shall be assigned a class-type (`elke::ParameterClass`) 
+  which can be:
   - OPTIONAL
   - REQUIRED
   - DEPRECATED
-- An input parameter shall be assigned a gross-type which can be:
+- An input parameter shall be assigned a gross-type (`elke::DataGrossType`) which can be:
   - NO_DATA, signifying it holds no data
   - SCALAR, holding a single value
   - SEQUENCE, holding multiple un-named children
   - MAP, holding multiple named children
-- For scalar parameters, a scalar-type shall be assigned which can be:
+- For scalar parameters, a scalar-type (`elke::VaryingDataType`)shall be 
+  assigned which can be:
   - STRING
   - BOOL
   - INTEGER
   - FLOAT
+
+Checking:
 - Scalar assignment for non-matching scalars shall be possible, with appropriate 
   controls. In other words, by default if one scalar-type "can" be assigned to
-  another it should be allowed. If the developer wants to enforce strict typing,
-  it should also be possible to do so.
+  another it should be allowed. For example: a boolean and a float can be 
+  assigned to an integer. Another example: all scalar types can be converted to 
+  strings and are therefore assignable to a string. 
+- If the developer wants to enforce strict typing, it should also be possible to do so.
   
 ### Definition of an input parameter
 - An input parameter can be one of following:

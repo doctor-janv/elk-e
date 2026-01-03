@@ -15,7 +15,7 @@ Factory::makeSimulationSystem(const std::string& registered_name,
   auto input_parameters = InputParametersBlock("dummy", "dummy");
   auto system = std::make_shared<SimulationBlock>(input_parameters);
 
-  m_warehouse.SimulationSystemStorage().depositItem(system);
+  m_warehouse.SyntaxBlockStorage().depositItem(system);
 
   return system;
 }

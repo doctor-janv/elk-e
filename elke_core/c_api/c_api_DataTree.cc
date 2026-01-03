@@ -16,7 +16,7 @@ int elke_DataTree_makeNew(int& errorCode, const char* c_str)
     std::cout << "Making new data tree " << c_str << std::endl;
     const auto new_data_tree = std::make_shared<elke::DataTree>(c_str);
 
-    new_data_tree->setType(elke::DataGrossType::MAP);
+    new_data_tree->setGrossType(elke::DataGrossType::MAP);
 
     auto& warehouse = elke::FrameworkCore::getInstance().warehouse();
 
@@ -58,16 +58,16 @@ void elke_DataTree_setType(int& errorCode,
         switch (type_id)
         {
           case 1:
-            current_tree.setType(elke::DataGrossType::SCALAR);
+            current_tree.setGrossType(elke::DataGrossType::SCALAR);
             break;
           case 2:
-            current_tree.setType(elke::DataGrossType::SEQUENCE);
+            current_tree.setGrossType(elke::DataGrossType::SEQUENCE);
             break;
           case 3:
-            current_tree.setType(elke::DataGrossType::MAP);
+            current_tree.setGrossType(elke::DataGrossType::MAP);
             break;
           default:
-            current_tree.setType(elke::DataGrossType::NO_DATA);
+            current_tree.setGrossType(elke::DataGrossType::NO_DATA);
         }
       } // if
     }; // End of callback

@@ -12,13 +12,13 @@ DataTree::DataTree(std::string name) : m_name(std::move(name))
 }
 
 /**Returns the general type of the data-tree.*/
-DataGrossType DataTree::grossType() const { return m_type; }
+DataGrossType DataTree::grossType() const { return m_gross_type; }
 
 /**Sets the data-tree type.*/
-void DataTree::setType(const DataGrossType type)
+void DataTree::setGrossType(const DataGrossType type)
 {
   m_tags["type"] = DataGrossTypeName(type);
-  m_type = type;
+  m_gross_type = type;
 }
 
 /**Returns the name assigned to this tree.*/
@@ -33,7 +33,7 @@ const Varying& DataTree::value() const { return m_value; }
 /**Adds a value to the node*/
 void DataTree::setValue(const Varying& value)
 {
-  if (m_type != DataGrossType::SCALAR)
+  if (m_gross_type != DataGrossType::SCALAR)
     throw std::runtime_error(
       "Attempting to add value to DataTree " + m_name +
       " which has not been designated as a DataTreeType::Scalar");
@@ -48,7 +48,7 @@ void DataTree::addChild(const DataTreePtr& child,
                         const bool prevent_duplicate /*=false*/)
 {
   //========================= Only sequences and maps may have children
-  if (not(m_type == DataGrossType::SEQUENCE or m_type == DataGrossType::MAP))
+  if (not(m_gross_type == DataGrossType::SEQUENCE or m_gross_type == DataGrossType::MAP))
     throw std::runtime_error(
       "Attempting to add child to DataTree " + m_name +
       " which is not designated as either a SEQUENCE or a MAP.");
@@ -79,7 +79,7 @@ void DataTree::addChild(const DataTreePtr& child,
 
   //========================= Set child tag
   auto child_tag = address_tag + "/" + child->name();
-  if (this->m_type == DataGrossType::SEQUENCE)
+  if (this->m_gross_type == DataGrossType::SEQUENCE)
   {
     const size_t id = m_children.size();
     child_tag = address_tag + "/" + std::to_string(id);
@@ -118,7 +118,7 @@ void DataTree::traverseWithCallback(const std::string& running_address,
 
   function(current_address, *this);
 
-  if (m_type == DataGrossType::SEQUENCE)
+  if (m_gross_type == DataGrossType::SEQUENCE)
   {
     size_t id = 0;
     for (const auto& child : m_children)
@@ -128,7 +128,7 @@ void DataTree::traverseWithCallback(const std::string& running_address,
       ++id;
     }
   }
-  else if (m_type == DataGrossType::MAP)
+  else if (m_gross_type == DataGrossType::MAP)
     for (const auto& child : m_children)
       child->traverseWithCallback(current_address, function);
 }

@@ -37,8 +37,6 @@ InputParameter::performChecks(const DataTree& data,
 /**Fetches the scalar for the parameters.*/
 Varying InputParameter::getScalar() const
 {
-  if (m_gross_type == DataGrossType::SCALAR) return m_assigned_data.scalar_data;
-
   throw std::logic_error(
     "Attempting to retrieve scalar for input parameter \"" + m_name +
     "\" failed because the parameter is not of gross-type SCALAR. It has "
@@ -50,16 +48,7 @@ Varying InputParameter::getScalar() const
  * VaryingDataType::VOID.*/
 VaryingDataType InputParameter::scalarType() const
 {
-  switch (m_gross_type)
-  {
-    case DataGrossType::SCALAR:
-      return m_default_data.scalar_data.type();
-    case DataGrossType::NO_DATA:
-    case DataGrossType::SEQUENCE:
-    case DataGrossType::MAP:
-    default:
-      return VaryingDataType::VOID;
-  }
+  return m_scalar_type;
 }
 
 } // namespace elke

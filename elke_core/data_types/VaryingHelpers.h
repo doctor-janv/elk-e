@@ -85,8 +85,8 @@ template <typename T>
 using FloatType = std::enable_if_t<IsFloat<T>::value, T>;
 template <typename T>
 using IntegerType = std::enable_if_t<IsInteger<T>::value, T>;
-template <typename T>
-using ScalarType = std::enable_if_t<IsScalar<T>::value, T>;
+// template <typename T>
+// using ScalarType = std::enable_if_t<IsScalar<T>::value, T>;
 template <typename T>
 using VectorType = std::enable_if_t<IsVector<T>::value, T>;
 
@@ -146,11 +146,12 @@ protected:
   VaryingDataType m_type;
 
 public:
-  virtual std::string stringValue() const;
-  virtual bool boolValue() const;
-  virtual int64_t integerValue() const;
-  virtual double floatValue() const;
-  virtual std::vector<std::byte> bytesValue() const;
+  virtual const std::vector<std::byte>& bytesValue() const;
+  virtual const std::string& stringValue() const;
+  virtual const bool& boolValue() const;
+  virtual const int64_t& integerValue() const;
+  virtual const double& floatValue() const;
+
 
   virtual bool operator==(const VaryingAbstractData& that) const = 0;
   virtual bool operator!=(const VaryingAbstractData& that) const = 0;
@@ -192,10 +193,11 @@ public:
     {
     }
   // clang-format on
-  std::string stringValue() const override;
-  bool boolValue() const override;
-  int64_t integerValue() const override;
-  double floatValue() const override;
+  const std::vector<std::byte>& bytesValue() const override;
+  const std::string& stringValue() const override;
+  const bool& boolValue() const override;
+  const int64_t& integerValue() const override;
+  const double& floatValue() const override;
 
   bool operator==(const VaryingAbstractData& that) const override
   {

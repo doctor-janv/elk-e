@@ -104,7 +104,7 @@ block_test3:
 #=========================================================================
 # Tests various aspects of robust input parameters and syntax blocks
 unitTest_InputParametersBlock:
-  args: "-b 'call elke::unit_tests::unitTestInputParameters' --nocolor --echo-input-data true --echo-input true"
+  args: "--bt -b 'call elke::unit_tests::unitTestInputParameters' --nocolor --echo-input-data true --echo-input true"
   requirements: ["inparams1"]
   precheck_script: >-
       sed -n "/UNIT_TEST_BEGIN/,/UNIT_TEST_END/p" out/unitTest_InputParametersBlock.cout > out/unitTest_InputParametersBlock.cout_test
