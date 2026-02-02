@@ -49,12 +49,12 @@ void populateValue(elke::DataTree& parent_tree,
     if (is_integer)
     {
       type = "[integer]";
-      parent_tree.setValue(Varying(node.as<int64_t>()));
+      parent_tree.setValue(ScalarValue(node.as<int64_t>()));
     }
     else
     {
       type = "[real]";
-      parent_tree.setValue(Varying(node.as<double>()));
+      parent_tree.setValue(ScalarValue(node.as<double>()));
     }
   }
 
@@ -63,17 +63,23 @@ void populateValue(elke::DataTree& parent_tree,
   try { [[maybe_unused]] const auto _ = node.as<bool>(); }
   catch (const YAML::Exception&) { is_boolean = false; }
 
+  //=================================== Override using the tag
+  // Sometimes a yaml node might be "true" instead of just true,
+  // when this is the case the above conversion would still result in
+  // a boolean but the tag will be set to "!"
+  if (node.Tag() == "!") is_boolean = false;
+
   if (is_boolean)
   {
     type = "[boolean]";
-    parent_tree.setValue(Varying(node.as<bool>()));
+    parent_tree.setValue(ScalarValue(node.as<bool>()));
   }
 
   //=================================== Default to string
   if (not is_number and not is_boolean)
   {
     type = "[string]";
-    parent_tree.setValue(Varying(node.as<std::string>()));
+    parent_tree.setValue(ScalarValue(node.as<std::string>()));
   }
 
   if (test_mode) logger.log() << offset << "Scalar node " << node.Tag()

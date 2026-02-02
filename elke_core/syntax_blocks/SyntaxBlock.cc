@@ -1,17 +1,18 @@
 #include "SyntaxBlock.h"
 
-#include "elke_core/parameters/InputParametersBlock.h"
+#include "elke_core/parameters2/ParameterTree.h"
 
 namespace elke
 {
 
-InputParametersBlock SyntaxBlock::getInputParameters()
+ParameterTree SyntaxBlock::getInputParameters()
 {
-  return {"SyntaxBlock",
-          "A syntax blocks is used to provide a sense of categorization to "
-          "input data."};
+  return ParameterTree(/*name=*/"SyntaxBlock",
+                       /*description=*/"A syntax blocks is used to provide a "
+                                       "sense of categorization to "
+                                       "input data.");
 }
 
-SyntaxBlock::SyntaxBlock(const InputParametersBlock& block) {}
+SyntaxBlock::SyntaxBlock(const ParameterTree&) {}
 
 } // namespace elke

@@ -112,7 +112,7 @@ void CommandLineInterface::parseCommandLine(
                         "is followed by another keyword specifier, " +
                         next_cla + ", therefore no value can be deduced.");
 
-      const auto value = Varying(next_cla);
+      const auto value = ScalarValue(next_cla);
       c += 1;
       auto& supplied_cla = supplied_clas.getCLAbyName(cla_spec.m_name);
       supplied_cla.m_values_assigned.push_back(value);
@@ -127,7 +127,7 @@ void CommandLineInterface::registerCommonCLI_Items()
   const auto cli0 = CommandLineArgument("help",
                                         "h",
                                         "Prints basic help for the program.",
-                                        /*default_value=*/Varying(0),
+                                        /*default_value=*/ScalarValue(0),
                                         /*only_one_allowed=*/false,
                                         /*requires_value=*/false);
   const auto cli1 = CommandLineArgument(
@@ -136,7 +136,7 @@ void CommandLineInterface::registerCommonCLI_Items()
   const auto cli2 = CommandLineArgument("nocolor",
                                         "",
                                         "Suppresses color output.",
-                                        /*default_value=*/Varying(false),
+                                        /*default_value=*/ScalarValue(false),
                                         /*only_one_allowed=*/true,
                                         /*requires_value=*/false);
 
@@ -269,7 +269,7 @@ void CommandLineInterface::printHeader() const
     outstr << column1 + std::string(offset, ' ');
     for (const auto& val : cla.m_values_assigned)
     {
-      outstr << val.stringValue();
+      outstr << val.getValue<std::string>();
       if (&val != &cla.m_values_assigned.back()) outstr << ", ";
     }
     outstr << "\n";

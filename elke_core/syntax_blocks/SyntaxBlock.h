@@ -4,14 +4,13 @@
 namespace elke
 {
 
-class InputParametersBlock;
-class DataTree;
+class ParameterTree;
 
 class SyntaxBlock
 {
 protected:
-  static InputParametersBlock getInputParameters();
-  explicit SyntaxBlock(const InputParametersBlock& block);
+  static ParameterTree getInputParameters();
+  explicit SyntaxBlock(const ParameterTree& block);
 };
 
 } // namespace elke

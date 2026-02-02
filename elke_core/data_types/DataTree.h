@@ -1,7 +1,7 @@
 #ifndef ELK_E_DATATREE_H
 #define ELK_E_DATATREE_H
 
-#include "Varying.h"
+#include "ScalarValue.h"
 #include "DataGrossType.h"
 
 #include <string>
@@ -41,7 +41,7 @@ namespace elke
  * - `DataTree::grossType`, which returns the gross-type.
  * - `DataTree::getTag`, which returns a named tag.
  * - `DataTree::value`, returns the scalar value if the tree has a
- *    gross-type of SCALAR. Implemented via `elke::Varying`.
+ *    gross-type of SCALAR. Implemented via `elke::ScalarValue`.
  * - `DataTree::child`, returns a child by name.
  * - `DataTree::children`, which returns an iterable list of all the
  *   tree's children.
@@ -75,12 +75,22 @@ class DataTree
   /// Gross-type
   DataGrossType m_gross_type = DataGrossType::NO_DATA;
   std::map<std::string, std::string> m_tags;
-  Varying m_value;
+  ScalarValue m_value;
   std::vector<DataTreePtr> m_children;
 
 public:
   /**Constructor requiring the name.*/
   explicit DataTree(std::string name);
+
+  /**Copy constructor.*/
+  DataTree(const DataTree& other)
+    : m_name(other.m_name),
+      m_gross_type(other.m_gross_type),
+      m_tags(other.m_tags),
+      m_value(other.m_value),
+      m_children(other.m_children)
+  {
+  }
 
   /**Returns the name assigned to this tree.*/
   const std::string& name() const;
@@ -95,10 +105,10 @@ public:
   void rename(const std::string& new_name);
 
   /**Returns a constant reference to the value.*/
-  const Varying& value() const;
+  const ScalarValue& value() const;
 
   /**Adds a value to the node*/
-  void setValue(const Varying& value);
+  void setValue(const ScalarValue& value);
 
   /**Adds a child tree.*/
   void addChild(const DataTreePtr& child, bool prevent_duplicate = false);
@@ -129,7 +139,13 @@ public:
   size_t numChildren() const { return m_children.size(); }
 
   /**Returns the list of children*/
-  const std::vector<DataTreePtr>& children() const;
+  std::vector<DataTreePtr>& children();
+
+  /**Returns the list of children*/
+  std::vector<DataTreeConstPtr> constChildren() const;
+
+  /**Makes a vector of all the children's gross-types.*/
+  std::vector<DataGrossType> makeChildrenGrossTypesList() const;
 
   /**Produces a string in YAML format of the entire tree.*/
   std::string

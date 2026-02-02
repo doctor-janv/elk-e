@@ -92,13 +92,13 @@ bool stringListHasString(const std::vector<std::string>& string_list,
 /**Determines the closest matching string in a list.*/
 std::string
 findClosestMatchingString(const std::string& input,
-                          const std::unordered_set<std::string>& dict,
+                          const std::vector<std::string>& list,
                           const unsigned int distance_threshold /*=4*/)
 {
   unsigned int min_dist = 1000000; // Large number
   std::string suggestion;
 
-  for (const std::string& word : dict)
+  for (const std::string& word : list)
   {
     const unsigned int dist = computeLevenshteinDistance(input, word);
     // Only consider words within a threshold

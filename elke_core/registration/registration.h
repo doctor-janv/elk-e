@@ -1,7 +1,7 @@
 #ifndef ELKE_CORE_REGISTRATION_REGISTRATION_H
 #define ELKE_CORE_REGISTRATION_REGISTRATION_H
 
-#include "elke_core/parameters/InputParametersBlock.h"
+#include "elke_core/parameters2/ParameterTree.h"
 #include "elke_core/syntax_blocks/SyntaxBlock.h"
 #include "elke_core/factory/FactoryObject.h"
 
@@ -27,9 +27,9 @@
   static char RJoinWordsB(unique_var_name2_, __COUNTER__) =                    \
     elke::StaticRegister::registerObject<class_name>(#class_name)
 
-#define elkeRegisterInputBlock(class_name)                                     \
+#define elkeRegisterNamedParameterTree(class_name)                                     \
   static char RJoinWordsB(unique_var_name2_, __COUNTER__) =                    \
-    elke::StaticRegister::registerInputParametersBlock<class_name>(            \
+    elke::StaticRegister::registerNamedParameterTree<class_name>(            \
       #class_name)
 
 namespace elke
@@ -39,11 +39,11 @@ namespace elke
 //  Helpers
 using NullaryFunction = void (*)();
 
-using GetParametersFunction = elke::InputParametersBlock (*)();
+using GetParametersFunction = elke::ParameterTree (*)();
 
 using SyntaxBlockPtr = std::shared_ptr<SyntaxBlock>;
 using SyntaxBlockConstructionFunction =
-  SyntaxBlockPtr (*)(const elke::InputParametersBlock&);
+  SyntaxBlockPtr (*)(const elke::ParameterTree&);
 
 struct SyntaxBlockRegisterEntry
 {
@@ -54,7 +54,7 @@ struct SyntaxBlockRegisterEntry
 
 using FactoryObjectPtr = std::shared_ptr<FactoryObject>;
 using FactoryObjectConstructionFunction =
-  FactoryObjectPtr (*)(const elke::InputParametersBlock&);
+  FactoryObjectPtr (*)(const elke::ParameterTree&);
 
 struct FactoryObjectRegisterEntry
 {
@@ -62,7 +62,7 @@ struct FactoryObjectRegisterEntry
   FactoryObjectConstructionFunction m_constructor_function = nullptr;
 };
 
-struct InputParametersBlockRegistryEntry
+struct NamedParameterTreeRegistryEntry
 {
   GetParametersFunction m_parameter_function = nullptr;
 };
@@ -74,7 +74,7 @@ class StaticRegister
   std::map<std::string, NullaryFunction> m_nullary_function_register;
   std::map<std::string, SyntaxBlockRegisterEntry> m_syntax_block_register;
   std::map<std::string, FactoryObjectRegisterEntry> m_factory_object_register;
-  std::map<std::string, InputParametersBlockRegistryEntry>
+  std::map<std::string, NamedParameterTreeRegistryEntry>
     m_input_blocks_register;
 
 public:
@@ -88,7 +88,7 @@ public:
   static const std::map<std::string, FactoryObjectRegisterEntry>&
   getFactoryObjectRegister();
   /**Returns the input block register.*/
-  static const std::map<std::string, InputParametersBlockRegistryEntry>&
+  static const std::map<std::string, NamedParameterTreeRegistryEntry>&
   getInputParameterBlockRegistry();
 
   static char registerNullaryFunction(const std::string& function_name,
@@ -131,11 +131,11 @@ public:
   }
 
   template <typename TargetType>
-  static char registerInputParametersBlock(const std::string& block_name)
+  static char registerNamedParameterTree(const std::string& block_name)
   {
     auto& registry = getInstance();
 
-    InputParametersBlockRegistryEntry new_entry;
+    NamedParameterTreeRegistryEntry new_entry;
 
     new_entry.m_parameter_function = TargetType::getInputParameters;
 
@@ -156,13 +156,13 @@ private:
 
   template <typename TargetType, typename BaseType>
   static std::shared_ptr<BaseType>
-  ProxySyntaxBlockConstructor(const InputParametersBlock& params)
+  ProxySyntaxBlockConstructor(const ParameterTree& params)
   {
     return std::make_shared<TargetType>(params);
   }
   template <typename TargetType, typename BaseType>
   static std::shared_ptr<BaseType>
-  ProxyFactoryObjectConstructor(const InputParametersBlock& params)
+  ProxyFactoryObjectConstructor(const ParameterTree& params)
   {
     return std::make_shared<TargetType>(params);
   }

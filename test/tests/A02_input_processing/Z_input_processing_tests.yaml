@@ -27,7 +27,7 @@ unitTestYAMLInput.cc:
     { type: HasStringCheck, line_key: '[0]      - true # type=BOOL address=YAMLInput.yaml/arr/2'},
     { type: HasStringCheck, line_key: '[0]      - false # type=BOOL address=YAMLInput.yaml/arr/3'},
     { type: HasStringCheck, line_key: '[0]      - 5 # type=INTEGER address=YAMLInput.yaml/arr/4'},
-    { type: HasStringCheck, line_key: '[0]      - true # type=BOOL address=YAMLInput.yaml/arr/5'},
+    { type: HasStringCheck, line_key: '[0]      - "yes" # type=STRING address=YAMLInput.yaml/arr/5'},
     { type: HasStringCheck, line_key: '[0]      - 55 # type=INTEGER address=YAMLInput.yaml/arr/6'},
     { type: HasStringCheck, line_key: '[0]    arr2: # type=SEQUENCE address=YAMLInput.yaml/arr2'},
     { type: HasStringCheck, line_key: '[0]      - # type=MAP address=YAMLInput.yaml/arr2/0'},
@@ -92,7 +92,9 @@ block_test3:
       type: HasStringCheck
       line_key: >-
         [0]  ERROR: While checking input parameter validity for block "TestSyntaxBlock"
-        from data-tree "block_test3.yaml/TestSyntaxBlock":
+        from data-tree "block_test3.yaml/TestSyntaxBlock"
+        parsed from block_test3.yaml line 2:3:
+
     -
       type: HasStringCheck
       line_key: '[0]  ERROR:   The parameter name "array_of_objects" is invalid. No suggested parameter name could be determined.'
@@ -101,15 +103,39 @@ block_test3:
       line_key: '[0]  ERROR:   The parameter name "scalex" is invalid. Did you mean "scale2"?'
   requirements: ["invalid_parameters", "friendly_errors"]
 
+##=========================================================================
+## Tests various aspects of robust input parameters and syntax blocks
+#unitTest_InputParametersBlock:
+#  args: "--bt -b 'call elke::unit_tests::unitTestInputParameters' --nocolor --echo-input-data true --echo-input true"
+#  requirements: ["inparams1"]
+#  precheck_script: >-
+#      sed -n "/UNIT_TEST_BEGIN/,/UNIT_TEST_END/p" out/unitTest_InputParametersBlock.cout > out/unitTest_InputParametersBlock.cout_test
+#  checks:
+#    - type: ExitCodeCheck
+#    - type: TextFileDiffCheck
+#      gold_file: gold/unitTest_InputParametersBlock.cout_gold
+#      check_file: out/unitTest_InputParametersBlock.cout_test
+
 #=========================================================================
 # Tests various aspects of robust input parameters and syntax blocks
-unitTest_InputParametersBlock:
-  args: "--bt -b 'call elke::unit_tests::unitTestInputParameters' --nocolor --echo-input-data true --echo-input true"
+unitTest_ParameterTree:
+  args: "--bt -b 'call elke::unit_tests::unitTestParameterTree' --nocolor --echo-input-data true --echo-input true"
   requirements: ["inparams1"]
   precheck_script: >-
-      sed -n "/UNIT_TEST_BEGIN/,/UNIT_TEST_END/p" out/unitTest_InputParametersBlock.cout > out/unitTest_InputParametersBlock.cout_test
+    sed -n "/UNIT_TEST_BEGIN/,/UNIT_TEST_END/p" out/unitTest_ParameterTree.cout > out/unitTest_ParameterTree.cout_test
   checks:
     - type: ExitCodeCheck
     - type: TextFileDiffCheck
-      gold_file: gold/unitTest_InputParametersBlock.cout_gold
-      check_file: out/unitTest_InputParametersBlock.cout_test
+      gold_file: gold/unitTest_ParameterTree.cout_gold
+      check_file: out/unitTest_ParameterTree.cout_test
+
+#=========================================================================
+# Tests syntax blocks
+syntaxBlocks:
+  args: "--bt -i input_for_TestSyntaxBlock.yaml --nocolor --echo-input-data true --echo-input true"
+  requirements: ["inparams1"]
+  checks:
+    - type: ExitCodeCheck
+#    - type: TextFileDiffCheck
+#      gold_file: gold/unitTest_ParameterTree.cout_gold
+#      check_file: out/unitTest_ParameterTree.cout_test

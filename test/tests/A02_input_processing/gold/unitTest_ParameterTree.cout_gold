@@ -1,0 +1,183 @@
+[0]  UNIT_TEST_BEGIN
+[0]  ====================================================
+[0]  Testing OPTIONAL SCALAR parameters
+[0]  Checking string_parameter_cross_check/string_assignment. No error.
+[0]  Checking string_parameter_cross_check/int_assignment. No error.
+[0]  Checking string_parameter_cross_check/float_assignment. No error.
+[0]  Checking string_parameter_cross_check/bool_assignment. No error.
+[0]  Checking string_parameter_cross_check/array_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/string_parameter_cross_check/array_assignment" parsed from unitTest_ParameterTree.yaml line 14:5:
+[0]  ERROR:     Item "test_param" is required to be of gross-type SCALAR. Supplied gross-type is SEQUENCE.
+[0]  ERROR: -----
+[0]  Checking string_parameter_cross_check/map_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/string_parameter_cross_check/map_assignment" parsed from unitTest_ParameterTree.yaml line 16:5:
+[0]  ERROR:     Item "test_param" is required to be of gross-type SCALAR. Supplied gross-type is MAP.
+[0]  ERROR: -----
+[0]
+[0]  Checking boolean_parameter_cross_check/string_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/boolean_parameter_cross_check/string_assignment" parsed from unitTest_ParameterTree.yaml line 23:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type BOOL. Supplied scalar-type is STRING with value Valid String which is not compatible with scalar-type BOOL.
+[0]  ERROR: -----
+[0]  Checking boolean_parameter_cross_check/string_assignment_with_true. No error.
+[0]  Checking boolean_parameter_cross_check/string_assignment_with_false. No error.
+[0]  Checking boolean_parameter_cross_check/int_assignment. No error.
+[0]  Checking boolean_parameter_cross_check/float_assignment. No error.
+[0]  Checking boolean_parameter_cross_check/bool_assignment. No error.
+[0]
+[0]  Checking integer_parameter_cross_check/string_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/integer_parameter_cross_check/string_assignment" parsed from unitTest_ParameterTree.yaml line 38:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value Valid String which is not compatible with scalar-type INTEGER.
+[0]  ERROR: -----
+[0]  Checking integer_parameter_cross_check/string_assignment_with_integer_string. No error.
+[0]  Checking integer_parameter_cross_check/string_assignment3_with_float_string. No error.
+[0]  Checking integer_parameter_cross_check/int_assignment. No error.
+[0]  Checking integer_parameter_cross_check/float_assignment. No error.
+[0]  Checking integer_parameter_cross_check/bool_assignment. No error.
+[0]
+[0]  Checking float_parameter_cross_check/string_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/float_parameter_cross_check/string_assignment" parsed from unitTest_ParameterTree.yaml line 53:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type FLOAT. Supplied scalar-type is STRING with value Valid String which is not compatible with scalar-type FLOAT.
+[0]  ERROR: -----
+[0]  Checking float_parameter_cross_check/string_assignment2. No error.
+[0]  Checking float_parameter_cross_check/string_assignment3. No error.
+[0]  Checking float_parameter_cross_check/int_assignment. No error.
+[0]  Checking float_parameter_cross_check/float_assignment. No error.
+[0]  Checking float_parameter_cross_check/bool_assignment. No error.
+[0]
+[0]  Checking float_parameter_cross_check/string_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/float_parameter_cross_check/string_assignment" parsed from unitTest_ParameterTree.yaml line 53:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type FLOAT. Supplied scalar-type is STRING with value Valid String which is not compatible with scalar-type FLOAT.
+[0]  ERROR: -----
+[0]  Checking float_parameter_cross_check/string_assignment2. No error.
+[0]  Checking float_parameter_cross_check/string_assignment3. No error.
+[0]  Checking float_parameter_cross_check/int_assignment. No error.
+[0]  Checking float_parameter_cross_check/float_assignment. No error.
+[0]  Checking float_parameter_cross_check/bool_assignment. No error.
+[0]
+[0]  ====================================================
+[0]  Testing REQUIRED SCALAR parameters WITH template parameters
+[0]  Checking string_parameter_cross_check/string_assignment. No error.
+[0]  Checking string_parameter_cross_check/int_assignment. No error.
+[0]  Checking string_parameter_cross_check/float_assignment. No error.
+[0]  Checking string_parameter_cross_check/bool_assignment. No error.
+[0]  Checking string_parameter_cross_check/array_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/string_parameter_cross_check/array_assignment" parsed from unitTest_ParameterTree.yaml line 14:5:
+[0]  ERROR:     Item "test_param" is required to be of gross-type SCALAR. Supplied gross-type is SEQUENCE.
+[0]  ERROR: -----
+[0]  Checking string_parameter_cross_check/map_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/string_parameter_cross_check/map_assignment" parsed from unitTest_ParameterTree.yaml line 16:5:
+[0]  ERROR:     Item "test_param" is required to be of gross-type SCALAR. Supplied gross-type is MAP.
+[0]  ERROR: -----
+[0]
+[0]  Checking boolean_parameter_cross_check/string_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/boolean_parameter_cross_check/string_assignment" parsed from unitTest_ParameterTree.yaml line 23:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type BOOL. Supplied scalar-type is STRING with value Valid String which is not compatible with scalar-type BOOL.
+[0]  ERROR: -----
+[0]  Checking boolean_parameter_cross_check/string_assignment_with_true. No error.
+[0]  Checking boolean_parameter_cross_check/string_assignment_with_false. No error.
+[0]  Checking boolean_parameter_cross_check/int_assignment. No error.
+[0]  Checking boolean_parameter_cross_check/float_assignment. No error.
+[0]  Checking boolean_parameter_cross_check/bool_assignment. No error.
+[0]
+[0]  Checking integer_parameter_cross_check/string_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/integer_parameter_cross_check/string_assignment" parsed from unitTest_ParameterTree.yaml line 38:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value Valid String which is not compatible with scalar-type INTEGER.
+[0]  ERROR: -----
+[0]  Checking integer_parameter_cross_check/string_assignment_with_integer_string. No error.
+[0]  Checking integer_parameter_cross_check/string_assignment3_with_float_string. No error.
+[0]  Checking integer_parameter_cross_check/int_assignment. No error.
+[0]  Checking integer_parameter_cross_check/float_assignment. No error.
+[0]  Checking integer_parameter_cross_check/bool_assignment. No error.
+[0]
+[0]  Checking float_parameter_cross_check/string_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/float_parameter_cross_check/string_assignment" parsed from unitTest_ParameterTree.yaml line 53:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type FLOAT. Supplied scalar-type is STRING with value Valid String which is not compatible with scalar-type FLOAT.
+[0]  ERROR: -----
+[0]  Checking float_parameter_cross_check/string_assignment2. No error.
+[0]  Checking float_parameter_cross_check/string_assignment3. No error.
+[0]  Checking float_parameter_cross_check/int_assignment. No error.
+[0]  Checking float_parameter_cross_check/float_assignment. No error.
+[0]  Checking float_parameter_cross_check/bool_assignment. No error.
+[0]
+[0]  ====================================================
+[0]  Testing OPTIONAL SEQUENCE parameters with vector
+[0]  Checking array_parameter_cross_check/string_assignment. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/array_parameter_cross_check/string_assignment" parsed from unitTest_ParameterTree.yaml line 69:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value A which is not compatible with scalar-type INTEGER.
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value B which is not compatible with scalar-type INTEGER.
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value C which is not compatible with scalar-type INTEGER.
+[0]  ERROR: -----
+[0]  Checking array_parameter_cross_check/string_assignment2. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/array_parameter_cross_check/string_assignment2" parsed from unitTest_ParameterTree.yaml line 71:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value true which is not compatible with scalar-type INTEGER.
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value false which is not compatible with scalar-type INTEGER.
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value true which is not compatible with scalar-type INTEGER.
+[0]  ERROR: -----
+[0]  Checking array_parameter_cross_check/int_assignment. No error.
+[0]  Checking array_parameter_cross_check/float_assignment. No error.
+[0]  Checking array_parameter_cross_check/number_assignment. No error.
+[0]  Checking array_parameter_cross_check/bool_assignment. No error.
+[0]  Checking array_parameter_cross_check/wrong_gross_type. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/array_parameter_cross_check/wrong_gross_type" parsed from unitTest_ParameterTree.yaml line 81:5:
+[0]  ERROR:     Item "test_param" is required to be of scalar-type INTEGER. Supplied scalar-type is STRING with value true which is not compatible with scalar-type INTEGER.
+[0]  ERROR:     Array entry 1 is required to be of gross-type SCALAR. Supplied gross-type is SEQUENCE.
+[0]  ERROR: -----
+[0]
+[0]  ====================================================
+[0]  Testing OPTIONAL SEQUENCE parameters with vector and custom checks
+[0]  Checking array_parameter_special_checks/wrong_size. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/array_parameter_special_checks/wrong_size" parsed from unitTest_ParameterTree.yaml line 86:5:
+[0]  ERROR:     Item "test_param" is required to be an array of size 3 but the data provided has 4 entries.
+[0]  ERROR:     Item "test_param" is required to be an array of size 3 but the data provided has 4 entries.
+[0]  ERROR: -----
+[0]
+[0]  ====================================================
+[0]  Testing OPTIONAL SEQUENCE parameters with arbitrary values
+[0]  Checking array_parameter_of_arb_type/test1. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/array_parameter_of_arb_type/test1" parsed from unitTest_ParameterTree.yaml line 90:5:
+[0]  ERROR:     The entries for item test_param are required to follow the gross-type sequence [SCALAR,SCALAR,SCALAR,SCALAR,MAP] but the supplied types are [SCALAR,SCALAR,SCALAR,SCALAR,SEQUENCE].
+[0]  ERROR: -----
+[0]
+[0]  ====================================================
+[0]  Testing OPTIONAL SEQUENCE parameters with arbitrary map
+[0]  Checking map_parameter/test1. Error(s) produced.
+[0]  ERROR:
+[0]  ERROR: -----
+[0]  ERROR: While checking input parameter validity for block "NoName" from data-tree "unitTest_ParameterTree.yaml/map_parameter/test1" parsed from unitTest_ParameterTree.yaml line 94:5:
+[0]  ERROR:     Item "test_param" is required to be of gross-type MAP. Supplied gross-type is SEQUENCE.
+[0]  ERROR: -----
+[0]  Checking map_parameter/test2. No error.
+[0]
+[0]  UNIT_TEST_END

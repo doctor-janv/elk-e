@@ -21,7 +21,7 @@ bool stringListHasString(const std::vector<std::string>& string_list,
 /**Determines the closest matching string in a list.*/
 std::string
 findClosestMatchingString(const std::string& input,
-                          const std::unordered_set<std::string>& dict,
+                          const std::vector<std::string>& list,
                           unsigned int distance_threshold = 4);
 
 /**Function to calculate Levenshtein distance. */

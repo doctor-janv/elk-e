@@ -153,6 +153,23 @@ Checking:
   assigned to an integer. Another example: all scalar types can be converted to 
   strings and are therefore assignable to a string. 
 - If the developer wants to enforce strict typing, it should also be possible to do so.
+
+- What is the parameter's gross type:
+  - SCALAR
+    - ScalarAssignmentRequirements
+      - FixedType
+      - CompatibleType
+      - AnyType
+  - SEQUENCE
+    - VectorOfScalars?
+      - Type requirement
+        - ArbitraryTypeArbitrarySize
+        - FixedTypeArbitrarySize
+        - FixedTypeFixedSize
+      - Size requirement
+        - Secondarily enforced 
+    - Vector of Anything
+  - MAP
   
 ### Definition of an input parameter
 - An input parameter can be one of following:

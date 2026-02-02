@@ -16,14 +16,14 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
     "module",
     "m",
     "Sets the name of the module that will dictate the execution",
-    /*default_value=*/Varying("NullModule"),
+    /*default_value=*/ScalarValue("NullModule"),
     /*only_one_allowed=*/true,
     /*requires_value=*/false);
 
   const auto cli1 = CommandLineArgument("dump-registry",
                                         "",
                                         "Dumps the registry in yaml format",
-                                        /*default_value=*/Varying(0),
+                                        /*default_value=*/ScalarValue(0),
                                         /*only_one_allowed=*/true,
                                         /*requires_value=*/false);
 
@@ -31,7 +31,7 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
                                         "b",
                                         "Calls a basic command in the "
                                         "form 'command arg1 arg2 arg3 etc.'",
-                                        /*default_value=*/Varying(""),
+                                        /*default_value=*/ScalarValue(""),
                                         /*only_one_allowed=*/false,
                                         /*requires_value=*/true);
 
@@ -39,7 +39,7 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
     "input",
     "i",
     "Assigns an input file. Repeated calls will load a list of input files.",
-    /*default_value=*/Varying("input.yaml"),
+    /*default_value=*/ScalarValue("input.yaml"),
     /*only_one_allowed=*/false,
     /*requires_value=*/true);
 
@@ -47,7 +47,7 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
     CommandLineArgument("echo-input",
                         "",
                         "Turns on/off the echoing of the input files",
-                        /*default_value=*/Varying(false),
+                        /*default_value=*/ScalarValue(false),
                         /*only_one_allowed=*/true,
                         /*requires_value=*/true);
 
@@ -55,7 +55,7 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
     "echo-input-data",
     "",
     "Turns on/off the echoing of the processed input files with tags.",
-    /*default_value=*/Varying(false),
+    /*default_value=*/ScalarValue(false),
     /*only_one_allowed=*/true,
     /*requires_value=*/true);
 
@@ -63,17 +63,16 @@ void FrameworkCore::registerFrameworkCoreSpecificCLI()
     CommandLineArgument("stop_after_input_parsing",
                         "",
                         "Stops execution after the input-parsing task.",
-                        /*default_value=*/Varying(false),
+                        /*default_value=*/ScalarValue(false),
                         /*only_one_allowed=*/true,
                         /*requires_value=*/false);
 
-  const auto cli7 =
-    CommandLineArgument("bt",
-                        "",
-                        "Enable stack-tracing using cpptrace.",
-                        /*default_value=*/Varying(false),
-                        /*only_one_allowed=*/true,
-                        /*requires_value=*/false);
+  const auto cli7 = CommandLineArgument("bt",
+                                        "",
+                                        "Enable stack-tracing using cpptrace.",
+                                        /*default_value=*/ScalarValue(false),
+                                        /*only_one_allowed=*/true,
+                                        /*requires_value=*/false);
 
   m_CLI.registerNewCLA(cli0);
   m_CLI.registerNewCLA(cli1);
@@ -91,8 +90,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
   const auto& supplied_clas = m_CLI.getSuppliedCommandLineArguments();
   auto& logger = this->getLogger();
 
-  if (supplied_clas.has("bt"))
-    m_use_stacktrace = true;
+  if (supplied_clas.has("bt")) m_use_stacktrace = true;
 
   if (supplied_clas.has("dump-registry")) dumpRegistry();
 
@@ -106,7 +104,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
 
     for (const auto& basic_command : basic_commands)
     {
-      const std::string command = basic_command.stringValue();
+      const auto command = basic_command.getValue<std::string>();
       logger.log() << command << "\n";
       const auto& words = string_utils::splitString(command);
 
@@ -132,7 +130,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
     const auto& inputs = input_CLA.m_values_assigned;
 
     for (const auto& input : inputs)
-      this->m_input_processor.addInputFilePath(input.stringValue());
+      this->m_input_processor.addInputFilePath(input.getValue<std::string>());
   } // if (supplied_clas.has("input"))
 
   if (supplied_clas.has("echo-input"))
@@ -141,8 +139,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
     const auto& inputs = input_CLA.m_values_assigned;
 
     bool value = false;
-    if (inputs.front().stringValue() == "true")
-      value = true;
+    if (inputs.front().getValue<std::string>() == "true") value = true;
 
     this->m_input_processor.setEchoInput(value);
   } // if (supplied_clas.has("echo-input"))
@@ -152,7 +149,7 @@ void FrameworkCore::respondToFrameworkCoreCLAs()
     const auto& input_CLA = supplied_clas.getCLAbyName("echo-input-data");
     const auto& inputs = input_CLA.m_values_assigned;
 
-    const bool value = inputs.front().stringValue() == "true";
+    const bool value = inputs.front().getValue<std::string>() == "true";
 
     this->m_input_processor.setEchoInputData(value);
   } // if (supplied_clas.has("echo-input-data"))
@@ -199,9 +196,8 @@ void FrameworkCore::basicCommandCall(const std::string& command_string) const
   }
   if (!function_found)
   {
-    throw std::runtime_error(
-      "Nullary function '" + function_name +
-      "' not found amount registered nullary functions.");
+    throw std::runtime_error("Registered Nullary function '" + function_name +
+                             "' not found.");
   }
 }
 

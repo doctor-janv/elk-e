@@ -13,6 +13,18 @@ struct WarningsAndErrorsData
   std::vector<std::string> m_errors;
 };
 
+struct StatusStrings
+{
+  std::string m_errors;
+  std::string m_warnings;
+
+  void operator+=(const StatusStrings& other)
+  {
+    m_errors += other.m_errors;
+    m_warnings += other.m_warnings;
+  }
+};
+
 void Abort(const std::string& program_phase);
 
 /**Makes a deep copy of a vector of unique pointers. Requires that the

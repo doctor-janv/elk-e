@@ -1,6 +1,6 @@
 #include "SimulationBlock.h"
 
-#include "elke_core/parameters/InputParametersBlock.h"
+#include "elke_core/parameters2/ParameterTree.h"
 #include "elke_core/registration/registration.h"
 
 elkeRegisterSyntaxBlock(/*class_name=*/elke::SimulationBlock,
@@ -9,25 +9,24 @@ elkeRegisterSyntaxBlock(/*class_name=*/elke::SimulationBlock,
 namespace elke
 {
 
-InputParametersBlock SimulationBlock::getInputParameters()
+ParameterTree SimulationBlock::getInputParameters()
 {
-  auto params = InputParametersBlock(
-    "Simulation", "No description", {SyntaxBlock::getInputParameters()});
+  auto params = ParameterTree(
+    "Simulation", "No description");
 
-  params.addOptionalParameter("scale", 1.0, "The scale");
-  params.addOptionalParameter("offset", 2.0, "The offset",
-    {std::make_shared<param_checks::ScalarTypeMustMatch>()});
-  params.addOptionalParameter("scale2", 1.0, "The scale",
-    {std::make_shared<param_checks::ScalarTypeMustMatch>()});
+  params.addOptionalParameter("scale", "The scale", 2.0);
+  params.addOptionalParameter("offset", "The offset", 2.0);
+  params.addOptionalParameter("scale2", "The scale", 1.0);
   params.addRequiredParameter<int>("optionA", "Description.");
 
   return params;
 }
 
-SimulationBlock::SimulationBlock(const InputParametersBlock& params)
-  : SyntaxBlock(params),
-    m_scale(params.getParameterValue<double>("scale")),
-    m_delta(params.getParameterValue<double>("offset"))
+SimulationBlock::SimulationBlock(const ParameterTree& params)
+  : SyntaxBlock(params)
+// ,
+//     m_scale(params.getParameterValue<double>("scale")),
+//     m_delta(params.getParameterValue<double>("offset"))
 {
 }
 

@@ -6,28 +6,32 @@ namespace elke
 
 class TestObject2 : public FactoryObject
 {
-  const int m_num_refinements;
+  // const int m_num_refinements;
+  int m_num_refinements;
 
 public:
-  static InputParametersBlock getInputParameters();
-  explicit TestObject2(const InputParametersBlock& input_parameters);
+  static ParameterTree getInputParameters();
+  explicit TestObject2(const ParameterTree& input_parameters);
 };
 
-InputParametersBlock TestObject2::getInputParameters()
+ParameterTree TestObject2::getInputParameters()
 {
-  auto params = InputParametersBlock("elke::TestObject1",
-                                     "A test object",
-                                     {FactoryObject::getInputParameters()});
+  auto params = ParameterTree("elke::TestObject1",
+                                     "A test object"
+                                     // ,
+                                     // {FactoryObject::getInputParameters()}
+                                     );
   params.addRequiredParameter<int>("num_refinements", "Number of refinements");
-  params.addRequiredParameter<RegisteredObjectProxy>("sub_object", "Yup");
+  // params.addRequiredParameter<RegisteredObjectProxy>("sub_object", "Yup");
 
   return params;
 }
 
-TestObject2::TestObject2(const InputParametersBlock& input_parameters)
-  : FactoryObject(input_parameters),
-    m_num_refinements(
-      input_parameters.getParameterValue<int>("num_refinements"))
+TestObject2::TestObject2(const ParameterTree& input_parameters)
+  : FactoryObject(input_parameters)
+// ,
+//     m_num_refinements(
+//       input_parameters.getParameterValue<int>("num_refinements"))
 {
 }
 

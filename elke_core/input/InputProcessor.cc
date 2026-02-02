@@ -4,7 +4,6 @@
 #include "elke_core/output/elk_exceptions.h"
 #include "elke_core/output/Logger.h"
 #include "elke_core/registration/registration.h"
-#include "elke_core/parameters/InputParametersBlock.h"
 #include "elke_core/utilities/string_utils.h"
 
 #include <sstream>
@@ -146,24 +145,40 @@ void InputProcessor::checkInputDataForSyntaxBlocks() const
   const auto& syntax_block_reg_entries =
     StaticRegister::getSyntaxSystemRegister();
 
-  const auto& main_input_tree_blocks = m_main_data_tree.children();
+  const auto& main_input_tree_blocks = m_main_data_tree.constChildren();
 
   //============================================= Check each syntax block
   for (const auto& [block_name, block_reg_entry] : syntax_block_reg_entries)
   {
-    m_logger_ptr->log() << "Processing " << block_reg_entry.m_syntax
-                        << " block";
+    std::stringstream out_stream;
+    out_stream << "Processing " << block_reg_entry.m_syntax << " block... ";
+    bool block_processed = false;
     for (const auto& block_tree_ptr : main_input_tree_blocks)
+    {
       if (block_tree_ptr->name() == block_reg_entry.m_syntax)
       {
-        m_logger_ptr->log() << "Tree has " << block_tree_ptr->name() << "\n";
-        const auto block_parameters = block_reg_entry.m_parameter_function();
-        block_parameters.checkInputDataValidity(*block_tree_ptr,
-                                                warnings_and_errors_data,
-                                                /*nest_depth=*/0);
+        out_stream << "Tree has " << block_tree_ptr->name() << "\n";
+        m_logger_ptr->log() << out_stream.str();
+        auto block_parameters = block_reg_entry.m_parameter_function();
 
+        StatusStrings status_strings;
+        block_parameters.processSpecification(status_strings, *block_tree_ptr);
+
+        if (not status_strings.m_errors.empty())
+          warnings_and_errors_data.m_errors.push_back(status_strings.m_errors);
+        if (not status_strings.m_warnings.empty())
+          warnings_and_errors_data.m_warnings.push_back(status_strings.m_warnings);
+
+        block_processed = true;
         break;
       }
+    }//for block_tree_ptr
+
+    if (not block_processed)
+    {
+      out_stream << "Not found in input.\n";
+      m_logger_ptr->log() << out_stream.str();
+    }
   }
 
   //============================================= Print warnings

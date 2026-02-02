@@ -18,8 +18,8 @@ unitTest_StackTraces.cc:
         [0]  ERROR: Quit has been called. Stack trace (most recent call first):
   requirements: ["utesting", "friendly_runtime_errors"]
 
-unitTest_Varying.cc:
-  args: "--bt --nocolor -b 'call elke::unit_tests::unitTestVarying'"
+unitTestScalarValue.cc:
+  args: "--bt --nocolor -b 'call elke::unit_tests::unitTestScalarValue'"
   checks:
     - {type: ExitCodeCheck}
   requirements: ["utesting", "friendly_runtime_errors"]

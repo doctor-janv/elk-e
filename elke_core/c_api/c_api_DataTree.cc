@@ -174,7 +174,7 @@ void DataTree_setArbitraryValue(int& errorCode,
     {
       if (current_address == str_address)
       {
-        current_tree.setValue(Varying(value));
+        current_tree.setValue(ScalarValue(value));
         address_found = true;
       }
     };

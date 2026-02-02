@@ -28,10 +28,10 @@ const std::string& DataTree::name() const { return m_name; }
 void DataTree::rename(const std::string& new_name) { m_name = new_name; }
 
 /**Returns a constant reference to the values.*/
-const Varying& DataTree::value() const { return m_value; }
+const ScalarValue& DataTree::value() const { return m_value; }
 
 /**Adds a value to the node*/
-void DataTree::setValue(const Varying& value)
+void DataTree::setValue(const ScalarValue& value)
 {
   if (m_gross_type != DataGrossType::SCALAR)
     throw std::runtime_error(
@@ -39,7 +39,7 @@ void DataTree::setValue(const Varying& value)
       " which has not been designated as a DataTreeType::Scalar");
   m_value = value;
 
-  m_tags["type"] = value.typeName();
+  m_tags["type"] = m_value.typeString();
 }
 
 // ###################################################################
@@ -48,7 +48,8 @@ void DataTree::addChild(const DataTreePtr& child,
                         const bool prevent_duplicate /*=false*/)
 {
   //========================= Only sequences and maps may have children
-  if (not(m_gross_type == DataGrossType::SEQUENCE or m_gross_type == DataGrossType::MAP))
+  if (not(m_gross_type == DataGrossType::SEQUENCE or
+          m_gross_type == DataGrossType::MAP))
     throw std::runtime_error(
       "Attempting to add child to DataTree " + m_name +
       " which is not designated as either a SEQUENCE or a MAP.");
@@ -100,12 +101,10 @@ std::string DataTree::getTag(const std::string& tag_name) const
 {
   const auto find_result = m_tags.find(tag_name);
 
-  if (find_result != m_tags.end())
-    return find_result->second;
+  if (find_result != m_tags.end()) return find_result->second;
 
   return {};
 }
-
 
 // ###################################################################
 /**Traverses the tree and calls a callback function at each node.*/
@@ -197,7 +196,10 @@ std::string DataTree::toStringAsYAML(
 
     case DataGrossType::SCALAR:
     {
-      yaml << " " << m_value.convertToString(/*with_type=*/false);
+      if (m_value.type() == ScalarType::STRING)
+        yaml << " " << "\"" + m_value.convertToString() + "\"";
+      else
+        yaml << " " << m_value.convertToString();
       appendTags();
       yaml << "\n";
     }
@@ -271,12 +273,32 @@ bool DataTree::hasChild(const std::string& child_name) const
   return false;
 }
 
+// ###################################################################
+/**Returns the list of children*/
+std::vector<DataTree::DataTreePtr>& DataTree::children() { return m_children; }
 
 // ###################################################################
 /**Returns the list of children*/
-const std::vector<DataTree::DataTreePtr>& DataTree::children() const
+std::vector<DataTree::DataTreeConstPtr> DataTree::constChildren() const
 {
-  return m_children;
+  std::vector<DataTreeConstPtr> const_children;
+  const_children.reserve(m_children.size());
+  for (const auto& child_ptr : m_children)
+    const_children.push_back(child_ptr);
+  return const_children;
 }
+
+// ###################################################################
+/**Makes a vector of all the children's gross-types.*/
+std::vector<DataGrossType> DataTree::makeChildrenGrossTypesList() const
+{
+  std::vector<DataGrossType> types;
+  types.reserve(m_children.size());
+  for (const auto& child_ptr : m_children)
+    types.push_back(child_ptr->grossType());
+
+  return types;
+}
+
 
 } // namespace elke

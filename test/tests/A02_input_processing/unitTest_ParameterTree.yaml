@@ -80,62 +80,19 @@ array_parameter_cross_check:
   wrong_gross_type:
     test_param: ["true", [1,2]]
 
-#================================================
-# Registered object checks
-reg_obj_parameter_cross_check:
-  # Tests RegisteredObjectProxy
-  # Expected:
-  # - sub_object, points to right object which is why it knows num_refinements is required.
-  # - sub_object_array[0], points to right object which is why it knows num_refinements is required.
-  # - sub_object_array[1], sub_object within a sub_object test
-  # - sub_object_map, object_2 should need num_refinements
-  sub_check1:
-    scale: 1.0
-    sub_object:
-      type: elke::TestObject1
-    sub_object_array:
-      - type: elke::TestObject1
-      - type: elke::TestObject2
-        sub_object:
-          type: elke::TestObject1
-    sub_object_map:
-      object_1:
-        type: elke::TestObject1
-        num_refinements: 12
-      object_2:
-        type: elke::TestObject1
-  # Tests Named Input block
-  # Expected:
-  # - sub_object_array, expects an array
-  # - geometry, miss-spelled volume
-  # - geometries, 3 items, all miss-spelled
-  # - geometries2, 1 too many item, all miss-spelled volume
-  sub_check2:
-    scale: 1.0
-    sub_object_array: # expects an arrya
-      type: elke::TestObject1
-    geometry:
-      volume2: 2.0 # Miss-spelling
-    geometries:
-      - volume2: 2.0 # Miss-spelling
-      - area2: 1.0 # Miss-spelling
-      - length2: 1.5 # Miss-spelling
-    geometries2: # Should still produce the errors for first 2 items
-      - volume2: 2.0
-      - volume2: 1.0
-      - volume2: 1.0
-  # Tests a different form of geometries2
-  sub_check3:
-    scale: 1.0
-    geometries2:
-      - volume2: 2.0 # Miss-spelling
-      - {volume2: 1.0, num_volumes2: 2} # Miss-spelling
-  # Tests a map of input blocks
-  sub_check4:
-    scale: 1.0
-    geometries3:
-      sub_object1:
-        length2: 1.0
-      mimi:
-        area2: 1.0
+array_parameter_special_checks:
+  # Defining it as size 3
+  wrong_size: # Should error
+    test_param: [1, 2, 3, 4]
 
+array_parameter_of_arb_type:
+  test1: # Should fail because entry 5 is not a MAP
+    test_param: [false, 1, 12.0, "A", [1,2]]
+
+map_parameter:
+  test1: # Should fail because it is an array
+    test_param: [false, 1, 12.0, "A", [1,2]]
+  test2:
+    test_param:
+      scale: 1.0
+      name: "Zorba"

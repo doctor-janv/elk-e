@@ -49,7 +49,7 @@ char StaticRegister::registerNullaryFunction(const std::string& function_name,
 }
 
 // ###################################################################
-const std::map<std::string, InputParametersBlockRegistryEntry>&
+const std::map<std::string, NamedParameterTreeRegistryEntry>&
 StaticRegister::getInputParameterBlockRegistry()
 {
   auto& registry = getInstance();

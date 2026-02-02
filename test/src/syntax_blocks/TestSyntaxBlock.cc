@@ -1,21 +1,6 @@
+#include "TestSyntaxBlock.h"
 
-#include "elke_core/parameters/InputParametersBlock.h"
 #include "elke_core/registration/registration.h"
-
-namespace elke
-{
-
-/**A test syntax block to test very robustness related aspects.*/
-class TestSyntaxBlock : public SyntaxBlock
-{
-  double m_scale;
-  double m_delta;
-public:
-  static InputParametersBlock getInputParameters();
-  explicit TestSyntaxBlock(const InputParametersBlock& params);
-};
-
-} // namespace elke
 
 elkeRegisterSyntaxBlock(/*class_name=*/elke::TestSyntaxBlock,
                         /*block_syntax=*/TestSyntaxBlock);
@@ -23,25 +8,28 @@ elkeRegisterSyntaxBlock(/*class_name=*/elke::TestSyntaxBlock,
 namespace elke
 {
 
-InputParametersBlock TestSyntaxBlock::getInputParameters()
+ParameterTree TestSyntaxBlock::getInputParameters()
 {
-  auto params = InputParametersBlock(
-    "TestSyntaxBlock", "No description", {SyntaxBlock::getInputParameters()});
+  auto params = ParameterTree("TestSyntaxBlock", "No description");
 
-  params.addOptionalParameter("scale", 1.0, "The scale");
-  params.addOptionalParameter("offset", 2.0, "The offset",
-    {std::make_shared<param_checks::ScalarTypeMustMatch>()});
-  params.addOptionalParameter("scale2", 1.0, "The scale",
-    {std::make_shared<param_checks::ScalarTypeMustMatch>()});
+  params.addOptionalParameter("scale", "The scale", 2.0);
+  params.addOptionalParameter("offset", "The offset", 2.0);
+  params.addOptionalParameter("scale2", "The scale", 1.0);
   params.addRequiredParameter<int>("optionA", "Description.");
+
+  auto& components = params.addOptionalParameter(
+    "components", "A list of components to instantiate", GenericParameterMap());
+
+
 
   return params;
 }
 
-TestSyntaxBlock::TestSyntaxBlock(const InputParametersBlock& params)
-  : SyntaxBlock(params),
-    m_scale(params.getParameterValue<double>("scale")),
-    m_delta(params.getParameterValue<double>("offset"))
+TestSyntaxBlock::TestSyntaxBlock(const ParameterTree& params)
+  : SyntaxBlock(params)
+// ,
+//     m_scale(params.getParameterValue<double>("scale")),
+//     m_delta(params.getParameterValue<double>("offset"))
 {
 }
 

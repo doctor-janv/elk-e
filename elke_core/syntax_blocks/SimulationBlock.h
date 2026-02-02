@@ -12,8 +12,8 @@ class SimulationBlock : public SyntaxBlock
   double m_scale;
   double m_delta;
 public:
-  static InputParametersBlock getInputParameters();
-  explicit SimulationBlock(const InputParametersBlock& params);
+  static ParameterTree getInputParameters();
+  explicit SimulationBlock(const ParameterTree& params);
 };
 
 } // namespace elke
